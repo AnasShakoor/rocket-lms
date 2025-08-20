@@ -1,14 +1,14 @@
 <div class="d-flex-center flex-column text-center mt-16 mb-24">
     @if($haveEnoughPoints)
         <div class="size-136">
-            <img src="/assets/design_1/img/courses/has_points.svg" alt="" class="img-cover">
+            <img src="/assets/design_1/img/courses/has_points.png" alt="" class="img-cover">
         </div>
 
         <h6 class="font-12 font-weight-bold mt-4">{{ trans('update.you_have_enough_points') }}</h6>
         <p class="mt-4 font-12 text-gray-500">{{ trans('update.do_you_want_to_purchase_this_course_using_your_points') }}</p>
     @else
         <div class="size-136">
-            <img src="/assets/design_1/img/courses/no_points.svg" alt="" class="img-cover">
+            <img src="/assets/design_1/img/courses/no_points.png" alt="" class="img-cover">
         </div>
 
         <h6 class="font-12 font-weight-bold mt-4">{{ trans('update.you_have_no_enough_points') }}</h6>

@@ -77,7 +77,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'certificates_list.svg',
+            'file_name' => 'certificates_list.png',
             'title' => trans('quiz.certificates_no_result'),
             'hint' => nl2br(trans('quiz.certificates_no_result_hint')),
         ])

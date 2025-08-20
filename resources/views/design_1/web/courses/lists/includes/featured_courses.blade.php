@@ -11,7 +11,7 @@
                 <div class="col-12 col-md-4 col-lg-3">
                     <div class="d-flex justify-content-center flex-column text-left w-100 h-100">
                         <div class="courses-lists-featured__arrow">
-                            <img src="/assets/design_1/img/courses/featured_courses_arrow.svg" alt="featured_courses_arrow" class="">
+                            <img src="/assets/design_1/img/courses/featured_courses_arrow.png" alt="featured_courses_arrow" class="">
                         </div>
 
                         <h3 class="font-24 font-weight-bold text-white">{{ trans('update.featured_courses') }}</h3>

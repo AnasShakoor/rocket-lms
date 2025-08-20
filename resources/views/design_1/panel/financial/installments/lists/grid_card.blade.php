@@ -13,11 +13,11 @@
             <img src="{{ $orderItem->thumbnail }}" class="img-cover rounded-16" alt="">
         @elseif($itemType == "subscribe")
             <div class="d-flex-center w-100 h-100">
-                <img src="/assets/default/img/icons/installment/subscribe_default.svg" alt="">
+                <img src="/assets/default/img/icons/installment/subscribe_default.png" alt="">
             </div>
         @elseif($itemType == "registrationPackage")
             <div class="d-flex-center w-100 h-100">
-                <img src="/assets/default/img/icons/installment/reg_package_default.svg" alt="">
+                <img src="/assets/default/img/icons/installment/reg_package_default.png" alt="">
             </div>
         @endif
 

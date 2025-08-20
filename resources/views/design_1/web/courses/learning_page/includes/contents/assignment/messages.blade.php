@@ -26,7 +26,7 @@
 @else
     <div class="d-flex-center flex-column text-center w-100 h-100">
         <div class="">
-            <img src="/assets/design_1/img/courses/learning_page/assignment/no-messages.svg" alt="" class="img-fluid" width="285px" height="212px">
+            <img src="/assets/design_1/img/courses/learning_page/assignment/no-messages.png" alt="" class="img-fluid" width="285px" height="212px">
         </div>
 
         <h5 class="mt-12 font-16 text-dark">{{ trans('update.no_assignment') }}</h5>

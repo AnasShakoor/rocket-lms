@@ -51,7 +51,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'blog_posts.svg',
+            'file_name' => 'blog_posts.png',
             'title' => trans('update.blog_post_no_result'),
             'hint' => nl2br(trans('update.blog_post_no_result_hint')),
             'btn' => ['url' => '/panel/blog/new','text' => trans('update.create_a_post')]

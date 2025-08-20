@@ -1,11 +1,11 @@
 @if(!empty($featuredAuthors) and $featuredAuthors->isNotEmpty())
     <div class="blog-top-authors position-relative mt-36">
         <div class="blog-top-authors__image-1">
-            <img src="/assets/design_1/img/blog/top_authors_2.svg" alt="image 1" class="img-fluid">
+            <img src="/assets/design_1/img/blog/top_authors_2.png" alt="image 1" class="img-fluid">
         </div>
 
         <div class="blog-top-authors__image-2">
-            <img src="/assets/design_1/img/blog/top_authors_3.svg" alt="image 1" class="img-fluid">
+            <img src="/assets/design_1/img/blog/top_authors_3.png" alt="image 1" class="img-fluid">
         </div>
 
 
@@ -13,7 +13,7 @@
             <div class="d-flex-center flex-column text-center pt-16">
                 <div class="d-flex align-items-center">
                     <h2 class="font-32 text-dark mr-4">{{ trans('update.top_authors') }}</h2>
-                    <img src="/assets/design_1/img/blog/top_authors.svg" alt="{{ trans('update.top_authors') }}" class="img-fluid" width="28px" height="28px">
+                    <img src="/assets/design_1/img/blog/top_authors.png" alt="{{ trans('update.top_authors') }}" class="img-fluid" width="28px" height="28px">
                 </div>
                 <p class="mt-8 text-gray-500">{{ trans('update.we_have_many_customers_around_the_world_used_our_product_for_their_employees') }}</p>
             </div>

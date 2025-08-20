@@ -93,7 +93,7 @@
     var getMeetingAmountRequest;
 
     function getMeetingAmount() {
-        const $loading = `<img src="/assets/default/img/loading.svg" width="36px" height="36px">`;
+        const $loading = `<img src="/assets/default/img/loading.png" width="36px" height="36px">`;
         const $amountDiv = $('.js-meeting-amount');
         const $form = $('.js-meeting-book-form');
 

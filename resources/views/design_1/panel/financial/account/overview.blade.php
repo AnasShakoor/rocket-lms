@@ -24,9 +24,9 @@
                     <div class="position-relative">
                         <div class="payout-bank-card-mask"></div>
                         <div class="payout-bank-card d-flex flex-column w-100 h-100 z-index-2">
-                            <img src="/assets/design_1/img/panel/payout/circle-left-top.svg" alt="" class="circle-left-top">
-                            <img src="/assets/design_1/img/panel/payout/circle-bottom-right.svg" alt="" class="circle-bottom-right">
-                            <img src="/assets/design_1/img/panel/payout/logo_mask.svg" alt="" class="logo-mask-right">
+                            <img src="/assets/design_1/img/panel/payout/circle-left-top.png" alt="" class="circle-left-top">
+                            <img src="/assets/design_1/img/panel/payout/circle-bottom-right.png" alt="" class="circle-bottom-right">
+                            <img src="/assets/design_1/img/panel/payout/logo_mask.png" alt="" class="logo-mask-right">
 
                             <div class="first-rectangle"></div>
                             <div class="second-rectangle"></div>
@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="">
-                    <img src="/assets/design_1/img/panel/payout/payout-statistics-icon.svg" alt="" class="" width="120px" height="120px">
+                    <img src="/assets/design_1/img/panel/payout/payout-statistics-icon.png" alt="" class="" width="120px" height="120px">
                 </div>
             </div>
         </div>

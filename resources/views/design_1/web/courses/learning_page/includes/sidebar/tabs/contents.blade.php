@@ -6,7 +6,7 @@
     )
     <div class="learning-page-forum-empty d-flex align-items-center justify-content-center flex-column">
         <div class="learning-page-forum-empty-icon d-flex align-items-center justify-content-center">
-            <img src="/assets/default/img/learning/content-empty.svg" class="img-fluid" alt="">
+            <img src="/assets/default/img/learning/content-empty.png" class="img-fluid" alt="">
         </div>
 
         <div class="d-flex align-items-center flex-column mt-10 text-center">

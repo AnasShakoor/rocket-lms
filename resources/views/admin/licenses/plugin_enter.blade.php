@@ -159,7 +159,7 @@
                                         class="form-control custom-input {{ session('plugin_error_type') ? 'is-invalid' : '' }}"
                                         placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
                                         pattern=".{36,36}" required>
-                                    <div class="text-muted font-12 mt-2">Please enter your Rocket LMS Plugins Bundle purchase code. This code has 32 characters.</div>
+                                    <div class="text-muted font-12 mt-2">Please enter your MULHIM Plugins Bundle purchase code. This code has 32 characters.</div>
                                 </div>
 
             <div class="d-flex align-items-center mt-4 text-end justify-content-end">
@@ -177,7 +177,7 @@
                 <div class="col-12 col-lg-7 mt-4 mt-lg-0">
                     <div class="card rounded-24">
                          <div class="card-header d-flex align-items-center justify-content-between">
-                            <h4>Rocket LMS Plugins Bundle Information</h4>
+                            <h4>MULHIM Plugins Bundle Information</h4>
                         </div>
                          <div class="info-card-body rounded-24">
                             <p>The Plugins Bundle is a separate Product that allows you to add additional features to your website.</p>
@@ -190,7 +190,7 @@
                                     </div>
                                     <div class="feature-content">
                                        <h5>What is Plugins Bundle?</h5>
-                                        <p class="text-gray-500">The Rocket LMS Plugins Bundle extends the capabilities of your main Rocket LMS installation with additional features and integrations.</p>
+                                        <p class="text-gray-500">The MULHIM Plugins Bundle extends the capabilities of your main MULHIM installation with additional features and integrations.</p>
                                     </div>
                                 </div>
 
@@ -200,7 +200,7 @@
                                     </div>
                                     <div class="feature-content">
                                         <h5>Separate License</h5>
-                                        <p class="text-gray-500">Plugins Bundle requires a separate purchase code from your main Rocket LMS license. Make sure you're entering the correct purchase code.</p>
+                                        <p class="text-gray-500">Plugins Bundle requires a separate purchase code from your main MULHIM license. Make sure you're entering the correct purchase code.</p>
                                     </div>
                                 </div>
                                 
@@ -223,9 +223,9 @@
                             </div>
 
                             <div class=" align-items-center text-center mt-24">
-                            <a href="https://codecanyon.net/item/universal-plugins-bundle-for-rocket-lms/33297004" target="_blank" class="btn w-100 rounded-16 btn-primary">
+                            <a href="https://codecanyon.net/item/universal-plugins-bundle-for-mulhim/33297004" target="_blank" class="btn w-100 rounded-16 btn-primary">
                                         <x-iconsax-bul-bag class="icons text-white" width="18px" height="18px"/>
-                                        <span class="ml-4 font-14">Purchase Rocket LMS Plugins Bundle</span>
+                                        <span class="ml-4 font-14">Purchase MULHIM Plugins Bundle</span>
                                     </a>
                             </div>
                                                         

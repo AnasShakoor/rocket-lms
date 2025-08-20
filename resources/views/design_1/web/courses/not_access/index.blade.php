@@ -13,7 +13,7 @@
 
                     <div class="position-relative d-flex-center flex-column bg-white rounded-32 p-24 pt-64 p-lg-40 text-center z-index-2">
                         <div class="system-status-page-image">
-                            <img src="/assets/design_1/img/courses/private_mode/private_content.svg" alt="" class="img-cover">
+                            <img src="/assets/design_1/img/courses/private_mode/private_content.png" alt="" class="img-cover">
                         </div>
 
                         <h1 class="font-16 font-weight-bold mt-16">{{ trans('update.access_denied') }}</h1>

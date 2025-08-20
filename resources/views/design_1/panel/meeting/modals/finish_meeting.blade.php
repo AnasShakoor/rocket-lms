@@ -3,7 +3,7 @@
 
     <div class="d-flex-center flex-column text-center my-16">
         <div class="">
-            <img src="/assets/design_1/img/panel/meeting/finish_modal.svg" alt="" class="img-fluid" width="215px" height="160px">
+            <img src="/assets/design_1/img/panel/meeting/finish_modal.png" alt="" class="img-fluid" width="215px" height="160px">
         </div>
 
         <h4 class="font-14 mt-12">{{ trans('update.are_you_sure_to_finish_the_meeting?') }}</h4>

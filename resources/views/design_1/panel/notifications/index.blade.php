@@ -33,7 +33,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'notifications.svg',
+            'file_name' => 'notifications.png',
            'title' => trans('panel.notification_no_result'),
            'hint' => nl2br(trans('panel.notification_no_result_hint')),
            'extraClass' => 'mt-0',

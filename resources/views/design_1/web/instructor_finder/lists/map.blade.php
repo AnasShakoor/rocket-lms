@@ -8,7 +8,7 @@
          data-scrollWheelZoom="true"
          data-zoomControlPosition="bottomleft"
     >
-        {{--<img src="/assets/design_1/img/map/pin_large.svg" class="marker" width="40" height="40">--}}
+        {{--<img src="/assets/design_1/img/map/pin_large.png" class="marker" width="40" height="40">--}}
     </div>
 @endif
 

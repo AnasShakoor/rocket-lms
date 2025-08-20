@@ -28,7 +28,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'bundles.svg',
+            'file_name' => 'bundles.png',
             'title' => trans('update.you_not_have_any_bundle'),
             'hint' =>  trans('update.no_result_bundle_hint') ,
             'btn' => ['url' => '/panel/bundles/new','text' => trans('update.create_a_bundle') ]

@@ -13,7 +13,7 @@
     @endif
 @else
     @include('design_1.panel.includes.no-result',[
-        'file_name' => 'profile_courses.svg',
+        'file_name' => 'profile_courses.png',
         'title' => trans('site.instructor_not_have_webinar'),
         'hint' => trans('site.instructor_not_have_webinar_hint'),
         'extraClass' => 'mt-0',

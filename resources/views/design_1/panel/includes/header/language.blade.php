@@ -26,7 +26,7 @@
             <div class="js-language-dropdown-item language-dropdown__item cursor-pointer {{ (mb_strtolower(app()->getLocale()) == mb_strtolower($localeSign)) ? 'active' : '' }}" data-value="{{ $localeSign }}" data-title="{{ $language }}">
                 <div class=" d-flex align-items-center w-100 px-16 py-8 text-dark bg-transparent">
                     <div class="language-dropdown__flag">
-                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.svg') }}" class="img-cover" alt="{{ $language }} {{ trans('flag') }}"/>
+                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.png') }}" class="img-cover" alt="{{ $language }} {{ trans('flag') }}"/>
                     </div>
                     <span class="ml-8 font-14">{{ $language }}</span>
                 </div>

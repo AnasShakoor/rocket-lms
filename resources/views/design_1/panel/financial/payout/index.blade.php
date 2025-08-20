@@ -55,7 +55,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'payout.svg',
+            'file_name' => 'payout.png',
             'title' => trans('financial.payout_no_result'),
             'hint' => nl2br(trans('financial.payout_no_result_hint')),
         ])
@@ -63,7 +63,7 @@
 
     <div id="requestPayoutModal" class="d-none">
         <div class="d-flex-center flex-column text-center">
-            <img src="/assets/design_1/img/panel/payout/payout_request.svg" alt="payout_request" class="" width="154px" height="150px">
+            <img src="/assets/design_1/img/panel/payout/payout_request.png" alt="payout_request" class="" width="154px" height="150px">
 
             <h5 class="font-14 font-weight-bold mt-16">{{ trans('update.review_payout_information') }}</h5>
             <p class="font-12 text-gray-500 mt-8">{{ trans('update.review_payout_information_hint') }}</p>

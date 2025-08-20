@@ -1,5 +1,5 @@
 <div class="">
-    <img src="/assets/design_1/img/courses/learning_page/session_not_started.svg" alt="" class="img-fluid" width="285px" height="212px">
+    <img src="/assets/design_1/img/courses/learning_page/session_not_started.png" alt="" class="img-fluid" width="285px" height="212px">
 </div>
 
 <h3 class="font-16 mt-12">{{ trans('update.session_is_not_started_yet') }}</h3>

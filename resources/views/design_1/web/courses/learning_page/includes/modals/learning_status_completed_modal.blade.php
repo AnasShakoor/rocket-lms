@@ -1,7 +1,7 @@
 <div class="course-completed-modal position-relative">
 
     <div class="svg-covered-modal-body">
-        <img src="/assets/design_1/img/courses/completed/2.svg" alt="" class="img-fluid">
+        <img src="/assets/design_1/img/courses/completed/2.png" alt="" class="img-fluid">
     </div>
 
     <div class="position-relative z-index-3">
@@ -9,7 +9,7 @@
 
             <div class="position-relative">
                 <div class="svg-around-avatar">
-                    <img src="/assets/design_1/img/courses/completed/1.svg" alt="" class="img-fluid">
+                    <img src="/assets/design_1/img/courses/completed/1.png" alt="" class="img-fluid">
                 </div>
 
                 <div class="position-relative z-index-3 d-flex-center size-96 bg-gray-100 rounded-circle">

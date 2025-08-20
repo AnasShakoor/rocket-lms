@@ -45,7 +45,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'forum_bookmarks.svg',
+            'file_name' => 'forum_bookmarks.png',
             'title' => trans('update.panel_topics_bookmark_no_result'),
             'hint' => nl2br(trans('update.panel_topics_bookmark_no_result_hint')),
             'extraClass' => 'mt-0',

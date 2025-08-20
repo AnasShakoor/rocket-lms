@@ -59,13 +59,13 @@
         <div class="d-flex-center gap-20">
             @if(!empty(getFeaturesSettings('show_google_login_button')))
                 <a href="/google" target="_blank" class="d-flex-center size-48 bg-gray-100 border-gray-200 rounded-circle mt-16">
-                    <img src="/assets/default/img/auth/google.svg" class="img-fluid" alt="google svg" width="24px" height="24px"/>
+                    <img src="/assets/default/img/auth/google.png" class="img-fluid" alt="google svg" width="24px" height="24px"/>
                 </a>
             @endif
 
             @if(!empty(getFeaturesSettings('show_facebook_login_button')))
                 <a href="{{url('/facebook/redirect')}}" target="_blank" class="d-flex-center size-48 bg-gray-100 border-gray-200 rounded-circle mt-16">
-                    <img src="/assets/default/img/auth/facebook.svg" class="img-fluid" alt="facebook svg" width="24px" height="24px"/>
+                    <img src="/assets/default/img/auth/facebook.png" class="img-fluid" alt="facebook svg" width="24px" height="24px"/>
                 </a>
             @endif
         </div>

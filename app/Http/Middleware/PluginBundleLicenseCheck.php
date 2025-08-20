@@ -33,6 +33,14 @@ class PluginBundleLicenseCheck
                 return $next($request);
             }
             
+            // Skip license check for local domains
+            $currentDomain = $request->getHost();
+            $isLocalDomain = $this->licenseService->isLocalDomain($currentDomain);
+            
+            if ($isLocalDomain) {
+                return $next($request);
+            }
+            
             // If user is already on the plugin license page in admin panel, allow access
             if ($request->is('*/licenses/plugin*') || $request->routeIs('admin.plugin.license')) {
                 return $next($request);

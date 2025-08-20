@@ -41,12 +41,12 @@
                             <div class="ml-16 text-white">
                                 <h5 class="font-16 font-weight-bold mb-16">Limited Components Available</h5>
                                 <p class="font-14 mb-0" style="line-height: 1.8;">
-                                By default, only a limited selection of components is available. To unlock all features and access the complete collection of landing builder components, please consider purchasing the <strong>Rocket LMS Theme and Landing Builder</strong>.
+                                By default, only a limited selection of components is available. To unlock all features and access the complete collection of landing builder components, please consider purchasing the <strong>MULHIM Theme and Landing Builder</strong>.
                                 </p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <a href="https://codecanyon.net/item/rocket-lms-theme-and-landing-page-builder/59174209" target="_blank" class="btn btn-secondary btn-sm font-12 font-weight-600 px-16 py-6" style="border-radius: 20px;">
+                            <a href="https://codecanyon.net/item/mulhim-theme-and-landing-page-builder/59174209" target="_blank" class="btn btn-secondary btn-sm font-12 font-weight-600 px-16 py-6" style="border-radius: 20px;">
                                 <i class="fa fa-bolt mr-4"></i>
                                 Upgrade Now
                             </a>
@@ -96,7 +96,7 @@
 @else
     <div class="d-flex-center flex-column text-center py-56">
         <div class="">
-            <img src="/assets/design_1/img/landing_builder/components_tab.svg" alt="" class="img-fluid" height="300px">
+            <img src="/assets/design_1/img/landing_builder/components_tab.png" alt="" class="img-fluid" height="300px">
         </div>
         <h4 class="font-14 mt-16">{{ trans('update.assign_landing_components') }}</h4>
         <p class="text-gray-500 mt-8">{{ trans('update.you_need_to_save_the_landing_page_information_to_assign_components') }}</p>

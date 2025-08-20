@@ -7,7 +7,9 @@
                 $authUser->can('admin_reviews_lists') or
                 $authUser->can('admin_webinar_assignments') or
                 $authUser->can('admin_enrollment') or
-                $authUser->can('admin_waitlists')
+                $authUser->can('admin_waitlists') or
+                $authUser->can('admin_simulation_access') or
+                $authUser->can('admin_bnpl_providers_access')
             )
     <li class="menu-header">{{ trans('site.education') }}</li>
 @endif
@@ -59,6 +61,37 @@
                     </ul>
                 </li>
             @endcan()
+
+            {{-- LMS Operational Section --}}
+            @if($authUser->can('admin_simulation_access') or $authUser->can('admin_bnpl_providers_access'))
+                <li class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/simulation*', false)) or request()->is(getAdminPanelUrl('/bnpl-providers*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <x-iconsax-bul-setting-2 class="icons" width="24px" height="24px"/>
+                        <span>LMS Operational</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        
+                        @can('admin_simulation_access')
+                            <li class="{{ (request()->is(getAdminPanelUrl('/simulation*', false))) ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/simulation">
+                                    <i class="fas fa-magic mr-2"></i>
+                                    Simulation
+                                </a>
+                            </li>
+                        @endcan
+
+                        @can('admin_bnpl_providers_access')
+                            <li class="{{ (request()->is(getAdminPanelUrl('/bnpl-providers*', false))) ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/bnpl-providers">
+                                    <i class="fas fa-credit-card mr-2"></i>
+                                    BNPL Providers
+                                </a>
+                            </li>
+                        @endcan
+
+                    </ul>
+                </li>
+            @endif
 
             @can('admin_bundles')
                 <li class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and !request()->is(getAdminPanelUrl('/bundles/comments*', false))) ? 'active' : '' }}">

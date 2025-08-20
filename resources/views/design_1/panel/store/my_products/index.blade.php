@@ -28,7 +28,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'store_products.svg',
+            'file_name' => 'store_products.png',
             'title' => trans('update.you_not_have_any_product'),
             'hint' =>  trans('update.you_not_have_any_product_hint') ,
             'btn' => ['url' => '/panel/store/products/new','text' => trans('update.create_a_product') ]

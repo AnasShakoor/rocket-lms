@@ -100,7 +100,7 @@
         const $categoriesFiltersCard = $('#categoriesFiltersCard');
 
         const loadingHtml = `<div class="js-loading-card d-flex align-items-center justify-content-center w-100 my-40">
-                    <img src="/assets/design_1/img/loading.svg" width="56" height="56">
+                    <img src="/assets/design_1/img/loading.png" width="56" height="56">
                 </div>`;
 
         $categoriesFiltersContainer.removeClass('d-none');

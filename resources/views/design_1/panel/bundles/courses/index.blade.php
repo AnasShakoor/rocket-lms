@@ -25,7 +25,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'bundle_courses.svg',
+            'file_name' => 'bundle_courses.png',
             'title' => trans('panel.you_not_have_any_webinar'),
             'hint' =>  trans('panel.no_result_hint'),
             'extraClass' => 'mt-0',

@@ -1,11 +1,11 @@
 <div class="d-flex-center flex-column text-center w-100 h-100">
     <div class="">
         @if($assignmentHistory->status == "passed")
-            <img src="/assets/design_1/img/courses/learning_page/assignment/passed.svg" alt="" class="img-fluid" width="285px" height="212px">
+            <img src="/assets/design_1/img/courses/learning_page/assignment/passed.png" alt="" class="img-fluid" width="285px" height="212px">
         @elseif($assignmentHistory->status == "not_passed")
-            <img src="/assets/design_1/img/courses/learning_page/assignment/failed.svg" alt="" class="img-fluid" width="285px" height="212px">
+            <img src="/assets/design_1/img/courses/learning_page/assignment/failed.png" alt="" class="img-fluid" width="285px" height="212px">
         @else
-            <img src="/assets/design_1/img/courses/learning_page/assignment/pending.svg" alt="" class="img-fluid" width="285px" height="212px">
+            <img src="/assets/design_1/img/courses/learning_page/assignment/pending.png" alt="" class="img-fluid" width="285px" height="212px">
         @endif
     </div>
 

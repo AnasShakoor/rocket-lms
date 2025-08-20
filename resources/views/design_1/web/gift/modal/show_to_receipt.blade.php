@@ -31,7 +31,7 @@
     <div class="py-8 custom-swl-modal-body has-footer px-16">
         <div class="d-flex-center flex-column text-center mt-36">
             <div class="d-flex-center size-136">
-                <img src="/assets/design_1/img/panel/gift/gift_received.svg" alt="{{ trans('gift_received') }}" class="img-fluid">
+                <img src="/assets/design_1/img/panel/gift/gift_received.png" alt="{{ trans('gift_received') }}" class="img-fluid">
             </div>
 
             <h4 class="font-14 font-weight-bold mt-20">{{ trans('update.you_received_a_gift_from_a_friend') }}</h4>

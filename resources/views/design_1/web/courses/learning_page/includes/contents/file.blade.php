@@ -6,7 +6,7 @@
     @elseif($file->downloadable and !$file->isVideo())
         <div class="d-flex-center flex-column text-center border-gray-200 rounded-12 py-160 px-48 mb-16">
             <div class="">
-                <img src="/assets/design_1/img/courses/learning_page/file_downloadable.svg" alt="" class="img-fluid" width="285px" height="212px">
+                <img src="/assets/design_1/img/courses/learning_page/file_downloadable.png" alt="" class="img-fluid" width="285px" height="212px">
             </div>
             <h4 class="font-16 mt-12">{{ trans('update.download_the_file') }}</h4>
             <div class="mt-8 font-12 text-gray-500">{{ trans('update.you_can_download_the_file_from_the_following_link') }}</div>
@@ -83,7 +83,7 @@
     @elseif($file->storage == "upload_archive")
         <div class="d-flex-center flex-column text-center border-gray-200 rounded-12 py-160 px-48 mb-16">
             <div class="">
-                <img src="/assets/design_1/img/courses/learning_page/file_downloadable.svg" alt="" class="img-fluid" width="285px" height="212px">
+                <img src="/assets/design_1/img/courses/learning_page/file_downloadable.png" alt="" class="img-fluid" width="285px" height="212px">
             </div>
             <h4 class="font-16 mt-12">{{ trans('update.show_html_file') }}</h4>
             <div class="mt-8 font-12 text-gray-500">{{ trans('update.you_can_show_online_the_file_from_the_following_link') }}</div>

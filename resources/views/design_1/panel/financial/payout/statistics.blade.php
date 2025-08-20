@@ -24,7 +24,7 @@
         </div>
 
         <div class="">
-            <img src="/assets/design_1/img/panel/payout/payout-statistics-icon.svg" alt="" class="" width="120px" height="120px">
+                            <img src="/assets/design_1/img/panel/payout/payout-statistics-icon.png" alt="" class="" width="120px" height="120px">
         </div>
     </div>
 </div>

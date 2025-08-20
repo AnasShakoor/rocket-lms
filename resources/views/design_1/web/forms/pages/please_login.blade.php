@@ -5,7 +5,7 @@
         <div class="mask-8-white rounded-32 z-index-1"></div>
         <div class="position-relative d-flex-center flex-column text-center mt-28 bg-white rounded-32 p-32 z-index-2">
             <div class="">
-                <img src="/assets/design_1/img/forms/please_login.svg" alt="{{ trans('update.access_denied') }}" class="img-fluid" height="300px">
+                <img src="/assets/design_1/img/forms/please_login.png" alt="{{ trans('update.access_denied') }}" class="img-fluid" height="300px">
             </div>
 
             <h3 class="font-16 mt-16">{{ trans('update.access_denied') }}</h3>

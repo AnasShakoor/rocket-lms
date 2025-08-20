@@ -658,6 +658,24 @@ class SectionsTableSeeder extends Seeder
         Section::updateOrCreate(['id' => 3175], ['name' => 'admin_landing_builder_all_pages', 'section_group_id' => 3170, 'caption' => 'All Pages']);
         Section::updateOrCreate(['id' => 3176], ['name' => 'admin_landing_builder_settings', 'section_group_id' => 3170, 'caption' => 'Settings']);
 
+        // LMS Operational 3180 - 3199
+        Section::updateOrCreate(['id' => 3180], ['name' => 'admin_lms_operational', 'caption' => 'LMS Operational']);
+        Section::updateOrCreate(['id' => 3181], ['name' => 'admin_simulation_access', 'section_group_id' => 3180, 'caption' => 'Simulation Module Access']);
+        Section::updateOrCreate(['id' => 3182], ['name' => 'admin_simulation_create', 'section_group_id' => 3180, 'caption' => 'Create Simulation Rules']);
+        Section::updateOrCreate(['id' => 3183], ['name' => 'admin_simulation_edit', 'section_group_id' => 3180, 'caption' => 'Edit Simulation Rules']);
+        Section::updateOrCreate(['id' => 3184], ['name' => 'admin_simulation_delete', 'section_group_id' => 3180, 'caption' => 'Delete Simulation Rules']);
+        Section::updateOrCreate(['id' => 3185], ['name' => 'admin_simulation_execute', 'section_group_id' => 3180, 'caption' => 'Execute Simulations']);
+        Section::updateOrCreate(['id' => 3186], ['name' => 'admin_bnpl_providers_access', 'section_group_id' => 3180, 'caption' => 'BNPL Providers Access']);
+        Section::updateOrCreate(['id' => 3187], ['name' => 'admin_bnpl_providers_create', 'section_group_id' => 3180, 'caption' => 'Create BNPL Providers']);
+        Section::updateOrCreate(['id' => 3188], ['name' => 'admin_bnpl_providers_edit', 'section_group_id' => 3180, 'caption' => 'Edit BNPL Providers']);
+        Section::updateOrCreate(['id' => 3189], ['name' => 'admin_bnpl_providers_delete', 'section_group_id' => 3180, 'caption' => 'Delete BNPL Providers']);
+
+        // Enhanced Reports 3200 - 3209
+        Section::updateOrCreate(['id' => 3200], ['name' => 'admin_enhanced_reports', 'caption' => 'Enhanced Reports']);
+        Section::updateOrCreate(['id' => 3201], ['name' => 'admin_enhanced_reports_access', 'section_group_id' => 3200, 'caption' => 'Enhanced Reports Access']);
+        Section::updateOrCreate(['id' => 3202], ['name' => 'admin_enhanced_reports_export', 'section_group_id' => 3200, 'caption' => 'Export Reports']);
+        Section::updateOrCreate(['id' => 3203], ['name' => 'admin_enhanced_reports_archive', 'section_group_id' => 3200, 'caption' => 'Archive Records']);
+        Section::updateOrCreate(['id' => 3204], ['name' => 'admin_enhanced_reports_restore', 'section_group_id' => 3200, 'caption' => 'Restore Records']);
 
         /* Run Panel Sections */
         $this->runPanelSections();

@@ -12,7 +12,7 @@
             @foreach($getUserLanguageAndLocale as $localeSign => $language)
                 @if(mb_strtolower(app()->getLocale()) == mb_strtolower($localeSign))
                     <div class="js-mobile-header-show-specific-drawer d-flex-center size-32 bg-gray-100 rounded-8" data-drawer="language">
-                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.svg') }}" class="img-fluid" width="16px" height="16px" alt="{{ $language }} {{ trans('flag') }}"/>
+                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.png') }}" class="img-fluid" width="16px" height="16px" alt="{{ $language }} {{ trans('flag') }}"/>
                     </div>
                 @endif
             @endforeach

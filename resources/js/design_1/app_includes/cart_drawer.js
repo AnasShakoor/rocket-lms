@@ -2,7 +2,7 @@
     "use strict";
 
     $('body').on('click', '.js-view-cart-drawer', function () {
-        const loadingHtml = '<div class="d-flex align-items-center justify-content-center my-56 "><img src="/assets/default/images/loading.svg" width="80" height="80"></div>';
+        const loadingHtml = '<div class="d-flex align-items-center justify-content-center my-56 "><img src="/assets/default/images/loading.png" width="80" height="80"></div>';
 
         const $sideCart = $('.cart-drawer');
         const $sideCartBody = $sideCart.find('.cart-drawer__body');

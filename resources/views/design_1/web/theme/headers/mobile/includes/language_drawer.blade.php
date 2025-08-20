@@ -19,7 +19,7 @@
             @foreach($getUserLanguageAndLocale as $localeSign => $language)
                 <div class="js-language-dropdown-item cursor-pointer d-flex align-items-center w-100 px-16 py-8 text-dark {{ (mb_strtolower(app()->getLocale()) == mb_strtolower($localeSign)) ? 'bg-gray-100 font-weight-bold' : '' }}" data-value="{{ $localeSign }}" data-title="{{ $language }}">
                     <div class="size-32">
-                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.svg') }}" class="img-cover" alt="{{ $language }} {{ trans('flag') }}"/>
+                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.png') }}" class="img-cover" alt="{{ $language }} {{ trans('flag') }}"/>
                     </div>
                     <span class="ml-8 font-20">{{ $language }}</span>
                 </div>
