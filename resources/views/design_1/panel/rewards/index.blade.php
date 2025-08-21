@@ -59,7 +59,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'rewards.svg',
+            'file_name' => 'rewards.png',
             'title' => trans('update.reward_no_result'),
             'hint' => nl2br(trans('update.reward_no_result_hint')),
         ])
@@ -68,7 +68,7 @@
 
     <div class="d-none" id="exchangePointsModal">
         <div class="d-flex-center flex-column text-center pb-24">
-            <img src="/assets/design_1/img/panel/reward/exchange-points.svg" alt="exchange-points" class="img-fluid" width="215px" height="160px">
+            <img src="/assets/design_1/img/panel/reward/exchange-points.png" alt="exchange-points" class="img-fluid" width="215px" height="160px">
 
             <h3 class="mt-12 font-14 font-weight-bold">{{ trans('update.convert_points_to_wallet_balance') }}</h3>
             <p class="font-12 text-gray-500 mt-8">

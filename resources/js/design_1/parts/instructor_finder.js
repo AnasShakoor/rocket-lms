@@ -210,7 +210,7 @@
         }, 1000);
 
         $instructorsList.html(`<div class="d-flex align-items-center justify-content-center w-100 my-56">
-                            <img src="/assets/design_1/img/loading.svg" width="80px" height="80px">
+                            <img src="/assets/design_1/img/loading.png" width="80px" height="80px">
                         </div>`);
 
         loadMoreInstructors = {

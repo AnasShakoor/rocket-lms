@@ -26,7 +26,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'upcoming_courses.svg',
+            'file_name' => 'upcoming_courses.png',
             'title' => trans('update.you_not_have_any_upcoming_courses'),
             'hint' =>  trans('update.you_not_have_any_upcoming_courses_hint') ,
             'btn' => ['url' => '/panel/upcoming_courses/new','text' => trans('update.create_a_upcoming_course') ]

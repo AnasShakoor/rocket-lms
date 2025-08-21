@@ -21,7 +21,7 @@
 
             <div class="d-flex align-items-center p-15 rounded-sm  bg-info-light border-gray300 mb-15">
                 <div class="d-flex-center size-40 rounded-circle bg-white">
-                    <img src="/assets/default/img/ai/ai-chip.svg" alt="ai" class="" width="20px" height="20px">
+                    <img src="/assets/default/img/ai/ai-chip.png" alt="ai" class="" width="20px" height="20px">
                 </div>
                 <div class="ml-2">
                     <h5 class="d-block font-weight-bold text-dark font-14 mb-0">{{ trans('update.generate_content_easily') }}</h5>

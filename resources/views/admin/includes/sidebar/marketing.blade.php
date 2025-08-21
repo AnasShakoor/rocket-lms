@@ -11,7 +11,8 @@
                 $authUser->can('admin_registration_bonus') or
                 $authUser->can('admin_floating_bar_create') or
                 $authUser->can('admin_purchase_notifications') or
-                $authUser->can('admin_product_badges')
+                $authUser->can('admin_product_badges') or
+                $authUser->can('admin_enhanced_reports_access')
             )
     <li class="menu-header">{{ trans('admin/main.marketing') }}</li>
 @endif
@@ -261,6 +262,30 @@
                                 <a class="nav-link" href="{{ getAdminPanelUrl() }}/newsletters/history">{{ trans('public.history') }}</a>
                             </li>
                         @endcan
+                    </ul>
+                </li>
+            @endcan
+
+            {{-- Email Automation Section --}}
+            @can('admin_enhanced_reports_access')
+                <li class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/enhanced-reports*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <x-iconsax-bul-sms class="icons" width="24px" height="24px"/>
+                        <span>Email Automation</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="{{ (request()->is(getAdminPanelUrl('/enhanced-reports', false))) ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ getAdminPanelUrl() }}/enhanced-reports">
+                                <i class="fas fa-envelope mr-2"></i>
+                                CME Emails
+                            </a>
+                        </li>
+                        <li class="{{ (request()->is(getAdminPanelUrl('/enhanced-reports/charts', false))) ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ getAdminPanelUrl() }}/enhanced-reports/charts">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                Email Analytics
+                            </a>
+                        </li>
                     </ul>
                 </li>
             @endcan

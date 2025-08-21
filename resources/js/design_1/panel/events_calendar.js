@@ -61,7 +61,7 @@
 
         if ($listParent.length) {
             const loadingHtml = `<div class="d-flex-center bg-white rounded-16 py-120 px-32 w-100">
-                    <img src="/assets/design_1/img/loading.svg" width="56" height="56">
+                    <img src="/assets/design_1/img/loading.png" width="56" height="56">
                 </div>`;
             $listParent.html(loadingHtml)
 

@@ -60,7 +60,7 @@
 
         <div class="col-12 col-lg-6 position-relative d-none d-lg-block">
             <div class="hello-box-user-vector d-flex justify-content-end">
-                <img src="/assets/design_1/img/panel/dashboard/student/hello-box-user-vector.svg" alt="" class="img-fluid">
+                <img src="/assets/design_1/img/panel/dashboard/student/hello-box-user-vector.png" alt="" class="img-fluid">
             </div>
         </div>
     </div>

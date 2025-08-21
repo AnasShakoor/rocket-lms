@@ -33,6 +33,14 @@ class MobileAppLicenseCheck
                 return $next($request);
             }
             
+            // Skip license check for local domains
+            $currentDomain = $request->getHost();
+            $isLocalDomain = $this->licenseService->isLocalDomain($currentDomain);
+            
+            if ($isLocalDomain) {
+                return $next($request);
+            }
+            
             // If user is already on the mobile app license page in admin panel, allow access
             if ($request->is('*/mobile-app-license*') || $request->routeIs('admin.mobile_app.license')) {
                 return $next($request);

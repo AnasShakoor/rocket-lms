@@ -71,7 +71,7 @@ class PluginLicenseController extends Controller
                     break;
                 
                 case PluginBundleLicenseService::ERROR_PRODUCT_MISMATCH:
-                    $errorMessage = "Invalid product. This purchase code is for a different product, not for Rocket LMS Plugins Bundle.";
+                    $errorMessage = "Invalid product. This purchase code is for a different product, not for MULHIM Plugins Bundle.";
                     break;
                 
                 case PluginBundleLicenseService::ERROR_INVALID_CODE:

@@ -220,6 +220,7 @@ return [
         App\Providers\PluginBundleLicenseServiceProvider::class,
         App\Providers\ThemeBuilderLicenseServiceProvider::class,
         App\Providers\MobileAppLicenseServiceProvider::class,
+        App\Providers\AdminMenuServiceProvider::class,
     ],
 
     /*

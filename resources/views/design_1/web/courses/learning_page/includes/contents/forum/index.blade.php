@@ -36,7 +36,7 @@
 @else
     <div class="d-flex-center flex-column text-center bg-white mt-24 py-64 px-16 rounded-24">
         <div class="">
-            <img src="/assets/design_1/img/courses/learning_page/empty_state.svg" alt="" class="img-fluid" width="285px" height="212px">
+            <img src="/assets/design_1/img/courses/learning_page/empty_state.png" alt="" class="img-fluid" width="285px" height="212px">
         </div>
         <h3 class="font-16 text-dark mt-12">{{ trans('update.learning_page_course_forum_empty_state_title') }}</h3>
         <div class="mt-8 font-12 text-gray-500">{{ trans('update.learning_page_course_forum_empty_state_msg') }}</div>

@@ -45,7 +45,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'store_product_comments.svg',
+            'file_name' => 'store_product_comments.png',
             'title' => trans('panel.my_comments_no_result'),
             'hint' =>  nl2br(trans('panel.my_comments_no_result_hint')),
             'extraClass' => 'mt-0',

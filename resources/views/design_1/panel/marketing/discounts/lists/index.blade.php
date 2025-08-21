@@ -54,7 +54,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'discounts.svg',
+            'file_name' => 'discounts.png',
             'title' => trans('panel.discount_no_result'),
             'hint' =>  nl2br(trans('panel.discount_no_result_hint')) ,
         ])

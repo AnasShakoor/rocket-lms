@@ -33,6 +33,14 @@ class ThemeBuilderLicenseCheck
                 return $next($request);
             }
             
+            // Skip license check for local domains
+            $currentDomain = $request->getHost();
+            $isLocalDomain = $this->licenseService->isLocalDomain($currentDomain);
+            
+            if ($isLocalDomain) {
+                return $next($request);
+            }
+            
             // If user is already on the theme builder license page in admin panel, allow access
             if ($request->is('*/licenses/theme-builder*') || $request->routeIs('admin.theme-builder.license')) {
                 return $next($request);
@@ -50,7 +58,7 @@ class ThemeBuilderLicenseCheck
                     session()->flash('theme_builder_error', $validationResult['message']);
                     
                     if ($validationResult['error'] === ThemeBuilderLicenseService::ERROR_DOMAIN_MISMATCH && isset($validationResult['registered_domain'])) {
-                        session()->flash('theme_builder_registered_domain', $validationResult['registered_domain']);
+                        session()->flash('theme_registered_domain', $validationResult['registered_domain']);
                     }
                 }
                 

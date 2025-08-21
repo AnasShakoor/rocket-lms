@@ -1,7 +1,7 @@
 <div class="d-flex-center flex-column text-center py-160 border-gray-200 rounded-12 h-100 w-100">
     @if($notStarted)
         <div class="">
-            <img src="/assets/design_1/img/courses/learning_page/empty_state.svg" alt="" class="img-fluid" width="285px" height="212px">
+            <img src="/assets/design_1/img/courses/learning_page/empty_state.png" alt="" class="img-fluid" width="285px" height="212px">
         </div>
 
         <h3 class="mt-12 font-16">{{ trans('update.this_live_has_not_started_yet') }}</h3>

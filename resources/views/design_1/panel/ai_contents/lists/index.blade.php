@@ -42,7 +42,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'ai_content.svg',
+            'file_name' => 'ai_content.png',
             'title' => trans('update.ai_contents_no_result'),
             'hint' =>  nl2br(trans('update.ai_contents_no_result_hint')) ,
         ])

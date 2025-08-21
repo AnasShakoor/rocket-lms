@@ -4,7 +4,8 @@
                 $authUser->can('admin_offline_payments_list') or
                 $authUser->can('admin_subscribe') or
                 $authUser->can('admin_registration_packages') or
-                $authUser->can('admin_installments')
+                $authUser->can('admin_installments') or
+                $authUser->can('admin_enhanced_reports_access')
             )
     <li class="menu-header">{{ trans('admin/main.financial') }}</li>
 @endif
@@ -38,6 +39,30 @@
                         <x-iconsax-bul-bag-timer class="icons" width="24px" height="24px"/>
                         <span>{{ trans('admin/main.sales_list') }}</span>
                     </a>
+                </li>
+            @endcan
+
+            {{-- Enhanced Reports Section --}}
+            @can('admin_enhanced_reports_access')
+                <li class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/enhanced-reports*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <x-iconsax-bul-chart-square class="icons" width="24px" height="24px"/>
+                        <span>Enhanced Reports</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="{{ (request()->is(getAdminPanelUrl('/enhanced-reports', false))) ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ getAdminPanelUrl() }}/enhanced-reports">
+                                <i class="fas fa-list mr-2"></i>
+                                Reports List
+                            </a>
+                        </li>
+                        <li class="{{ (request()->is(getAdminPanelUrl('/enhanced-reports/charts', false))) ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ getAdminPanelUrl() }}/enhanced-reports/charts">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                Charts & Analytics
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             @endcan
 

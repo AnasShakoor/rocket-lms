@@ -1,6 +1,6 @@
 <div class="d-flex-center flex-column text-center mt-24">
     <div class="">
-        <img src="/assets/design_1/img/panel/quiz/status/failed.svg" alt="{{ trans('quiz.failed') }}" class="img-fluid" width="294.63px" height="280px">
+        <img src="/assets/design_1/img/panel/quiz/status/failed.png" alt="{{ trans('quiz.failed') }}" class="img-fluid" width="294.63px" height="280px">
     </div>
 
     <h1 class="font-24 font-weight-bold mt-16">{{ trans('update.quiz_passed_failed!') }}</h1>

@@ -45,7 +45,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'forum_posts.svg',
+            'file_name' => 'forum_posts.png',
             'title' => trans('update.panel_topics_posts_no_result'),
             'hint' => nl2br(trans('update.panel_topics_posts_no_result_hint')),
             'extraClass' => 'mt-0',

@@ -51,7 +51,7 @@
 
 @else
     @include('design_1.panel.includes.no-result',[
-        'file_name' => 'profile_meeting.svg',
+        'file_name' => 'profile_meeting.png',
         'title' => trans('update.user_profile_not_have_meeting'),
         'hint' => trans('update.user_profile_not_have_meeting_hint'),
         'extraClass' => 'mt-0',

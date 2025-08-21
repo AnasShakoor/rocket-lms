@@ -43,7 +43,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'financial_summary.svg',
+            'file_name' => 'financial_summary.png',
             'title' => trans('financial.financial_summary_no_result'),
             'hint' => nl2br(trans('financial.financial_summary_no_result_hint')),
             'extraClass' => 'mt-0',

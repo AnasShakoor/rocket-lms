@@ -14,7 +14,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'support_tickets.svg',
+            'file_name' => 'support_tickets.png',
             'title' => trans('panel.support_no_result'),
             'hint' => nl2br(trans('panel.support_no_result_hint')),
             'extraClass' => 'mt-0',

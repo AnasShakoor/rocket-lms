@@ -14,7 +14,7 @@
                     <div class="position-relative d-flex-center flex-column bg-white rounded-32 p-24 pt-64 p-lg-40 text-center z-index-2">
 
                         <div class="cart-empty-image">
-                            <img src="/assets/design_1/img/cart/empty.svg" alt="{{ trans('update.cart_is_empty') }}" class="img-fluid">
+                            <img src="/assets/design_1/img/cart/empty.png" alt="{{ trans('update.cart_is_empty') }}" class="img-fluid">
                         </div>
 
                         <h1 class="font-16 font-weight-bold mt-16">{{ trans('update.cart_is_empty') }}</h1>

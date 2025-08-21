@@ -1,5 +1,5 @@
 <div class="d-flex-center flex-column text-center mt-20">
-    <img src="/assets/design_1/img/panel/promotions/modal.svg" alt="modal" class="img-fluid" width="215px" height="160px">
+    <img src="/assets/design_1/img/panel/promotions/modal.png" alt="modal" class="img-fluid" width="215px" height="160px">
 
     <h4 class="font-14 mt-12">{{ trans('update.promote_your_course') }}</h4>
     <p class="font-12 text-gray-500 mt-8">{!! nl2br(trans('update.promote_your_course_hint_in_pay_promotion_plan_modal')) !!}</p>

@@ -12,10 +12,10 @@
 @section('content')
 
  <div class=" text-center d-block mt-104"  data-width="50%" >
-                                <img class="col-md-3" src="/assets/default/img/plugin.svg" alt="image">
+                                <img class="col-md-3" src="/assets/default/img/plugin.png" alt="image">
                                 <h3 class="mt-3 mb-10">This is a paid plugin!</h3>
                                 <h5 class="lead">
-                                    You can purchase it by <strong><a class="text-danger" href="https://codecanyon.net/item/universal-plugins-bundle-for-rocket-lms/33297004">this link</a></strong> on Codecanyon.
+                                    You can purchase it by <strong><a class="text-danger" href="https://codecanyon.net/item/universal-plugins-bundle-for-mulhim/33297004">this link</a></strong> on Codecanyon.
                                 </h5>             
                               </div>
 

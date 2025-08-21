@@ -1,6 +1,6 @@
 <div class="d-flex-center flex-column text-center mt-20">
     <div class="">
-        <img src="/assets/design_1/img/panel/store/enter_tracking_code.svg" alt="enter_tracking_code" class="img-fluid" width="215px" height="160px">
+        <img src="/assets/design_1/img/panel/store/enter_tracking_code.png" alt="enter_tracking_code" class="img-fluid" width="215px" height="160px">
     </div>
 
     <h4 class="font-14 mt-12">{{ trans('update.submit_tracking_code') }}</h4>

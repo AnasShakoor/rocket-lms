@@ -25,7 +25,7 @@
 
                     <div class="row">
                         <div class="col-12 col-md-5 mt-16 d-flex-center">
-                            <img src="/assets/design_1/img/panel/registration_bonus/bonus_status.svg" alt="bonus_status" class="img-fluid" height="207px">
+                            <img src="/assets/design_1/img/panel/registration_bonus/bonus_status.png" alt="bonus_status" class="img-fluid" height="207px">
                         </div>
 
                         <div class="col-12 col-md-7 mt-16">
@@ -174,7 +174,7 @@
         @else
             <div class="d-flex-center mt-80 mb-40">
                 @include('design_1.panel.includes.no-result',[
-                    'file_name' => 'upcoming_no_followers.svg',
+                    'file_name' => 'upcoming_no_followers.png',
                     'title' => trans('update.no_referred_users'),
                     'hint' => nl2br(trans('update.you_havent_referred_any_users_yet')),
                 ])

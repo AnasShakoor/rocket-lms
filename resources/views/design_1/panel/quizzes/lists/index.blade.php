@@ -54,7 +54,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'quizzes.svg',
+            'file_name' => 'quizzes.png',
             'title' => trans('quiz.quiz_no_result'),
             'hint' => nl2br(trans('quiz.quiz_no_result_hint')),
             'btn' => ['url' => '/panel/quizzes/new','text' => trans('quiz.create_a_quiz')]

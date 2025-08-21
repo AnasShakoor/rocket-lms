@@ -1,7 +1,7 @@
 <div id="upcomingAssignCourseModal" class="" data-action="/panel/upcoming_courses/{{ $upcomingCourse->id }}/assign-course">
 
     <div class="d-flex-center flex-column text-center mt-12">
-        <img src="/assets/design_1/img/panel/upcoming/assign_course.svg" alt="assign_course" class="img-fluid" width="215px" height="160px">
+        <img src="/assets/design_1/img/panel/upcoming/assign_course.png" alt="assign_course" class="img-fluid" width="215px" height="160px">
 
         <h3 class="font-14 font-weight-bold mt-12">{{ trans('update.are_you_sure_to_assign_a_course?') }}</h3>
         <p class="mt-8 font-12 text-gray-500">{{ trans('update.are_you_sure_to_assign_a_course_hint') }}</p>

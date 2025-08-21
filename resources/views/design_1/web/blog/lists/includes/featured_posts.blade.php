@@ -2,7 +2,7 @@
     <div class="d-flex-center flex-column text-center mt-48">
         <div class="d-flex align-items-center">
             <h2 class="font-32 text-dark mr-4">{{ trans('update.featured_posts') }}</h2>
-            <img src="/assets/design_1/img/blog/featured_posts.svg" alt="{{ trans('update.featured_posts') }}" class="img-fluid" width="28px" height="28px">
+            <img src="/assets/design_1/img/blog/featured_posts.png" alt="{{ trans('update.featured_posts') }}" class="img-fluid" width="28px" height="28px">
         </div>
         <p class="mt-8 text-gray-500">{{ trans('update.we_have_many_customers_around_the_world_used_our_product_for_their_employees') }}</p>
     </div>

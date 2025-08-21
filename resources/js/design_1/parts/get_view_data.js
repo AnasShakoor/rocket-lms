@@ -3,7 +3,7 @@
 
     function handleTableIsLoading() {
         return `<div class="d-flex align-items-center js-view-data-loading">
-                <img src="/assets/design_1/img/loading.svg" alt="loading" class="size-40">
+                <img src="/assets/design_1/img/loading.png" alt="loading" class="size-40">
                 <span class="ml-4 text-gray-500">${loadingDataPleaseWaitLang}</span>
             </div>`
     }

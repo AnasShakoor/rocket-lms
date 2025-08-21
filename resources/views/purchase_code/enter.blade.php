@@ -471,11 +471,11 @@
             <div class="card rounded-24">
                 <div class="card-body">
                         <div class="mb-4">
-                            <img src="{{ asset('assets/design_1/img/logo.svg') }}" alt="Rocket LMS" class="img-fluid">
+                            <img src="{{ asset('assets/design_1/img/logo.png') }}" alt="MULHIM" class="img-fluid">
                         </div>
                     
                     <h1 class="card-title">@yield('heading', 'License Verification')</h1>
-                    <p class="card-subtitle">Enter your Rocket LMS purchase code to verify your license</p>
+                    <p class="card-subtitle">Enter your MULHIM purchase code to verify your license</p>
                     
                     @if(session($errorTypeSessionKey) == 'domain_mismatch' || (session($errorSessionKey) && str_contains(session($errorSessionKey), 'registered for')))
                         <div class="notice-box domain-notice">
@@ -552,7 +552,7 @@
         </div>
         
         <div class="footer-right">
-            <a href="https://codecanyon.net/item/rocket-lms-learning-management-academy-script/33120735" target="_blank" class="footer-link">Product Page</a>
+            <a href="https://codecanyon.net/item/mulhim-learning-management-academy-script/33120735" target="_blank" class="footer-link">Product Page</a>
             <a href="https://codecanyon.net/user/rocketsoft" target="_blank" class="footer-link">About</a>
             <a href="https://crm.rocket-soft.org/index.php/tickets" target="_blank" class="footer-link">Contact us</a>
         </div>

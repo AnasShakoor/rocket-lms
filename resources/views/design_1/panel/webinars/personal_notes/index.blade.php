@@ -44,7 +44,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'personal_note.svg',
+            'file_name' => 'personal_note.png',
             'title' => trans('update.no_notes'),
             'hint' =>  nl2br(trans("update.you_haven't_submitted_notes_for_your_courses")),
             'extraClass' => 'mt-0',

@@ -12,7 +12,7 @@
     <div class="py-8 custom-swl-modal-body has-footer px-16">
         <div class="d-flex-center flex-column text-center mt-16">
             <div class="d-flex-center">
-                <img src="/assets/design_1/img/panel/registration_packages/upgrade_your_plan.svg" alt="{{ trans('upgrade_your_plan') }}" class="img-fluid" width="216px" height="161px">
+                <img src="/assets/design_1/img/panel/registration_packages/upgrade_your_plan.png" alt="{{ trans('upgrade_your_plan') }}" class="img-fluid" width="216px" height="161px">
             </div>
 
             <h4 class="font-14 font-weight-bold mt-12">{{ trans('update.your_account_limited') }}</h4>

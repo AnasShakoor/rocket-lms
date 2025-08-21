@@ -11,7 +11,7 @@
             @if(mb_strtolower(app()->getLocale()) == mb_strtolower($localeSign))
                 <div class="d-flex align-items-center gap-8">
                     <div class="size-32 d-flex-center bg-gray-100 rounded-8">
-                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.svg') }}" class="img-fluid" width="16px" height="16px" alt="{{ $language }} {{ trans('flag') }}"/>
+                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.png') }}" class="img-fluid" width="16px" height="16px" alt="{{ $language }} {{ trans('flag') }}"/>
                     </div>
                     <span class="js-lang-title text-gray-500 d-none d-md-flex">{{ $language }}</span>
                     <x-iconsax-lin-arrow-down class="icons text-gray-500" width="16px" height="16px"/>
@@ -28,7 +28,7 @@
             <div class="js-language-dropdown-item header-2-dropdown-menu__item cursor-pointer {{ (mb_strtolower(app()->getLocale()) == mb_strtolower($localeSign)) ? 'active' : '' }}" data-value="{{ $localeSign }}" data-title="{{ $language }}">
                 <div class=" d-flex align-items-center w-100 px-16 py-8 text-dark bg-transparent">
                     <div class="header-2-dropdown-menu__flag">
-                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.svg') }}" class="img-cover" alt="{{ $language }} {{ trans('flag') }}"/>
+                        <img src="{{ asset('vendor/blade-country-flags/4x3-'. mb_strtolower(localeToCountryCode(mb_strtoupper($localeSign))) .'.png') }}" class="img-cover" alt="{{ $language }} {{ trans('flag') }}"/>
                     </div>
                     <span class="ml-8 font-14">{{ $language }}</span>
                 </div>

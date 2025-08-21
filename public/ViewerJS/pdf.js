@@ -6727,7 +6727,7 @@ var AnnotationUtils = (function AnnotationUtilsClosure() {
     image.style.width = container.style.width;
     var iconName = item.name;
     image.src = PDFJS.imageResourcesPath + 'annotation-' +
-      iconName.toLowerCase() + '.svg';
+      iconName.toLowerCase() + '.png';
     image.alt = '[{{type}} Annotation]';
     image.dataset.l10nId = 'text_annotation_type';
     image.dataset.l10nArgs = JSON.stringify({type: iconName});
@@ -7286,7 +7286,7 @@ var SVGGraphics = (function SVGGraphicsClosure() {
     },
 
     getSVG: function SVGGraphics_getSVG(operatorList, viewport) {
-      this.svg = createScratchSVG(viewport.width, viewport.height);
+      this.png = createScratchSVG(viewport.width, viewport.height);
       this.viewport = viewport;
 
       return this.loadDependencies(operatorList).then(function () {
@@ -7298,10 +7298,10 @@ var SVGGraphics = (function SVGGraphicsClosure() {
         this.defs = document.createElementNS(NS, 'svg:defs');
         this.pgrp.appendChild(this.defs);
         this.pgrp.appendChild(this.tgrp);
-        this.svg.appendChild(this.pgrp);
+        this.png.appendChild(this.pgrp);
         var opTree = this.convertOpList(operatorList);
         this.executeOpTree(opTree);
-        return this.svg;
+        return this.png;
       }.bind(this));
     },
 

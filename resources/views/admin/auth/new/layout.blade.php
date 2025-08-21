@@ -56,8 +56,8 @@
                     <x-iconsax-bol-info-circle class="icons text-gray-400" width="24px" height="24px"/>
                 </div>
                 <div class="ml-8">
-                    <h5 class="font-14">Rocket LMS</h5>
-                    <a href="https://codecanyon.net/user/rocketsoft/portfolio" class="font-12 text-gray-500 mt-4">All rights reserved for Rocket Soft on Codecanyon</a>
+                    <h5 class="font-14">MULHIM</h5>
+                    <a href="https://codecanyon.net/user/rocketsoft/portfolio" class="font-12 text-gray-500 mt-4">All rights reserved for MULHIM on Codecanyon</a>
                 </div>
             </div>
 

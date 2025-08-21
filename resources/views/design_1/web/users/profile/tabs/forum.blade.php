@@ -13,7 +13,7 @@
     @endif
 @else
     @include('design_1.panel.includes.no-result',[
-        'file_name' => 'profile_forum.svg',
+        'file_name' => 'profile_forum.png',
         'title' => trans('update.user_profile_not_have_topics'),
         'hint' => trans('update.user_profile_not_have_topics_hint'),
         'extraClass' => 'mt-0',

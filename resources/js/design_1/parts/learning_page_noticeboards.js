@@ -3,7 +3,7 @@
 
     function getLoadingHtml(size) {
         return `<div class="d-flex-center flex-column py-56">
-                    <img src="/assets/default/img/loading.svg" alt="" class="img-fluid" width="${size}px" height="${size}px">
+                    <img src="/assets/default/img/loading.png" alt="" class="img-fluid" width="${size}px" height="${size}px">
                 </div>`
     }
 

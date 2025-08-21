@@ -91,7 +91,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'promotions.svg',
+            'file_name' => 'promotions.png',
             'title' => trans('panel.promotion_no_result'),
             'hint' =>  nl2br(trans('panel.promotion_no_result_hint')),
         ])
