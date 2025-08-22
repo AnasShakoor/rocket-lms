@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\PurchaseCodeController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -281,6 +283,40 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::get('/status', 'PaymentController@payStatus');
         Route::get('/payku/callback/{id}', 'PaymentController@paykuPaymentVerify')->name('payku.result');
         Route::get('/chapa/callback/{reference}', 'PaymentController@chapaPaymentVerify')->name('chapa.callback');
+        Route::post('/moyasar/webhook', 'MoyasarWebhookController@handleWebhook')->name('moyasar.webhook');
+
+        // Route to get Moyasar payment form data
+        Route::post('/moyasar-form-data', 'PaymentController@getMoyasarFormData')->middleware('auth');
+
+        // Moyasar payment form route (for testing)
+        Route::get('/moyasar/form/{orderId}', function($orderId) {
+            if (!auth()->check()) {
+                return redirect('/login');
+            }
+
+            $order = \App\Models\Order::where('id', $orderId)
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if (!$order) {
+                abort(404);
+            }
+
+            $paymentChannel = \App\Models\PaymentChannel::where('class_name', 'Moyasar')->first();
+
+            if (!$paymentChannel) {
+                abort(404, 'Moyasar payment channel not found');
+            }
+
+            $channel = \App\PaymentChannels\ChannelManager::makeChannel($paymentChannel);
+            $paymentFormData = $channel->paymentRequest($order);
+
+            return view('web.default.payment_content.moyasar', [
+                'paymentFormData' => $paymentFormData
+            ]);
+        })->middleware('auth')->name('moyasar.form');
+
+
     });
 
     Route::group(['prefix' => 'subscribes'], function () {

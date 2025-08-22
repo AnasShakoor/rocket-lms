@@ -11,7 +11,7 @@ class PaymentChannel extends Model
     public $timestamps = false;
 
     static $classes = [
-        'Paypal', 'Payu', 'Razorpay'
+        'Paypal', 'Payu', 'Razorpay', 'Moyasar'
     ];
 
     static $gatewayIgnoreRedirect = [
@@ -21,7 +21,7 @@ class PaymentChannel extends Model
     static $paypal = 'Paypal';
     static $payu = 'Payu';
     static $razorpay = 'Razorpay';
-
+    static $moyasar = 'Moyasar';
 
     public function getCredentialsAttribute()
     {

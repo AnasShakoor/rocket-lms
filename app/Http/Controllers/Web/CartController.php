@@ -15,6 +15,7 @@ use App\Models\Product;
 use App\Models\ProductOrder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -81,7 +82,15 @@ class CartController extends Controller
                     'deliveryEstimateTime' => $deliveryEstimateTime,
                     'totalCashbackAmount' => $totalCashbackAmount,
                     'cartDiscount' => $cartDiscount,
+                    'userCharge' => $user->getAccountingCharge(),
                 ];
+
+                Log::info('Cart overview page data prepared', [
+                    'user_id' => $user->id,
+                    'cart_count' => $carts->count(),
+                    'total_amount' => $calculate['sub_total'] ?? 0,
+                    'user_charge' => $user->getAccountingCharge()
+                ]);
 
                 $data = array_merge($data, $this->getLocationsData($user));
 
@@ -318,6 +327,15 @@ class CartController extends Controller
                 }
 
                 $totalCashbackAmount = $this->getTotalCashbackAmount($carts, $user, $calculate["sub_total"]);
+
+                // Check if this is an AJAX request for Moyasar
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'order_id' => $order->id,
+                        'message' => 'Order created successfully'
+                    ]);
+                }
 
                 $data = [
                     'pageTitle' => trans('public.checkout_page_title'),

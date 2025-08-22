@@ -221,6 +221,7 @@ return [
         App\Providers\ThemeBuilderLicenseServiceProvider::class,
         App\Providers\MobileAppLicenseServiceProvider::class,
         App\Providers\AdminMenuServiceProvider::class,
+        App\Providers\MoyasarServiceProvider::class,
     ],
 
     /*

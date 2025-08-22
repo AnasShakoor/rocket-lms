@@ -19,8 +19,10 @@ use App\Models\RewardAccounting;
 use App\Models\Sale;
 use App\Models\TicketUser;
 use App\PaymentChannels\ChannelManager;
+use App\Services\PaymentLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -69,6 +71,9 @@ class PaymentController extends Controller
                 'status' => Order::$paid
             ]);
 
+            // Remove purchased items from cart after successful credit payment
+            $this->removePurchasedItemsFromCart($order);
+
             session()->put($this->order_session_key, $order->id);
 
             return redirect('/payments/status');
@@ -94,6 +99,17 @@ class PaymentController extends Controller
         try {
             $channelManager = ChannelManager::makeChannel($paymentChannel);
             $redirect_url = $channelManager->paymentRequest($order);
+
+            // If Moyasar, send form data back to the cart payment page instead of redirecting
+            if ($paymentChannel->class_name === 'Moyasar' && is_array($redirect_url)) {
+                // Keep current order in session for status
+                session()->put($this->order_session_key, $order->id);
+
+                return redirect('/cart')->with([
+                    'moyasar' => true,
+                    'moyasar_form_data' => $redirect_url,
+                ]);
+            }
 
             if (in_array($paymentChannel->class_name, PaymentChannel::$gatewayIgnoreRedirect)) {
                 return $redirect_url;
@@ -123,9 +139,68 @@ class PaymentController extends Controller
             $channelManager = ChannelManager::makeChannel($paymentChannel);
             $order = $channelManager->verify($request);
 
+            // For frontend Moyasar payments, return JSON response
+            if ($request->expectsJson() && $gateway === 'Moyasar') {
+                if ($order && $order->status === Order::$paid) {
+                    // Log payment data if not already logged
+                    try {
+                        $paymentLogService = new PaymentLogService();
+                        $existingLogs = $paymentLogService->getOrderPaymentLogs($order->id);
+
+                                                if ($existingLogs->isEmpty()) {
+                            // Create a basic payment log entry for frontend payments
+                            $paymentData = [
+                                'id' => $request->input('id'),
+                                'status' => $request->input('status'),
+                                'message' => $request->input('message'),
+                                'amount' => $order->total_amount,
+                                'currency' => 'SAR',
+                                'source' => ['type' => 'creditcard']
+                            ];
+
+                            $paymentLog = $paymentLogService->logMoyasarPayment($paymentData, $order, $request);
+
+                            Log::info('Frontend Moyasar payment logged', [
+                                'order_id' => $order->id,
+                                'payment_log_id' => $paymentLog->id
+                            ]);
+
+                            // Remove purchased items from cart for frontend payments
+                            $this->removePurchasedItemsFromCart($order);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('Failed to log frontend Moyasar payment', [
+                            'order_id' => $order->id,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Payment verified successfully',
+                        'order_id' => $order->id,
+                        'status' => 'paid'
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Payment verification failed',
+                        'order_id' => $order ? $order->id : null,
+                        'status' => $order ? $order->status : 'unknown'
+                    ], 400);
+                }
+            }
+
             return $this->paymentOrderAfterVerify($order);
 
         } catch (\Exception $exception) {
+            if ($request->expectsJson() && $gateway === 'Moyasar') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment verification error: ' . $exception->getMessage()
+                ], 500);
+            }
+
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
                 'msg' => trans('cart.gateway_error'),
@@ -168,7 +243,51 @@ class PaymentController extends Controller
                 'status' => 'error'
             ];
 
-            return redirect('cart')->with($toastData);
+                    return redirect('cart')->with($toastData);
+        }
+    }
+
+    /**
+     * Remove purchased items from cart after successful payment
+     */
+    private function removePurchasedItemsFromCart($order)
+    {
+        try {
+            $userId = $order->user_id;
+            $removedCount = 0;
+
+            foreach ($order->orderItems as $orderItem) {
+                $cart = \App\Models\Cart::where('creator_id', $userId);
+
+                if (!empty($orderItem->webinar_id)) {
+                    // Remove webinar from cart
+                    $cartItems = $cart->where('webinar_id', $orderItem->webinar_id)->get();
+                    foreach ($cartItems as $cartItem) {
+                        $cartItem->delete();
+                        $removedCount++;
+                    }
+                } elseif (!empty($orderItem->product_order_id)) {
+                    // Remove product from cart
+                    $cartItems = $cart->where('product_order_id', $orderItem->product_order_id)->get();
+                    foreach ($cartItems as $cartItem) {
+                        $cartItem->delete();
+                        $removedCount++;
+                    }
+                }
+            }
+
+            if ($removedCount > 0) {
+                Log::info('Items removed from cart after frontend payment', [
+                    'order_id' => $order->id,
+                    'user_id' => $userId,
+                    'removed_count' => $removedCount
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to remove items from cart after frontend payment', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -281,6 +400,59 @@ class PaymentController extends Controller
         }
 
         return redirect('/panel');
+    }
+
+    /**
+     * Get Moyasar payment form data
+     */
+    public function getMoyasarFormData(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        $orderId = $request->input('order_id');
+        $gatewayId = $request->input('gateway');
+
+        $order = Order::where('id', $orderId)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+
+        $paymentChannel = PaymentChannel::where('id', $gatewayId)
+            ->where('class_name', 'Moyasar')
+            ->first();
+
+        if (!$paymentChannel) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Moyasar payment channel not found'
+            ], 404);
+        }
+
+        try {
+            $channel = ChannelManager::makeChannel($paymentChannel);
+            $paymentFormData = $channel->paymentRequest($order);
+
+            return response()->json([
+                'success' => true,
+                'payment_form_data' => $paymentFormData
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getting Moyasar form data: ' . $e->getMessage(), [
+                'order_id' => $orderId,
+                'gateway_id' => $gatewayId,
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error preparing payment form: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }

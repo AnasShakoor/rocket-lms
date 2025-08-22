@@ -21,7 +21,7 @@
 
                         <div class="card-body">
 
-                            <form action="{{ getAdminPanelUrl() }}/settings/payment_channels/{{ (!empty($paymentChannel) ? $paymentChannel->id.'/update':'store') }}" method="post">
+                            <form action="{{ getAdminPanelUrl() }}/settings/payment_channels/{{ (!empty($paymentChannel) ? $paymentChannel->id.'/update':'store') }}" method="post" id="paymentChannelForm">
                                 {{ csrf_field() }}
 
                                 <div class="row">
@@ -82,7 +82,7 @@
                                                     @if(is_array($credentialItem))
                                                         <div class="form-group">
                                                             <label>{{ $credentialKey }}</label>
-                                                            <select name="credentials[{{ $credentialKey }}]" class="form-control">
+                                                            <select name="credentials[{{ $credentialKey }}]" class="form-control credential-field">
                                                                 <option value="">{{ trans('update.select_a_option') }}</option>
 
                                                                 @foreach($credentialItem as $cItem)
@@ -94,7 +94,7 @@
                                                         <div class="form-group">
                                                             <label>{{ $credentialItem }}</label>
                                                             <input type="text" name="credentials[{{ $credentialItem }}]"
-                                                                   class="form-control"
+                                                                   class="form-control credential-field"
                                                                    value="{{ (!empty($paymentChannel) and !empty($paymentChannel->credentials) and !empty($paymentChannel->credentials[$credentialItem])) ? $paymentChannel->credentials[$credentialItem] : '' }}"/>
                                                         </div>
                                                     @endif
@@ -104,7 +104,7 @@
                                                     <div class="form-group custom-switches-stacked mb-0">
                                                         <label class="custom-switch pl-0">
                                                             <input type="hidden" name="credentials[test_mode]" value="">
-                                                            <input type="checkbox" name="credentials[test_mode]" id="test_modeSwitch" value="on" class="custom-switch-input" {{ (!empty($paymentChannel) and !empty($paymentChannel->credentials) and !empty($paymentChannel->credentials['test_mode'])) ? 'checked' : '' }}/>
+                                                            <input type="checkbox" name="credentials[test_mode]" id="test_modeSwitch" value="on" class="custom-switch-input credential-field" {{ (!empty($paymentChannel) and !empty($paymentChannel->credentials) and !empty($paymentChannel->credentials['test_mode'])) ? 'checked' : '' }}/>
                                                             <span class="custom-switch-indicator"></span>
                                                             <label class="custom-switch-description mb-0 cursor-pointer" for="test_modeSwitch">{{ trans('update.test_mode') }}</label>
                                                         </label>
@@ -157,5 +157,84 @@
             </div>
         </div>
     </section>
+
+    <script>
+        console.log('Payment Channel Edit Page Loaded', {
+            paymentChannel: @json($paymentChannel ?? null),
+            credentialItems: @json($credentialItems ?? []),
+            showTestModeToggle: @json($showTestModeToggle ?? false),
+            currencies: @json($currencies ?? []),
+            selectedCurrencies: @json($selectedCurrency ?? [])
+        });
+
+        // Log form data when submitted
+        document.getElementById('paymentChannelForm').addEventListener('submit', function(e) {
+            const formData = new FormData(this);
+            const formObject = {};
+
+            for (let [key, value] of formData.entries()) {
+                if (key.includes('[')) {
+                    // Handle array fields like credentials[secret_key]
+                    const match = key.match(/^(\w+)\[(\w+)\]$/);
+                    if (match) {
+                        if (!formObject[match[1]]) {
+                            formObject[match[1]] = {};
+                        }
+                        formObject[match[1]][match[2]] = value;
+                    } else {
+                        formObject[key] = value;
+                    }
+                } else {
+                    formObject[key] = value;
+                }
+            }
+
+            console.log('Payment Channel Form Submitted', {
+                formData: formObject,
+                credentials: formObject.credentials || {},
+                currencies: formObject.currencies || [],
+                status: formObject.status
+            });
+        });
+
+        // Log credential field changes
+        document.querySelectorAll('.credential-field').forEach(field => {
+            field.addEventListener('change', function() {
+                console.log('Credential field changed', {
+                    name: this.name,
+                    value: this.value,
+                    type: this.type,
+                    checked: this.type === 'checkbox' ? this.checked : undefined
+                });
+            });
+        });
+
+        // Log when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Payment Channel Form Ready');
+
+            // Log current form values
+            const currentFormData = new FormData(document.getElementById('paymentChannelForm'));
+            const currentFormObject = {};
+
+            for (let [key, value] of currentFormData.entries()) {
+                if (key.includes('[')) {
+                    const match = key.match(/^(\w+)\[(\w+)\]$/);
+                    if (match) {
+                        if (!currentFormObject[match[1]]) {
+                            currentFormObject[match[1]] = {};
+                        }
+                        currentFormObject[match[1]][match[2]] = value;
+                    } else {
+                        currentFormObject[key] = value;
+                    }
+                } else {
+                    currentFormObject[key] = value;
+                }
+            }
+
+            console.log('Current Form Values', currentFormObject);
+        });
+    </script>
 @endsection
 
