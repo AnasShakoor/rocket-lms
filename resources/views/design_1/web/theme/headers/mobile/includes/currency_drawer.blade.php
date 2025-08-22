@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            @foreach($currencies as $currencyItem)
+            {{-- @foreach($currencies as $currencyItem)
                 <div class="js-currency-dropdown-item d-flex align-items-center justify-content-between w-100 px-16 py-8 cursor-pointer {{ ($userCurrency == $currencyItem->currency) ? 'bg-gray-100 font-weight-bold' : '' }}" data-value="{{ $currencyItem->currency }}" data-title="{{ $currencyItem->currency }}">
                     <span class="text-gray-500 text-dark">{{ currenciesLists($currencyItem->currency) }}</span>
 
@@ -25,7 +25,7 @@
                         {{ currencySign($currencyItem->currency) }}
                     </div>
                 </div>
-            @endforeach
+            @endforeach --}}
 
         </div>
     </div>

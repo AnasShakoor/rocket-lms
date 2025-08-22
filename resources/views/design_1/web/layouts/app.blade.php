@@ -14,6 +14,8 @@
     <!-- General CSS File -->
     <link rel="stylesheet" href="/assets/default/vendors/simplebar/simplebar.css">
     <link rel="stylesheet" href="/assets/design_1/css/app.min.css">
+    {{-- Hubsport link --}}
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-eu1.hs-scripts.com/146541640.js"></script>
 
     @if($isRtl)
         <link rel="stylesheet" href="/assets/design_1/css/rtl-app.min.css">
@@ -110,6 +112,7 @@
     var defaultAvatarPath = "{{ getDefaultAvatarPath() }}";
     var themeColorsMode = @json(getThemeColorsMode());
 </script>
+
 
 
 <script type="text/javascript" src="/assets/design_1/js/app.min.js"></script>
