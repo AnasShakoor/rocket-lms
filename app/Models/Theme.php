@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Theme extends Model
 {
@@ -12,12 +13,13 @@ class Theme extends Model
     protected $dateFormat = 'U';
     protected $guarded = ['id'];
 
-
+     
+    
     /*===========
      * Relations
      * ========*/
 
-    public function color()
+    public function color(): BelongsTo
     {
         return $this->belongsTo(ThemeColorFont::class, 'color_id', 'id');
     }

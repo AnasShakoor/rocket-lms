@@ -104,6 +104,8 @@
 
 <script src="/assets/admin/js/admin.min.js"></script>
 
+
+
 @stack('styles_bottom')
 @stack('scripts_bottom')
 
