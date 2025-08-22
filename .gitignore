@@ -10,7 +10,7 @@
 /.vscode
 
 /storage/framework/laravel-excel
-
+/.env
 .env.backup
 .phpunit.result.cache
 Homestead.json
