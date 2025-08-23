@@ -14,7 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('course_learning', function (Blueprint $table) {
-            // Add missing columns that the model expects
+            if (!Schema::hasColumn('course_learning', 'webinar_id')) {
+                $table->integer('webinar_id')->unsigned()->nullable()->after('user_id');
+            }
             if (!Schema::hasColumn('course_learning', 'status')) {
                 $table->enum('status', ['pending', 'in_progress', 'completed', 'failed'])->default('pending')->after('session_id');
             }
@@ -33,12 +35,10 @@ return new class extends Migration
             if (!Schema::hasColumn('course_learning', 'notes')) {
                 $table->text('notes')->nullable()->after('completed_at');
             }
-            
-            // Add indexes for performance
-            $table->index(['user_id', 'status']);
-            $table->index(['webinar_id', 'status']);
-            $table->index('status');
         });
+
+        // Add indexes for performance (with proper checks)
+        $this->addIndexes();
     }
 
     /**
@@ -52,8 +52,35 @@ return new class extends Migration
             $table->dropIndex(['user_id', 'status']);
             $table->dropIndex(['webinar_id', 'status']);
             $table->dropIndex(['status']);
-            
-            $table->dropColumn(['status', 'progress', 'enrolled_at', 'started_at', 'completed_at', 'notes']);
+
+            $table->dropColumn(['webinar_id', 'status', 'progress', 'enrolled_at', 'started_at', 'completed_at', 'notes']);
         });
+    }
+
+    /**
+     * Add indexes with proper checks to avoid duplicates
+     */
+    private function addIndexes()
+    {
+        $connection = Schema::getConnection();
+        $tableName = 'course_learning';
+
+        // Check if indexes exist using SHOW INDEX and add them if they don't
+        $this->createIndexIfNotExists($connection, $tableName, 'course_learning_user_id_status_index', ['user_id', 'status']);
+        $this->createIndexIfNotExists($connection, $tableName, 'course_learning_webinar_id_status_index', ['webinar_id', 'status']);
+        $this->createIndexIfNotExists($connection, $tableName, 'course_learning_status_index', ['status']);
+    }
+
+    /**
+     * Create index if it doesn't exist
+     */
+    private function createIndexIfNotExists($connection, $tableName, $indexName, $columns)
+    {
+        $result = $connection->select("SHOW INDEX FROM {$tableName} WHERE Key_name = ?", [$indexName]);
+
+        if (empty($result)) {
+            $columnList = implode(', ', $columns);
+            $connection->statement("CREATE INDEX {$indexName} ON {$tableName} ({$columnList})");
+        }
     }
 };

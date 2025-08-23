@@ -9,9 +9,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('simulation_rules', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->enum('target_type', ['course', 'student', 'bundle']);
-            $table->unsignedBigInteger('target_id')->nullable()->comment('course_id, user_id, or bundle_id');
+            $table->unsignedInteger('target_id')->nullable()->comment('course_id, user_id, or bundle_id');
             $table->integer('enrollment_offset_days')->default(-12)->comment('Days from purchase date (negative for past dates)');
             $table->integer('completion_offset_days')->default(2)->comment('Days from fake enrollment');
             $table->integer('inter_course_gap_days')->default(1)->comment('Gap between courses in sequence');

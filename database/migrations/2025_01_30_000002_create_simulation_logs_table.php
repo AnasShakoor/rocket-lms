@@ -9,8 +9,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('simulation_logs', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('rule_id');
+            $table->increments('id');
+            $table->unsignedInteger('rule_id');
             $table->unsignedInteger('user_id'); // Changed to match users.id type
             $table->unsignedInteger('course_id'); // Changed to match webinars.id type (unsigned integer)
             $table->date('purchase_date');
@@ -20,11 +20,11 @@ return new class extends Migration
             $table->text('notes')->nullable()->comment('Reason for skip or error');
             $table->unsignedInteger('triggered_by_admin_id'); // Changed to match users.id type
             $table->timestamps();
-            
+
             $table->index(['rule_id', 'user_id', 'course_id']);
             $table->index('status');
             $table->index('triggered_by_admin_id');
-            
+
             // Add foreign key constraints
             $table->foreign('rule_id')->references('id')->on('simulation_rules')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

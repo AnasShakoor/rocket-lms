@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('sales', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->unsignedInteger('buyer_id');
             $table->unsignedInteger('webinar_id')->nullable();
             $table->unsignedInteger('bundle_id')->nullable();
@@ -25,13 +25,13 @@ return new class extends Migration
             $table->timestamp('paid_at')->nullable();
             $table->text('payment_details')->nullable();
             $table->timestamps();
-            
+
             $table->index(['buyer_id', 'status']);
             $table->index(['webinar_id', 'status']);
             $table->index(['bundle_id', 'status']);
             $table->index('status');
             $table->index('order_number');
-            
+
             $table->foreign('buyer_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('webinar_id')->references('id')->on('webinars')->onDelete('set null');
             $table->foreign('bundle_id')->references('id')->on('bundles')->onDelete('set null');
