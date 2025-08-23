@@ -115,6 +115,14 @@ class WebinarController extends Controller
         }
 
 
+        // Get students for simulation modal
+        $students = User::where('role_name', 'user')
+            ->where('status', 'active')
+            ->select('id', 'name', 'email')
+            ->orderBy('name')
+            ->limit(100)
+            ->get();
+
         $data = [
             'pageTitle' => trans('admin/pages/webinars.webinars_list_page_title'),
             'webinars' => $webinars,
@@ -125,6 +133,7 @@ class WebinarController extends Controller
             'categories' => $categories,
             'inProgressWebinars' => $inProgressWebinars,
             'classesType' => $type,
+            'students' => $students,
         ];
 
         $teacher_ids = $request->get('teacher_ids', null);

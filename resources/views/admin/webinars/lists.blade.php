@@ -432,6 +432,13 @@
                                                             </a>
                                                         @endcan
 
+                                                        @can('admin_simulation_access')
+                                                            <a href="#" onclick="openSimulationModal({{ $webinar->id }}, '{{ $webinar->title }}')" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
+                                                                <i class="fas fa-magic text-primary mr-2"></i>
+                                                                <span class="text-primary font-14">{{ trans('admin.main.simulation_simulate_now') }}</span>
+                                                            </a>
+                                                        @endcan
+
                                                         @can('admin_support_send')
                                                             <a href="{{ getAdminPanelUrl() }}/supports/create?user_id={{ $webinar->teacher->id }}" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
                                                                 <x-iconsax-lin-sms-tracking class="icons text-gray-500 mr-2" width="18px" height="18px"/>
@@ -477,8 +484,166 @@
             </div>
         </div>
     </section>
+
+    <!-- Simulation Modal -->
+    <div class="modal fade" id="simulationModal" tabindex="-1" aria-labelledby="simulationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="simulationModalLabel">
+                        <i class="fas fa-magic text-primary mr-2"></i>
+                        {{ trans('admin.main.simulation_simulate_now') }}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="simulationForm">
+                        <input type="hidden" id="course_id" name="course_id">
+                        <input type="hidden" id="target_type" name="target_type" value="course">
+
+                        <div class="form-group">
+                            <label for="user_ids">{{ trans('admin.main.simulation_select_users') }} <span class="text-danger">*</span></label>
+                            <select name="user_ids[]" id="user_ids" class="form-control select2" multiple required>
+                                @foreach($students ?? [] as $student)
+                                    <option value="{{ $student->id }}">
+                                        {{ $student->name }} ({{ $student->email }}) - ID: {{ $student->id }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">
+                                {{ trans('admin.main.simulation_user_selection_info') }}
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="enrollment_offset_days">{{ trans('admin.main.simulation_enrollment_offset') }} <span class="text-danger">*</span></label>
+                            <input type="number" name="enrollment_offset_days" id="enrollment_offset_days"
+                                   class="form-control" value="-12" min="-365" max="365" required>
+                            <small class="form-text text-muted">
+                                Negative values = days before purchase date<br>
+                                Default: -12 (12 days before purchase)
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="completion_offset_days">{{ trans('admin.main.simulation_completion_offset') }} <span class="text-danger">*</span></label>
+                            <input type="number" name="completion_offset_days" id="completion_offset_days"
+                                   class="form-control" value="2" min="1" max="365" required>
+                            <small class="form-text text-muted">
+                                Days after enrollment to complete the course<br>
+                                Default: 2 days
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inter_course_gap_days">{{ trans('admin.main.simulation_inter_course_gap') }} <span class="text-danger">*</span></label>
+                            <input type="number" name="inter_course_gap_days" id="inter_course_gap_days"
+                                   class="form-control" value="1" min="0" max="30" required>
+                            <small class="form-text text-muted">
+                                Gap between courses in sequence<br>
+                                Default: 1 day
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>{{ trans('admin.main.simulation_what_will_happen') }}</strong><br>
+                            <ul class="mb-0 mt-2">
+                                <li>Create fake enrollment dates based on purchase dates</li>
+                                <li>Simulate course completions with realistic timing</li>
+                                <li>Generate certificates for completed courses</li>
+                                <li>Update student dashboards and progress</li>
+                                <li>If course is part of a bundle, all bundle courses will be simulated</li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        {{ trans('admin.main.cancel') }}
+                    </button>
+                    <button type="button" id="executeSimulationBtn" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> {{ trans('admin.main.simulation_simulate_now') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts_bottom')
+<script>
+    $(document).ready(function() {
+        // Initialize Select2
+        $('.select2').select2();
+    });
 
+    function openSimulationModal(courseId, courseTitle) {
+        $('#course_id').val(courseId);
+        $('#simulationModalLabel').html('<i class="fas fa-magic text-primary mr-2"></i> Simulate: ' + courseTitle);
+        $('#simulationModal').modal('show');
+    }
+
+    $('#executeSimulationBtn').click(function() {
+        if (validateSimulationForm()) {
+            executeSimulation();
+        }
+    });
+
+    function validateSimulationForm() {
+        const userIds = $('#user_ids').val();
+
+        if (!userIds || userIds.length === 0) {
+            alert('{{ trans("admin.main.simulation_select_users") }}');
+            return false;
+        }
+
+        return true;
+    }
+
+    function executeSimulation() {
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('target_type', $('#target_type').val());
+        formData.append('course_ids[]', $('#course_id').val());
+        formData.append('enrollment_offset_days', $('#enrollment_offset_days').val());
+        formData.append('completion_offset_days', $('#completion_offset_days').val());
+        formData.append('inter_course_gap_days', $('#inter_course_gap_days').val());
+        formData.append('status', 'active');
+
+        const userIds = $('#user_ids').val();
+        userIds.forEach(userId => {
+            formData.append('user_ids[]', userId);
+        });
+
+        // Show loading state
+        $('#executeSimulationBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Simulating...');
+
+        // Execute simulation via AJAX
+        $.ajax({
+            url: '{{ route("admin.simulation.execute.immediate") }}',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    alert('{{ trans("admin.main.simulation_success") }}!\n\n' + response.message);
+                    $('#simulationModal').modal('hide');
+                    location.reload(); // Refresh the page to show updated data
+                } else {
+                    alert('{{ trans("admin.main.simulation_failed") }}: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                alert('{{ trans("admin.main.simulation_failed") }}: ' + (xhr.responseJSON?.message || 'Unknown error'));
+            },
+            complete: function() {
+                $('#executeSimulationBtn').prop('disabled', false).html('<i class="fas fa-magic"></i> {{ trans("admin.main.simulation_simulate_now") }}');
+            }
+        });
+    }
+</script>
 @endpush

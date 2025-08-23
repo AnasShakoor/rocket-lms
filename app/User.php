@@ -677,6 +677,11 @@ class User extends Authenticatable
         return Sale::whereIn('webinar_id', $webinarIds)->sum('amount');
     }
 
+    public function purchases()
+    {
+        return $this->hasMany(\App\Models\Sale::class, 'buyer_id');
+    }
+
     public function salesCount()
     {
         return Sale::where('seller_id', $this->id)

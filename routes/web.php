@@ -99,6 +99,11 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 
     Route::get('/getDefaultAvatar', 'DefaultAvatarController@make');
 
+// Simulation routes for admin
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['web', 'admin']], function () {
+    Route::post('/simulation/execute-immediate', 'SimulationController@executeImmediate')->name('admin.simulation.execute.immediate');
+});
+
     Route::post('/get-advertising-modal', 'AdvertisingModalController@getModal');
 
     Route::group(['prefix' => 'course'], function () {
