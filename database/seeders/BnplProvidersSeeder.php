@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\BnplProvider;
+use Illuminate\Database\Seeder;
 
 class BnplProvidersSeeder extends Seeder
 {
@@ -11,63 +11,78 @@ class BnplProvidersSeeder extends Seeder
     {
         $providers = [
             [
-                'name' => 'Tamara',
-                'fee_percentage' => 0.00,
-                'installment_count' => 4,
-                'is_active' => true,
-                'config' => [
-                    'min_amount' => 50,
-                    'max_amount' => 5000,
-                    'supported_currencies' => ['SAR'],
-                    'api_endpoint' => 'https://api.tamara.co'
-                ]
-            ],
-            [
                 'name' => 'Tabby',
-                'fee_percentage' => 0.00,
+                'logo_path' => 'bnpl/tabby-logo.png',
+                'fee_percentage' => 8.00,
                 'installment_count' => 4,
                 'is_active' => true,
                 'config' => [
-                    'min_amount' => 100,
-                    'max_amount' => 10000,
-                    'supported_currencies' => ['SAR', 'AED'],
-                    'api_endpoint' => 'https://api.tabby.ai'
+                    'min_amount' => 50.00,
+                    'max_amount' => 5000.00,
+                    'max_concurrent_payments' => 3,
+                    'description' => 'Split your purchase into 4 interest-free installments',
+                    'website' => 'https://tabby.ai',
+                    'supported_regions' => ['UAE', 'Saudi Arabia', 'Kuwait', 'Bahrain']
                 ]
             ],
             [
-                'name' => 'MICB',
-                'fee_percentage' => 2.50,
-                'installment_count' => 6,
-                'is_active' => true,
-                'config' => [
-                    'min_amount' => 200,
-                    'max_amount' => 15000,
-                    'supported_currencies' => ['SAR'],
-                    'api_endpoint' => 'https://api.micb.com.sa'
-                ]
-            ],
-            [
-                'name' => 'Salla Pay',
-                'fee_percentage' => 1.99,
+                'name' => 'Tamara',
+                'logo_path' => 'bnpl/tamara-logo.png',
+                'fee_percentage' => 8.50,
                 'installment_count' => 3,
                 'is_active' => true,
                 'config' => [
-                    'min_amount' => 50,
-                    'max_amount' => 3000,
-                    'supported_currencies' => ['SAR'],
-                    'api_endpoint' => 'https://api.salla.sa'
+                    'min_amount' => 100.00,
+                    'max_amount' => 3000.00,
+                    'max_concurrent_payments' => 2,
+                    'description' => 'Pay in 3 installments with no hidden fees',
+                    'website' => 'https://tamara.co',
+                    'supported_regions' => ['UAE', 'Saudi Arabia', 'Kuwait']
                 ]
             ],
             [
-                'name' => 'STC Pay',
-                'fee_percentage' => 0.00,
+                'name' => 'Spotii',
+                'logo_path' => 'bnpl/spotii-logo.png',
+                'fee_percentage' => 9.00,
                 'installment_count' => 4,
                 'is_active' => true,
                 'config' => [
-                    'min_amount' => 100,
-                    'max_amount' => 8000,
-                    'supported_currencies' => ['SAR'],
-                    'api_endpoint' => 'https://api.stcpay.com.sa'
+                    'min_amount' => 75.00,
+                    'max_amount' => 4000.00,
+                    'max_concurrent_payments' => 3,
+                    'description' => 'Split your payment into 4 easy installments',
+                    'website' => 'https://spotii.com',
+                    'supported_regions' => ['UAE', 'Saudi Arabia']
+                ]
+            ],
+            [
+                'name' => 'Cashew',
+                'logo_path' => 'bnpl/cashew-logo.png',
+                'fee_percentage' => 7.50,
+                'installment_count' => 3,
+                'is_active' => true,
+                'config' => [
+                    'min_amount' => 50.00,
+                    'max_amount' => 2500.00,
+                    'max_concurrent_payments' => 2,
+                    'description' => 'Pay in 3 installments with competitive rates',
+                    'website' => 'https://cashewpayments.com',
+                    'supported_regions' => ['UAE', 'Saudi Arabia', 'Kuwait', 'Bahrain', 'Oman']
+                ]
+            ],
+            [
+                'name' => 'Postpay',
+                'logo_path' => 'bnpl/postpay-logo.png',
+                'fee_percentage' => 8.25,
+                'installment_count' => 4,
+                'is_active' => true,
+                'config' => [
+                    'min_amount' => 100.00,
+                    'max_amount' => 5000.00,
+                    'max_concurrent_payments' => 3,
+                    'description' => 'Split your purchase into 4 interest-free installments',
+                    'website' => 'https://postpay.io',
+                    'supported_regions' => ['UAE', 'Saudi Arabia', 'Kuwait', 'Bahrain', 'Qatar']
                 ]
             ]
         ];
@@ -78,6 +93,8 @@ class BnplProvidersSeeder extends Seeder
                 $providerData
             );
         }
+
+        $this->command->info('BNPL providers seeded successfully!');
     }
 }
 

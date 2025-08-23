@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('rule_id');
             $table->unsignedInteger('user_id'); // Changed to match users.id type
-            $table->unsignedBigInteger('course_id');
+            $table->unsignedInteger('course_id'); // Changed to match webinars.id type (unsigned integer)
             $table->date('purchase_date');
             $table->date('fake_enroll_date');
             $table->date('fake_completion_date');

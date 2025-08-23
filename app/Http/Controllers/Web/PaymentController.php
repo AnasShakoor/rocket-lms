@@ -35,6 +35,12 @@ class PaymentController extends Controller
             'gateway' => 'required'
         ]);
 
+        if ($request->input('gateway') === 'bnpl') {
+            $this->validate($request, [
+                'bnpl_provider' => 'required|string|exists:bnpl_providers,name'
+            ]);
+        }
+
         $user = auth()->user();
         $gateway = $request->input('gateway');
         $orderId = $request->input('order_id');
@@ -72,6 +78,60 @@ class PaymentController extends Controller
             session()->put($this->order_session_key, $order->id);
 
             return redirect('/payments/status');
+        }
+
+        if ($gateway === 'bnpl') {
+            $bnplProvider = $request->input('bnpl_provider');
+
+            if (empty($bnplProvider)) {
+                return back()->withErrors(['bnpl_provider' => 'Please select a BNPL provider']);
+            }
+
+            // Process BNPL payment using the service
+            $bnplService = new \App\Services\BnplPaymentService();
+
+            try {
+                $result = $bnplService->createBnplOrder(
+                    $user->id,
+                    $order->total_amount,
+                    $bnplProvider,
+                    $order->orderItems->map(function($item) {
+                        return [
+                            'webinar_id' => $item->webinar_id,
+                            'bundle_id' => $item->bundle_id,
+                            'product_id' => $item->product_id,
+                            'reserve_meeting_id' => $item->reserve_meeting_id,
+                            'ticket_id' => $item->ticket_id,
+                            'discount' => $item->discount,
+                            'tax' => $item->tax,
+                            'amount' => $item->amount,
+                            'total_amount' => $item->total_amount
+                        ];
+                    })->toArray()
+                );
+
+                if ($result['success']) {
+                    // Update order with BNPL details
+                    $order->update([
+                        'payment_method' => Order::$bnpl,
+                        'bnpl_provider' => $bnplProvider,
+                        'bnpl_fee' => $result['payment_breakdown']['bnpl_fee'],
+                        'bnpl_fee_percentage' => $result['payment_breakdown']['bnpl_fee_percentage'],
+                        'installment_count' => $result['payment_breakdown']['installment_count'],
+                        'bnpl_payment_schedule' => $result['payment_breakdown']['payment_schedule']
+                    ]);
+
+                    // Mark order as paid (BNPL orders are considered paid immediately)
+                    $order->update(['status' => Order::$paid]);
+
+                    session()->put($this->order_session_key, $order->id);
+                    return redirect('/payments/status');
+                } else {
+                    return back()->withErrors(['bnpl' => $result['error']]);
+                }
+            } catch (\Exception $e) {
+                return back()->withErrors(['bnpl' => 'BNPL payment processing failed: ' . $e->getMessage()]);
+            }
         }
 
         $paymentChannel = PaymentChannel::where('id', $gateway)

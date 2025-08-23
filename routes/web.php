@@ -227,9 +227,9 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         });
 
         Route::group(['prefix' => 'cart'], function () {
-            Route::get('/', 'CartController@index');
+            Route::get('/', 'CartController@index')->name('cart.index');
 
-            Route::post('/coupon/validate', 'CartController@couponValidate');
+            Route::post('/coupon/validate', 'CartController@couponValidate')->name('cart.coupon.validate');
             Route::post('/checkout', 'CartController@checkout')->name('checkout');
         });
 
@@ -275,7 +275,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
     });
 
     Route::group(['prefix' => 'payments'], function () {
-        Route::post('/payment-request', 'PaymentController@paymentRequest');
+        Route::post('/payment-request', 'PaymentController@paymentRequest')->name('payments.payment-request');
         Route::get('/verify/{gateway}', ['as' => 'payment_verify', 'uses' => 'PaymentController@paymentVerify']);
         Route::post('/verify/{gateway}', ['as' => 'payment_verify_post', 'uses' => 'PaymentController@paymentVerify']);
         Route::get('/status', 'PaymentController@payStatus');
@@ -485,3 +485,20 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 // Purchase Code Routes
 Route::get('/purchase-code', [PurchaseCodeController::class, 'show'])->name('purchase.code.show');
 Route::post('/purchase-code', [PurchaseCodeController::class, 'store'])->name('purchase.code.store');
+
+// BNPL Routes
+Route::group(['prefix' => 'bnpl', 'middleware' => ['web.auth']], function () {
+    Route::get('/checkout', 'Web\BnplController@checkout')->name('bnpl.checkout');
+    Route::post('/process-checkout', 'Web\BnplController@processCheckout')->name('bnpl.process-checkout');
+    Route::get('/success/{order_id}', 'Web\BnplController@success')->name('bnpl.success');
+    Route::get('/payment-details/{order_id}', 'Web\BnplController@getPaymentDetails')->name('bnpl.payment-details');
+    Route::get('/providers', 'Web\BnplController@getProviders')->name('bnpl.providers');
+    Route::post('/calculate', 'Web\BnplController@calculatePayment')->name('bnpl.calculate');
+    Route::post('/check-eligibility', 'Web\BnplController@checkEligibility')->name('bnpl.check-eligibility');
+});
+
+// BNPL Payment Processing
+Route::group(['prefix' => 'payments/bnpl', 'middleware' => ['web.auth']], function () {
+    Route::get('/process/{order_id}', 'Web\BnplController@processCheckout')->name('payments.bnpl.process');
+    Route::get('/success/{order_id}', 'Web\BnplController@success')->name('payments.bnpl.success');
+});

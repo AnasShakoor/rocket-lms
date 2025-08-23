@@ -285,6 +285,9 @@ class WebinarController extends Controller
         $commentController = new CommentController();
         $courseComments = $commentController->getComments($request, 'webinar', $course->id);
 
+        // Get BNPL providers for course page
+        $bnplProviders = \App\Models\BnplProvider::where('is_active', true)->orderBy('name')->get();
+
         $data = [
             'pageTitle' => $course->title,
             'pageDescription' => $course->seo_description,
@@ -308,6 +311,7 @@ class WebinarController extends Controller
             'courseReviews' => $courseReviews,
             'courseComments' => $courseComments,
             'recentReviews' => $this->getCourseRecentReviews($course->id),
+            'bnplProviders' => $bnplProviders,
         ];
 
         // check for certificate

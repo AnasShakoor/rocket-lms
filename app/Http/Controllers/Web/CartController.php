@@ -292,6 +292,9 @@ class CartController extends Controller
 
         $paymentChannels = PaymentChannel::where('status', 'active')->get();
 
+        // Get BNPL providers for payment options
+        $bnplProviders = \App\Models\BnplProvider::where('is_active', true)->orderBy('name')->get();
+
         $discountCoupon = Discount::where('id', $discountId)->first();
 
         if (empty($discountCoupon) or $discountCoupon->checkValidDiscount() != 'ok') {
@@ -322,6 +325,7 @@ class CartController extends Controller
                 $data = [
                     'pageTitle' => trans('public.checkout_page_title'),
                     'paymentChannels' => $paymentChannels,
+                    'bnplProviders' => $bnplProviders,
                     'carts' => $carts,
                     'calculatePrices' => $calculate,
                     'userGroup' => $user->userGroup ? $user->userGroup->group : null,

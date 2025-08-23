@@ -163,6 +163,24 @@
                                                                         @endif
                                                                     </div>
                                                                 </div>
+                                                                @if(!empty($sale->order) && $sale->order->isBnplPayment())
+                                                                    <div class="invoice-detail-item">
+                                                                        <div class="invoice-detail-name">{{ trans('update.bnpl_fee') }} ({{ $sale->order->bnpl_provider }})</div>
+                                                                        <div class="invoice-detail-value">
+                                                                            @if(!empty($sale->order->bnpl_fee))
+                                                                                +{{ handlePrice($sale->order->bnpl_fee) }}
+                                                                            @else
+                                                                                -
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="invoice-detail-item">
+                                                                        <div class="invoice-detail-name">{{ trans('update.installments') }}</div>
+                                                                        <div class="invoice-detail-value">
+                                                                            {{ $sale->order->installment_count }} {{ trans('update.installments') }} × {{ handlePrice($sale->order->getInstallmentAmount()) }}
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
                                                                 <hr class="mt-2 mb-2">
                                                                 <div class="invoice-detail-item">
                                                                     <div class="invoice-detail-name">{{ trans('cart.total') }}</div>

@@ -326,6 +326,8 @@ class BundleController extends Controller
         $commentController = new CommentController();
         $bundleComments = $commentController->getComments($request, 'bundle', $bundle->id);
 
+        // Get BNPL providers for bundle page
+        $bnplProviders = \App\Models\BnplProvider::where('is_active', true)->orderBy('name')->get();
 
         // Visit Logs
         $visitLogMixin = new VisitLogMixin();
@@ -350,6 +352,7 @@ class BundleController extends Controller
             'instructorDiscounts' => $instructorDiscounts,
             'bundleComments' => $bundleComments,
             'bundleReviews' => $bundleReviews,
+            'bnplProviders' => $bnplProviders,
         ];
 
         return view('design_1.web.bundles.show.index', $data);

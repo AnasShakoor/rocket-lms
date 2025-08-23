@@ -48,12 +48,65 @@
             </div>
         @endif
 
+        {{-- BNPL Information --}}
+        @if(!empty($carts) && $carts->where('bnpl_provider')->count() > 0)
+            <div class="cart-summary-divider"></div>
+
+            <div class="d-flex align-items-center justify-content-between mt-16">
+                <span class="text-gray-500">{{ trans('update.bnpl_selected') }}</span>
+                <span class="js-cart-bnpl-info font-12 text-primary">
+                    @php
+                        $bnplCarts = $carts->where('bnpl_provider');
+                        $bnplProvider = $bnplCarts->first()->bnpl_provider;
+                        $bnplInstallments = $bnplCarts->first()->bnpl_installments;
+                    @endphp
+                    {{ $bnplProvider }} ({{ $bnplInstallments }} {{ trans('update.installments') }})
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between mt-12">
+                <span class="text-gray-500">{{ trans('update.bnpl_fee') }}</span>
+                <span class="js-cart-bnpl-fee text-primary">
+                    @php
+                        $totalBnplFee = 0;
+                        foreach($bnplCarts as $cart) {
+                            if ($cart->bnpl_fee) {
+                                $totalBnplFee += $cart->bnpl_fee * ($cart->productOrder->quantity ?? 1);
+                            }
+                        }
+                    @endphp
+                    +{{ handlePrice($totalBnplFee) }}
+                </span>
+            </div>
+        @endif
+
         <div class="cart-summary-divider"></div>
 
         <div class="d-flex align-items-center justify-content-between mt-16">
             <span class="text-gray-500">{{ trans('cart.total') }}</span>
-            <span class="js-cart-total font-16 font-weight-bold">{{ handlePrice($calculatePrices["total"]) }}</span>
+            <span class="js-cart-total font-16 font-weight-bold">
+                @php
+                    $totalWithBnpl = $calculatePrices["total"];
+                    if (!empty($carts) && $carts->where('bnpl_provider')->count() > 0) {
+                        $totalBnplFee = 0;
+                        foreach($carts->where('bnpl_provider') as $cart) {
+                            if ($cart->bnpl_fee) {
+                                $totalBnplFee += $cart->bnpl_fee * ($cart->productOrder->quantity ?? 1);
+                            }
+                        }
+                        $totalWithBnpl += $totalBnplFee;
+                    }
+                @endphp
+                {{ handlePrice($totalWithBnpl) }}
+            </span>
         </div>
+
+        @if(!empty($carts) && $carts->where('bnpl_provider')->count() > 0)
+            <div class="d-flex align-items-center justify-content-between mt-8">
+                <span class="text-gray-500 font-12">{{ trans('update.total_with_bnpl') }}</span>
+                <span class="js-cart-total-with-bnpl font-12 font-weight-bold text-primary">{{ handlePrice($totalWithBnpl) }}</span>
+            </div>
+        @endif
 
         <button type="button" class="{{ !empty($isCartPaymentPage) ? 'js-cart-payment-btn' : 'js-cart-checkout' }} btn btn-lg btn-block btn-primary mt-20">
             @if(!empty($isCartPaymentPage))

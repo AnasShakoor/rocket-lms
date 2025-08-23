@@ -11,7 +11,7 @@
             <p class="mt-8 font-16 text-gray-500">{{ handlePrice($calculatePrices["sub_total"], true, true, false, null, true) . ' ' . trans('cart.for_items',['count' => $carts->count()]) }}</p>
         </div>
 
-        <form action="/cart/checkout" method="post" id="cartForm">
+        <form action="{{ route('checkout') }}" method="post" id="cartForm">
             {{ csrf_field() }}
 
             <div class="row mb-160">

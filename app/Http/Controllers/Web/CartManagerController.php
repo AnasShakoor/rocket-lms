@@ -236,6 +236,11 @@ class CartManagerController extends Controller
         $specifications = $data['specifications'] ?? null;
         $quantity = $data['quantity'] ?? 1;
 
+        // Get BNPL preference from request or localStorage
+        $bnplProvider = $data['bnpl_provider'] ?? null;
+        $bnplInstallments = $data['bnpl_installments'] ?? null;
+        $bnplFee = $data['bnpl_fee'] ?? null;
+
         $product = Product::where('id', $product_id)
             ->where('status', 'active')
             ->first();
@@ -259,6 +264,9 @@ class CartManagerController extends Controller
                 'specifications' => $specifications ? json_encode($specifications) : null,
                 'quantity' => $quantity,
                 'discount_id' => !empty($activeDiscount) ? $activeDiscount->id : null,
+                'bnpl_provider' => $bnplProvider,
+                'bnpl_installments' => $bnplInstallments,
+                'bnpl_fee' => $bnplFee,
                 'created_at' => time()
             ]);
 
@@ -267,6 +275,9 @@ class CartManagerController extends Controller
                 'product_order_id' => $productOrder->id,
             ], [
                 'product_discount_id' => !empty($activeDiscount) ? $activeDiscount->id : null,
+                'bnpl_provider' => $bnplProvider,
+                'bnpl_installments' => $bnplInstallments,
+                'bnpl_fee' => $bnplFee,
                 'created_at' => time()
             ]);
 

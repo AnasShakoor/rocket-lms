@@ -441,6 +441,9 @@ class ProductController extends Controller
                 'category'
             ])->get();
 
+        // Get BNPL providers for product page
+        $bnplProviders = \App\Models\BnplProvider::where('is_active', true)->orderBy('name')->get();
+
         $commentController = new CommentController();
         $productComments = $commentController->getComments($request, 'product', $product->id);
 
@@ -478,6 +481,7 @@ class ProductController extends Controller
             'productComments' => $productComments,
             'productReviews' => $productReviews,
             'productAvailability' => $product->getAvailability(),
+            'bnplProviders' => $bnplProviders,
         ];
 
         return view("design_1.web.products.show.index", $data);

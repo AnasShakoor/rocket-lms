@@ -213,6 +213,7 @@
                                         <th>{{ trans('admin/main.paid_amount') }}</th>
                                         <th>{{ trans('admin/main.discount') }}</th>
                                         <th>{{ trans('admin/main.tax') }}</th>
+                                        <th>{{ trans('update.bnpl') }}</th>
                                         <th class="text-left">{{ trans('admin/main.item') }}</th>
                                         <th>{{ trans('admin/main.sale_type') }}</th>
                                         <th>{{ trans('admin/main.date') }}</th>
@@ -250,6 +251,13 @@
                                             </td>
                                             <td>
                                                 <span class="">{{ handlePrice($sale->tax ?? 0) }}</span>
+                                            </td>
+                                            <td>
+                                                @if(!empty($sale->bnpl_provider))
+                                                    <span class="badge-status text-success bg-success-30">{{ $sale->bnpl_provider }}</span>
+                                                @else
+                                                    <span class="text-gray-500">-</span>
+                                                @endif
                                             </td>
                                             <td class="text-left">
                                                 <div class="media-body">

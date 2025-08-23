@@ -18,8 +18,8 @@
         </div>
 
         <div class="d-grid grid-columns-2 gap-8 mt-12">
-            <a href="/cart" class="btn btn-outline-primary">{{ trans('update.view_cart') }}</a>
-            <a href="/cart" class="btn btn-primary">{{ trans('update.checkout') }}</a>
+            <a href="{{ route('cart.index') }}" class="btn btn-outline-primary">{{ trans('update.view_cart') }}</a>
+            <a href="{{ route('cart.index') }}" class="btn btn-primary">{{ trans('update.checkout') }}</a>
         </div>
     </div>
 </div>

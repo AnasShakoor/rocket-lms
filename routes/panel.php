@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['impersonate', 'panel', 'share', 'check_maintenance', 'check_restriction']], function () {
 
     /* Dashboard */
-    Route::get('/', 'DashboardController@index');
+    Route::get('/', 'DashboardController@index')->name('panel.dashboard');
 
     /* Events */
     Route::group(['prefix' => 'events'], function () {
