@@ -192,7 +192,6 @@ class Webinar extends Model implements TranslatableContract
     public function sales()
     {
         return $this->hasMany('App\Models\Sale', 'webinar_id', 'id')
-            ->whereNull('refund_at')
             ->where('type', 'webinar');
     }
 

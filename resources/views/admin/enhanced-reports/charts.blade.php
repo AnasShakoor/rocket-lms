@@ -109,12 +109,12 @@ let mainChart = null;
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize chart
     initializeChart();
-    
+
     // Event listeners
     document.getElementById('generateChart').addEventListener('click', generateChart);
     document.getElementById('chartType').addEventListener('change', updateChartType);
     document.getElementById('dateRange').addEventListener('change', updateChartData);
-    
+
     // Load initial chart
     generateChart();
 });
@@ -152,10 +152,10 @@ function generateChart() {
     const chartType = document.getElementById('chartType').value;
     const dateRange = document.getElementById('dateRange').value;
     const courseFilter = document.getElementById('courseFilter').value;
-    
+
     // Show loading state
     document.getElementById('generateChart').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-    
+
     // Fetch chart data
     fetch(`/admin/enhanced-reports/chart-data?type=${chartType}&days=${dateRange}&course=${courseFilter}`)
         .then(response => response.json())
@@ -167,7 +167,7 @@ function generateChart() {
         .catch(error => {
             console.error('Error fetching chart data:', error);
             document.getElementById('generateChart').innerHTML = '<i class="fas fa-chart-bar"></i> Generate Chart';
-            
+
             // Show sample data for demonstration
             showSampleData(chartType);
         });
@@ -175,7 +175,7 @@ function generateChart() {
 
 function updateChart(data) {
     if (!mainChart) return;
-    
+
     mainChart.data.labels = data.labels;
     mainChart.data.datasets = data.datasets;
     mainChart.options.plugins.title.text = data.title;
@@ -197,7 +197,7 @@ function showSampleData(chartType) {
         datasets: [],
         title: 'Sample Data'
     };
-    
+
     switch(chartType) {
         case 'completion_rate':
             sampleData = {
@@ -212,7 +212,7 @@ function showSampleData(chartType) {
                 title: 'Course Completion Rates'
             };
             break;
-            
+
         case 'enrollment_trend':
             sampleData = {
                 labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
@@ -227,7 +227,7 @@ function showSampleData(chartType) {
                 title: 'Enrollment Trends'
             };
             break;
-            
+
         case 'bundle_performance':
             sampleData = {
                 labels: ['Bundle A', 'Bundle B', 'Bundle C'],
@@ -241,7 +241,7 @@ function showSampleData(chartType) {
                 title: 'Bundle Performance'
             };
             break;
-            
+
         case 'cme_hours':
             sampleData = {
                 labels: ['0-2 hrs', '3-5 hrs', '6-8 hrs', '9+ hrs'],
@@ -259,13 +259,13 @@ function showSampleData(chartType) {
                 title: 'CME Hours Distribution'
             };
             break;
-            
+
         case 'bnpl_payments':
             sampleData = {
-                labels: ['Tamara', 'Tabby', 'Spotii', 'Other'],
+                labels: ['Tabby', 'Spotii', 'Other'], // 'Tamara' commented out
                 datasets: [{
                     label: 'Payment Count',
-                    data: [67, 34, 23, 12],
+                    data: [34, 23, 12], // Removed Tamara data (67)
                     backgroundColor: 'rgba(153, 102, 255, 0.8)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
@@ -274,7 +274,7 @@ function showSampleData(chartType) {
             };
             break;
     }
-    
+
     updateChart(sampleData);
 }
 

@@ -187,7 +187,7 @@ class Product extends Model implements TranslatableContract
         $query = Sale::query()->whereIn('product_order_id', $ordersIds);
 
         if ($withoutRefunds) {
-            $query->whereNull('refund_at');
+            $query->where('status', '!=', 'refunded');
         }
 
         $query->orderBy('created_at', 'desc');
@@ -205,7 +205,7 @@ class Product extends Model implements TranslatableContract
             $query = $this->productOrders()
                 ->whereNotNull('sale_id')
                 ->whereHas('sale', function ($query) {
-                    $query->whereNull('refund_at');
+                    $query->where('status', '!=', 'refunded');
                 })
                 ->whereNotIn('status', [ProductOrder::$canceled, ProductOrder::$pending]);
 
@@ -245,7 +245,7 @@ class Product extends Model implements TranslatableContract
             $usedCount = ProductOrder::where('product_id', $this->id)
                 ->where('discount_id', $activeDiscount->id)
                 ->whereHas('sale', function ($query) {
-                    $query->whereNull('refund_at');
+                    $query->where('status', '!=', 'refunded');
                 })
                 ->count();
 
@@ -429,7 +429,7 @@ class Product extends Model implements TranslatableContract
                 ->whereHas('sale', function ($query) use ($user) {
                     $query->whereIn('type', ['product', 'gift'])
                         ->where('access_to_purchased_item', true)
-                        ->whereNull('refund_at');
+                        ->where('status', '!=', 'refunded');
                 })->first();
 
             $hasBought = !empty($order);

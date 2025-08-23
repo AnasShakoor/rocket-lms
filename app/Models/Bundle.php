@@ -122,7 +122,6 @@ class Bundle extends Model implements TranslatableContract
     public function sales()
     {
         return $this->hasMany('App\Models\Sale', 'bundle_id', 'id')
-            ->whereNull('refund_at')
             ->where('type', 'bundle');
     }
 

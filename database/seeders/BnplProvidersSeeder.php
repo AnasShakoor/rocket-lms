@@ -25,21 +25,21 @@ class BnplProvidersSeeder extends Seeder
                     'supported_regions' => ['UAE', 'Saudi Arabia', 'Kuwait', 'Bahrain']
                 ]
             ],
-            [
-                'name' => 'Tamara',
-                'logo_path' => 'bnpl/tamara-logo.png',
-                'fee_percentage' => 8.50,
-                'installment_count' => 3,
-                'is_active' => true,
-                'config' => [
-                    'min_amount' => 100.00,
-                    'max_amount' => 3000.00,
-                    'max_concurrent_payments' => 2,
-                    'description' => 'Pay in 3 installments with no hidden fees',
-                    'website' => 'https://tamara.co',
-                    'supported_regions' => ['UAE', 'Saudi Arabia', 'Kuwait']
-                ]
-            ],
+            // [
+            //     'name' => 'Tamara',
+            //     'logo_path' => 'bnpl/tamara-logo.png',
+            //     'fee_percentage' => 8.50,
+            //     'installment_count' => 3,
+            //     'is_active' => true,
+            //     'config' => [
+            //         'min_amount' => 100.00,
+            //         'max_amount' => 3000.00,
+            //         'max_concurrent_payments' => 2,
+            //         'description' => 'Pay in 3 installments with no hidden fees',
+            //         'website' => 'https://tamara.co',
+            //         'supported_regions' => ['UAE', 'Saudi Arabia', 'Kuwait']
+            //     ]
+            // ],
             [
                 'name' => 'Spotii',
                 'logo_path' => 'bnpl/spotii-logo.png',

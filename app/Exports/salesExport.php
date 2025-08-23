@@ -60,7 +60,7 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
             }
         }
 
-        $status = (!empty($sale->refund_at)) ? trans('admin/main.refund') : trans('admin/main.success');
+        $status = ($sale->status === 'refunded') ? trans('admin/main.refund') : trans('admin/main.success');
 
         return [
             $sale->id,

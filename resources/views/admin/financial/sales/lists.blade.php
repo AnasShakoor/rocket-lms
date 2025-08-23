@@ -170,7 +170,7 @@
                             <div class="col-md-3 d-flex align-items-center ">
                                 <button type="submit" class="btn btn-primary btn-block btn-lg">{{trans('admin/main.show_results')}}</button>
                             </div>
-                            
+
                         </div>
 
                     </form>
@@ -182,12 +182,12 @@
                     <div class="card">
 
                         <div class="card-header justify-content-between">
-                            
+
                             <div>
                                <h5 class="font-14 mb-0">{{ $pageTitle }}</h5>
                                <p class="font-12 mt-4 mb-0 text-gray-500">{{ trans('update.manage_all_sales_in_a_single_place') }}</p>
                            </div>
-                           
+
                             <div class="d-flex align-items-center gap-12">
 
                             @can('admin_sales_export')
@@ -200,7 +200,7 @@
                             @endcan
 
                             </div>
-                           
+
                        </div>
 
                         <div class="card-body">
@@ -287,7 +287,7 @@
                                             <td>{{ dateTimeFormat($sale->created_at, 'j F Y H:i') }}</td>
 
                                             <td>
-                                                @if(!empty($sale->refund_at))
+                                                @if($sale->status === 'refunded')
                                                     <span class="badge-status text-warning bg-warning-30">{{ trans('admin/main.refund') }}</span>
                                                 @elseif(!$sale->access_to_purchased_item)
                                                     <span class="badge-status text-danger bg-danger-30">{{ trans('update.access_blocked') }}</span>
@@ -305,7 +305,7 @@
         <div class="dropdown-menu dropdown-menu-right">
             @can('admin_sales_invoice')
                 @if(!empty($sale->webinar_id) or !empty($sale->bundle_id))
-                    <a href="{{ getAdminPanelUrl() }}/financial/sales/{{ $sale->id }}/invoice" 
+                    <a href="{{ getAdminPanelUrl() }}/financial/sales/{{ $sale->id }}/invoice"
                        target="_blank"
                        class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
                         <x-iconsax-lin-printer class="icons text-gray-500 mr-2" width="18px" height="18px"/>
@@ -315,7 +315,7 @@
             @endcan
 
             @can('admin_sales_refund')
-                @if(empty($sale->refund_at) and $sale->payment_method != \App\Models\Sale::$subscribe)
+                @if($sale->status !== 'refunded' and $sale->payment_method != \App\Models\Sale::$subscribe)
                     @include('admin.includes.delete_button',[
                         'url' => getAdminPanelUrl().'/financial/sales/'.$sale->id.'/refund',
                         'btnClass' => 'dropdown-item text-danger mb-0 py-3 px-0 font-14',

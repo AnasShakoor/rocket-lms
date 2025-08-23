@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class Sale extends Model
 {
@@ -18,15 +19,17 @@ class Sale extends Model
     public static $promotion = 'promotion';
     public static $registrationPackage = 'registrationPackage';
     public static $installmentPayment = 'installmentPayment';
-    
+
     protected $table = 'sales';
-    
+
     protected $fillable = [
         'buyer_id',
         'seller_id',
         'webinar_id',
         'bundle_id',
         'meeting_id',
+        'meeting_time_id',
+        'ticket_id',
         'subscribe_id',
         'promotion_id',
         'registration_package_id',
@@ -42,6 +45,13 @@ class Sale extends Model
         'payment_method',
         'status',
         'type',
+        'tax',
+        'commission',
+        'discount',
+        'total_amount',
+        'access_to_purchased_item',
+        'manual_added',
+        'product_delivery_fee',
         'purchased_at',
         'paid_at',
         'payment_details'
@@ -52,10 +62,54 @@ class Sale extends Model
         'vat_amount' => 'decimal:2',
         'bnpl_fee' => 'decimal:2',
         'installments' => 'integer',
+        'tax' => 'decimal:2',
+        'commission' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+        'product_delivery_fee' => 'decimal:2',
+        'access_to_purchased_item' => 'boolean',
+        'manual_added' => 'boolean',
         'purchased_at' => 'datetime',
         'paid_at' => 'datetime',
         'payment_details' => 'array'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('non_refunded', function (Builder $builder) {
+            $builder->where('status', '!=', 'refunded');
+        });
+    }
+
+    // Backward compatibility accessor for refund_at
+    public function getRefundAtAttribute()
+    {
+        return $this->status === 'refunded' ? now() : null;
+    }
+
+    // Method to check if sale is refunded
+    public function isRefunded()
+    {
+        return $this->status === 'refunded';
+    }
+
+    // Scope to include refunded sales
+    public function scopeWithRefunded(Builder $query)
+    {
+        return $query->withoutGlobalScope('non_refunded');
+    }
+
+    // Scope to get only refunded sales
+    public function scopeRefunded(Builder $query)
+    {
+        return $query->withoutGlobalScope('non_refunded')->where('status', 'refunded');
+    }
+
+    // Scope to get all sales including refunded ones
+    public function scopeAll(Builder $query)
+    {
+        return $query->withoutGlobalScope('non_refunded');
+    }
 
     public function buyer(): BelongsTo
     {
@@ -128,6 +182,16 @@ class Sale extends Model
     public function productOrder()
     {
         return $this->belongsTo(\App\Models\ProductOrder::class, 'product_order_id');
+    }
+
+    public function ticket()
+    {
+        return $this->belongsTo(\App\Models\Ticket::class, 'ticket_id');
+    }
+
+    public function meetingTime()
+    {
+        return $this->belongsTo(\App\Models\MeetingTime::class, 'meeting_time_id');
     }
 
     // Backward compatibility method for subscribe handling
@@ -222,13 +286,13 @@ class Sale extends Model
             ->where('type', $itemType === 'webinar_id' ? self::$webinar : self::$bundle)
             ->where('status', 'completed')
             ->first();
-        
+
         if ($subscribeSale) {
             // Check if subscribe is still valid (not expired)
             // You may need to implement your own expiration logic here
             return true; // Placeholder - implement actual expiration check
         }
-        
+
         return false;
     }
 

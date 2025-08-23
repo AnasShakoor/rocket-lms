@@ -97,12 +97,12 @@ return [
             'secret_key' => env('BNPL_TABBY_SECRET_KEY'),
             'environment' => env('BNPL_TABBY_ENVIRONMENT', 'sandbox'),
         ],
-        'tamara' => [
-            'enabled' => env('BNPL_TAMARA_ENABLED', true),
-            'api_key' => env('BNPL_TAMARA_API_KEY'),
-            'secret_key' => env('BNPL_TAMARA_SECRET_KEY'),
-            'environment' => env('BNPL_TAMARA_ENVIRONMENT', 'sandbox'),
-        ],
+        // 'tamara' => [
+        //     'enabled' => env('BNPL_TAMARA_ENABLED', true),
+        //     'api_key' => env('BNPL_TAMARA_API_KEY'),
+        //     'secret_key' => env('BNPL_TAMARA_SECRET_KEY'),
+        //     'environment' => env('BNPL_TAMARA_ENVIRONMENT', 'sandbox'),
+        // ],
         'spotii' => [
             'enabled' => env('BNPL_SPOTII_ENABLED', true),
             'api_key' => env('BNPL_SPOTII_API_KEY'),
