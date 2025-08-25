@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Setting;
 
 class clearAll extends Command
 {
@@ -12,46 +14,48 @@ class clearAll extends Command
      *
      * @var string
      */
-    protected $signature = 'clear:all {--force} {--map}';
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'clear all caches (view, cache, config, log)';
-    private $disk;
+    protected $signature = 'clear:all';
 
     /**
-     * Create a new command instance.
-     * @param \Illuminate\Filesystem\Filesystem $disk
-     * @return void
+     * The console command description.
+     *   
+     * @var string
      */
-    public function __construct(Filesystem $disk)
-    {
-        parent::__construct();
-        $this->disk = $disk;
-    }
+    protected $description = 'Clear all caches and optimize the application';
 
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      */
     public function handle()
     {
-        $this->call('cache:clear');
-        $this->call('view:clear');
-        $this->call('config:clear');
-        $this->call('route:clear');
+        $this->info('Clearing all caches...');
 
-        foreach ($this->disk->allFiles(storage_path('logs')) as $file) {
-            $this->disk->delete($file);
-        }
-        $this->info('log files cleared!');
+        // Clear Laravel caches
+        Artisan::call('cache:clear');
+        Artisan::call('config:clear');
+        Artisan::call('route:clear');
+        Artisan::call('view:clear');
+        Artisan::call('optimize:clear');
 
-        foreach ($this->disk->allFiles(storage_path('debugbar')) as $file) {
-            $this->disk->delete($file);
-        }
-        $this->info('debugbar files cleared!');
+        // Clear settings cache specifically
+        Setting::clearSettingsCache();
+        $this->info('Settings cache cleared.');
+
+        // Clear any custom caches
+        Cache::flush();
+        $this->info('All caches cleared successfully!');
+
+        // Optimize the application
+        $this->info('Optimizing application...');
+        Artisan::call('optimize');
+        Artisan::call('config:cache');
+        Artisan::call('route:cache');
+        Artisan::call('view:cache');
+
+        $this->info('Application optimized successfully!');
+
+        return 0;
     }
 }

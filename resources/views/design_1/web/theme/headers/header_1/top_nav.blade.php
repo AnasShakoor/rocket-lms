@@ -5,20 +5,20 @@
             <div class="col-12 col-lg-4">
                 <div class="d-flex align-items-center gap-24">
                     {{-- Phone --}}
-                    @if(!empty($themeHeaderTopNavData['phone']))
+                    {{-- @if(!empty($themeHeaderTopNavData['phone']))
                         <div class="d-flex align-items-center gap-8 opacity-75">
                             <x-iconsax-lin-call-calling class="icons text-white" width="16px" height="16x"/>
                             <span class="text-white">{{ $themeHeaderTopNavData['phone'] }}</span>
                         </div>
-                    @endif
+                    @endif --}}
 
                     {{-- Email --}}
-                    @if(!empty($themeHeaderTopNavData['email']))
+                    {{-- @if(!empty($themeHeaderTopNavData['email']))
                         <div class="d-flex align-items-center gap-8 opacity-75">
                             <x-iconsax-lin-sms class="icons text-white" width="16px" height="16x"/>
                             <span class="text-white">{{ $themeHeaderTopNavData['email'] }}</span>
                         </div>
-                    @endif
+                    @endif --}}
 
                     {{-- Multi Color (Dark,Light) --}}
                     @if(!empty($themeHeaderTopNavData['show_color_mode']))

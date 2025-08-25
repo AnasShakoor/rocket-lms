@@ -116,6 +116,6 @@
     <script src="/assets/default/vendors/sweetalert2/dist/sweetalert2.min.js"></script>
     <script src="/assets/default/vendors/sortable/jquery-ui.min.js"></script>
 
-    <script src="/assets/admin/js/parts/settings/cookie_settings.min.js"></script>
-    <script src="/assets/admin/js/parts/create_theme.min.js"></script>
+    <script src="/assets/default/js/admin/settings/cookie_settings.min.js"></script>
+    <script src="/assets/default/js/admin/create_theme.min.js"></script>
 @endpush

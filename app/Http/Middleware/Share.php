@@ -78,9 +78,9 @@ class Share
         $cartDiscount = CartDiscount::query()->where('enable', true)->count();
         $data['userCartDiscount'] = $cartDiscount;
 
+        // Get general settings (will be cached by the Setting model)
         $generalSettings = getGeneralSettings();
         $data['generalSettings'] = $generalSettings;
-
 
         $currency = currencySign();
         $data['currency'] = $currency;

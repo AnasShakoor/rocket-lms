@@ -4304,5 +4304,8 @@ return [
 'mobile_app_configuration' => 'Mobile App Configuration',
 'mobile_app_configuration_hint' => 'You can manage settings related to the mobile app.',
 'mobile_app_setting_api_key_input_hint' => 'Set API Key For Mobile App Requests Security',
+'cme_hours' => 'CME Hours',
+'invoices' => 'Invoices',
+'my_cme_hours' => 'My CME Hours',
 
 ];

@@ -40,6 +40,7 @@
 
                 {{-- Currency --}}
                 @if(!empty($currencies) and count($currencies))
+
                     @foreach($currencies as $currencyItem)
                         @if($userCurrency == $currencyItem->currency)
                             <div class="js-mobile-header-show-specific-drawer d-flex-center size-32 bg-gray-100 rounded-8" data-drawer="currency">
@@ -47,7 +48,7 @@
                             </div>
                         @endif
                     @endforeach
-                @endif
+                @endif  
 
                 {{-- Cart --}}
                 <div class="js-view-cart-drawer position-relative d-flex-center size-32 bg-gray-100 rounded-8">

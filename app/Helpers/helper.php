@@ -144,11 +144,18 @@ function handleDateAndTimeFormat($format)
 
     return $format;
 }
-
 function diffTimestampDay($firstTime, $lastTime)
 {
+    if ($firstTime instanceof \DateTimeInterface) {
+        $firstTime = $firstTime->getTimestamp();
+    }
+    if ($lastTime instanceof \DateTimeInterface) {
+        $lastTime = $lastTime->getTimestamp();
+    }
+
     return ($firstTime - $lastTime) / (24 * 60 * 60);
 }
+
 
 function convertMinutesToHourAndMinute($minutes)
 {
