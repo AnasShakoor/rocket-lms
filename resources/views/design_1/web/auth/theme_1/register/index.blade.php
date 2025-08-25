@@ -40,7 +40,7 @@
                         @endforeach
                     </div>
                 </div>
-            @endif
+            @endif  
 
             @if($registerMethod == 'mobile')
                 @include('design_1.web.auth.theme_1.includes.mobile_field')
