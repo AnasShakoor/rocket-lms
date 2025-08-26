@@ -19,9 +19,9 @@ use App\Models\RewardAccounting;
 use App\Models\Sale;
 use App\Models\TicketUser;
 use App\PaymentChannels\ChannelManager;
-use App\Services\PaymentLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
@@ -71,12 +71,168 @@ class PaymentController extends Controller
                 'status' => Order::$paid
             ]);
 
-            // Remove purchased items from cart after successful credit payment
-            $this->removePurchasedItemsFromCart($order);
-
             session()->put($this->order_session_key, $order->id);
 
             return redirect('/payments/status');
+        }
+
+        if ($gateway === 'bnpl') {
+            // Validate BNPL provider selection
+            $bnplProviderId = $request->input('bnpl_provider');
+
+            if (!$bnplProviderId) {
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => trans('update.bnpl_select_provider'),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            // Get BNPL provider details
+            $bnplProvider = \App\Models\BnplProvider::find($bnplProviderId);
+
+            if (!$bnplProvider || !$bnplProvider->is_active) {
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => trans('update.bnpl_not_available'),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            // Check if it's Tabby and handle accordingly
+            if ($bnplProvider->name === 'Tabby') {
+                try {
+                    // Get customer data
+                    $customerData = [
+                        'email' => $order->user->email,
+                        'phone' => $order->user->mobile,
+                        'name' => $order->user->full_name,
+                    ];
+
+                    // Create Tabby checkout session
+                    $tabbyService = new \App\Services\TabbyService();
+                    $checkoutResult = $tabbyService->createCheckoutSession($order, $customerData);
+
+                    if (!$checkoutResult['success']) {
+                        $toastData = [
+                            'title' => trans('cart.fail_purchase'),
+                            'msg' => $checkoutResult['error'] ?? 'Tabby checkout failed',
+                            'status' => 'error'
+                        ];
+                        return back()->with(['toast' => $toastData]);
+                    }
+
+                    // Update order with Tabby payment data
+                    $order->update([
+                        'payment_method' => Order::$bnpl,
+                        'payment_data' => [
+                            'bnpl_provider' => $bnplProvider->name,
+                            'bnpl_provider_id' => $bnplProvider->id,
+                            'installment_count' => $bnplProvider->installment_count,
+                            'fee_percentage' => $bnplProvider->fee_percentage,
+                            'tabby_payment_id' => $checkoutResult['payment_id'],
+                            'tabby_checkout_created_at' => now(),
+                            'selected_at' => now()
+                        ]
+                    ]);
+
+                    // Redirect to Tabby hosted payment page
+                    return Redirect::away($checkoutResult['web_url']);
+
+                } catch (\Exception $e) {
+                    Log::error('Tabby BNPL payment failed', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+
+                    $toastData = [
+                        'title' => trans('cart.fail_purchase'),
+                        'msg' => 'Tabby payment processing failed: ' . $e->getMessage(),
+                        'status' => 'error'
+                    ];
+                    return back()->with(['toast' => $toastData]);
+                }
+            } elseif ($bnplProvider->name === 'MisPay') {
+                try {
+                    // Get customer data
+                    $customerData = [
+                        'email' => $order->user->email,
+                        'phone' => $order->user->mobile,
+                        'name' => $order->user->full_name,
+                    ];
+
+                    // Create MisPay checkout session
+                    $mispayService = new \App\Services\MisPayService();
+                    $checkoutResult = $mispayService->createCheckoutSession($order, $customerData);
+
+                    if (!$checkoutResult['success']) {
+                        $toastData = [
+                            'title' => trans('cart.fail_purchase'),
+                            'msg' => $checkoutResult['error'] ?? 'MisPay checkout failed',
+                            'status' => 'error'
+                        ];
+                        return back()->with(['toast' => $toastData]);
+                    }
+
+                    // Update order with MisPay payment data
+                    $order->update([
+                        'payment_method' => Order::$bnpl,
+                        'payment_data' => [
+                            'bnpl_provider' => $bnplProvider->name,
+                            'bnpl_provider_id' => $bnplProvider->id,
+                            'installment_count' => $bnplProvider->installment_count,
+                            'fee_percentage' => $bnplProvider->fee_percentage,
+                            'mispay_checkout_id' => $checkoutResult['checkout_id'],
+                            'mispay_checkout_created_at' => now(),
+                            'selected_at' => now()
+                        ]
+                    ]);
+
+                    // Redirect to MisPay hosted payment page
+                    return Redirect::away($checkoutResult['web_url']);
+
+                } catch (\Exception $e) {
+                    Log::error('MisPay BNPL payment failed', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+
+                    $toastData = [
+                        'title' => trans('cart.fail_purchase'),
+                        'msg' => 'MisPay payment processing failed: ' . $e->getMessage(),
+                        'status' => 'error'
+                    ];
+                    return back()->with(['toast' => $toastData]);
+                }
+            } else {
+                // Handle other BNPL providers (existing logic)
+                $order->update([
+                    'payment_method' => Order::$bnpl,
+                    'payment_data' => [
+                        'bnpl_provider' => $bnplProvider->name,
+                        'bnpl_provider_id' => $bnplProvider->id,
+                        'installment_count' => $bnplProvider->installment_count,
+                        'fee_percentage' => $bnplProvider->fee_percentage,
+                        'selected_at' => now()
+                    ]
+                ]);
+
+                // Process BNPL payment (this would typically redirect to BNPL provider's checkout)
+                // For now, we'll redirect to a success page and handle the actual BNPL processing later
+                $this->setPaymentAccounting($order, 'bnpl');
+
+                $order->update([
+                    'status' => Order::$paid
+                ]);
+
+                session()->put($this->order_session_key, $order->id);
+
+                return redirect('/payments/status');
+            }
         }
 
         $paymentChannel = PaymentChannel::where('id', $gateway)
@@ -100,19 +256,24 @@ class PaymentController extends Controller
             $channelManager = ChannelManager::makeChannel($paymentChannel);
             $redirect_url = $channelManager->paymentRequest($order);
 
-            // If Moyasar, send form data back to the cart payment page instead of redirecting
-            if ($paymentChannel->class_name === 'Moyasar' && is_array($redirect_url)) {
-                // Keep current order in session for status
-                session()->put($this->order_session_key, $order->id);
-
-                return redirect('/cart')->with([
-                    'moyasar' => true,
-                    'moyasar_form_data' => $redirect_url,
-                ]);
-            }
-
             if (in_array($paymentChannel->class_name, PaymentChannel::$gatewayIgnoreRedirect)) {
                 return $redirect_url;
+            }
+
+            // Check if redirect_url is valid before using it
+            if (empty($redirect_url)) {
+                Log::error('Payment redirect failed: Empty redirect URL', [
+                    'payment_channel' => $paymentChannel->class_name,
+                    'order_id' => $order->id,
+                    'user_id' => auth()->id()
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => trans('cart.gateway_error'),
+                    'status' => 'error'
+                ];
+                return redirect('cart')->with(['toast' => $toastData]);
             }
 
             return Redirect::away($redirect_url);
@@ -129,77 +290,40 @@ class PaymentController extends Controller
         }
     }
 
-    public function paymentVerify(Request $request, $gateway)
+        public function paymentVerify(Request $request, $gateway)
     {
         $paymentChannel = PaymentChannel::where('class_name', $gateway)
             ->where('status', 'active')
             ->first();
 
+        if (!$paymentChannel) {
+            Log::error('Payment verification failed: Payment channel not found or inactive', [
+                'gateway' => $gateway,
+                'user_id' => auth()->id()
+            ]);
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => trans('cart.gateway_error'),
+                'status' => 'error'
+            ];
+            return redirect('cart')->with(['toast' => $toastData]);
+        }
+
         try {
             $channelManager = ChannelManager::makeChannel($paymentChannel);
             $order = $channelManager->verify($request);
 
-            // For frontend Moyasar payments, return JSON response
-            if ($request->expectsJson() && $gateway === 'Moyasar') {
-                if ($order && $order->status === Order::$paid) {
-                    // Log payment data if not already logged
-                    try {
-                        $paymentLogService = new PaymentLogService();
-                        $existingLogs = $paymentLogService->getOrderPaymentLogs($order->id);
-
-                                                if ($existingLogs->isEmpty()) {
-                            // Create a basic payment log entry for frontend payments
-                            $paymentData = [
-                                'id' => $request->input('id'),
-                                'status' => $request->input('status'),
-                                'message' => $request->input('message'),
-                                'amount' => $order->total_amount,
-                                'currency' => 'SAR',
-                                'source' => ['type' => 'creditcard']
-                            ];
-
-                            $paymentLog = $paymentLogService->logMoyasarPayment($paymentData, $order, $request);
-
-                            Log::info('Frontend Moyasar payment logged', [
-                                'order_id' => $order->id,
-                                'payment_log_id' => $paymentLog->id
-                            ]);
-
-                            // Remove purchased items from cart for frontend payments
-                            $this->removePurchasedItemsFromCart($order);
-                        }
-                    } catch (\Exception $e) {
-                        Log::error('Failed to log frontend Moyasar payment', [
-                            'order_id' => $order->id,
-                            'error' => $e->getMessage()
-                        ]);
-                    }
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Payment verified successfully',
-                        'order_id' => $order->id,
-                        'status' => 'paid'
-                    ]);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Payment verification failed',
-                        'order_id' => $order ? $order->id : null,
-                        'status' => $order ? $order->status : 'unknown'
-                    ], 400);
-                }
-            }
-
             return $this->paymentOrderAfterVerify($order);
 
         } catch (\Exception $exception) {
-            if ($request->expectsJson() && $gateway === 'Moyasar') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Payment verification error: ' . $exception->getMessage()
-                ], 500);
-            }
+            Log::error('Payment verification failed with exception', [
+                'gateway' => $gateway,
+                'exception_message' => $exception->getMessage(),
+                'exception_trace' => $exception->getTraceAsString(),
+                'user_id' => auth()->id(),
+                'request_data' => $request->all()
+            ]);
 
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
@@ -211,13 +335,12 @@ class PaymentController extends Controller
     }
 
 
-    private function paymentOrderAfterVerify($order)
+        private function paymentOrderAfterVerify($order)
     {
         if (!empty($order)) {
 
             if ($order->status == Order::$paying) {
                 $this->setPaymentAccounting($order);
-
                 $order->update(['status' => Order::$paid]);
             } else {
                 if ($order->type === Order::$meeting) {
@@ -234,60 +357,20 @@ class PaymentController extends Controller
             }
 
             session()->put($this->order_session_key, $order->id);
-
             return redirect("/payments/status?t={$order->id}");
         } else {
+            Log::error('Payment order after verify failed: Order is empty', [
+                'user_id' => auth()->id(),
+                'timestamp' => now()
+            ]);
+
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
                 'msg' => trans('cart.gateway_error'),
                 'status' => 'error'
             ];
 
-                    return redirect('cart')->with($toastData);
-        }
-    }
-
-    /**
-     * Remove purchased items from cart after successful payment
-     */
-    private function removePurchasedItemsFromCart($order)
-    {
-        try {
-            $userId = $order->user_id;
-            $removedCount = 0;
-
-            foreach ($order->orderItems as $orderItem) {
-                $cart = \App\Models\Cart::where('creator_id', $userId);
-
-                if (!empty($orderItem->webinar_id)) {
-                    // Remove webinar from cart
-                    $cartItems = $cart->where('webinar_id', $orderItem->webinar_id)->get();
-                    foreach ($cartItems as $cartItem) {
-                        $cartItem->delete();
-                        $removedCount++;
-                    }
-                } elseif (!empty($orderItem->product_order_id)) {
-                    // Remove product from cart
-                    $cartItems = $cart->where('product_order_id', $orderItem->product_order_id)->get();
-                    foreach ($cartItems as $cartItem) {
-                        $cartItem->delete();
-                        $removedCount++;
-                    }
-                }
-            }
-
-            if ($removedCount > 0) {
-                Log::info('Items removed from cart after frontend payment', [
-                    'order_id' => $order->id,
-                    'user_id' => $userId,
-                    'removed_count' => $removedCount
-                ]);
-            }
-        } catch (\Exception $e) {
-            Log::error('Failed to remove items from cart after frontend payment', [
-                'order_id' => $order->id,
-                'error' => $e->getMessage()
-            ]);
+            return redirect('cart')->with($toastData);
         }
     }
 
@@ -403,56 +486,434 @@ class PaymentController extends Controller
     }
 
     /**
-     * Get Moyasar payment form data
+     * Apple Pay merchant validation for Moyasar integration
      */
-    public function getMoyasarFormData(Request $request)
+        public function applePayValidateMerchant(Request $request)
     {
-        if (!auth()->check()) {
-            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
-        }
-
-        $orderId = $request->input('order_id');
-        $gatewayId = $request->input('gateway');
-
-        $order = Order::where('id', $orderId)
-            ->where('user_id', auth()->id())
-            ->first();
-
-        if (!$order) {
-            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
-        }
-
-        $paymentChannel = PaymentChannel::where('id', $gatewayId)
-            ->where('class_name', 'Moyasar')
-            ->first();
-
-        if (!$paymentChannel) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Moyasar payment channel not found'
-            ], 404);
-        }
-
         try {
-            $channel = ChannelManager::makeChannel($paymentChannel);
-            $paymentFormData = $channel->paymentRequest($order);
+            // Get the validation URL from the request
+            $validationUrl = $request->input('validation_url');
 
-            return response()->json([
-                'success' => true,
-                'payment_form_data' => $paymentFormData
+            if (!$validationUrl) {
+                return response()->json(['error' => 'Validation URL is required'], 400);
+            }
+
+            // Make a POST request to Apple's validation URL
+            $response = Http::post($validationUrl, [
+                'merchantIdentifier' => config('services.apple_pay.merchant_id', 'merchant.com.yourstore'),
+                'domainName' => config('services.apple_pay.domain', request()->getHost()),
+                'displayName' => config('services.apple_pay.display_name', getGeneralSettings('site_name', 'Your Store'))
             ]);
+
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+
+            return response()->json(['error' => 'Apple Pay validation failed'], 400);
+
         } catch (\Exception $e) {
-            Log::error('Error getting Moyasar form data: ' . $e->getMessage(), [
-                'order_id' => $orderId,
-                'gateway_id' => $gatewayId,
+            Log::error('Apple Pay validation error: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'user_id' => auth()->id()
             ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error preparing payment form: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['error' => 'Apple Pay validation error'], 500);
         }
     }
 
+    /**
+     * Tabby payment verification
+     */
+    public function tabbyVerify(Request $request)
+    {
+        try {
+            $paymentId = $request->get('payment_id');
+
+            if (!$paymentId) {
+                Log::error('Tabby verification: Missing payment_id', [
+                    'request_data' => $request->all()
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Missing payment ID',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            // Find order by Tabby payment ID
+            $order = Order::where('payment_data->tabby_payment_id', $paymentId)->first();
+
+            if (!$order) {
+                Log::error('Tabby verification: Order not found', [
+                    'payment_id' => $paymentId
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Order not found',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            // Verify payment with Tabby
+            $tabbyService = new \App\Services\TabbyService();
+            $verificationResult = $tabbyService->verifyPayment($paymentId);
+
+            if (!$verificationResult['success']) {
+                Log::error('Tabby verification: API verification failed', [
+                    'payment_id' => $paymentId,
+                    'order_id' => $order->id,
+                    'error' => $verificationResult['error'] ?? 'Unknown error'
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Payment verification failed',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            $tabbyStatus = $verificationResult['status'] ?? 'unknown';
+
+            // Update order status based on Tabby response
+            if ($tabbyStatus === 'AUTHORIZED') {
+                $order->update([
+                    'status' => Order::$paid,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'tabby_verified_at' => now(),
+                        'tabby_status' => $tabbyStatus
+                    ])
+                ]);
+
+                // Set payment accounting
+                $this->setPaymentAccounting($order, 'tabby');
+
+                session()->put($this->order_session_key, $order->id);
+                return redirect('/payments/status');
+
+            } elseif (in_array($tabbyStatus, ['REJECTED', 'EXPIRED', 'CANCELLED'])) {
+                $order->update([
+                    'status' => Order::$fail,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'tabby_verified_at' => now(),
+                        'tabby_status' => $tabbyStatus
+                    ])
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Payment was not successful',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            // Unknown status
+            Log::warning('Tabby verification: Unknown status', [
+                'payment_id' => $paymentId,
+                'order_id' => $order->id,
+                'status' => $tabbyStatus
+            ]);
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => 'Payment status unknown',
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+
+        } catch (\Exception $e) {
+            Log::error('Tabby verification exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => 'Payment verification failed',
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+    }
+
+    /**
+     * Tabby success callback
+     */
+    public function tabbySuccess(Request $request)
+    {
+        $paymentId = $request->get('payment_id');
+
+        if ($paymentId) {
+            return redirect()->route('payments.tabby.verify', ['payment_id' => $paymentId]);
+        }
+
+        return redirect('/cart');
+    }
+
+    /**
+     * Tabby cancel callback
+     */
+    public function tabbyCancel(Request $request)
+    {
+        $paymentId = $request->get('payment_id');
+
+        if ($paymentId) {
+            // Find and update order status
+            $order = Order::where('payment_data->tabby_payment_id', $paymentId)->first();
+
+            if ($order) {
+                $order->update([
+                    'status' => Order::$fail,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'tabby_cancelled_at' => now(),
+                        'tabby_status' => 'CANCELLED'
+                    ])
+                ]);
+            }
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => trans('update.tabby_payment_cancelled'),
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+
+        return redirect('/cart');
+    }
+
+    /**
+     * Tabby failure callback
+     */
+    public function tabbyFailure(Request $request)
+    {
+        $paymentId = $request->get('payment_id');
+
+        if ($paymentId) {
+            // Find and update order status
+            $order = Order::where('payment_data->tabby_payment_id', $paymentId)->first();
+
+            if ($order) {
+                $order->update([
+                    'status' => Order::$fail,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'tabby_failed_at' => now(),
+                        'tabby_status' => 'REJECTED'
+                    ])
+                ]);
+            }
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => trans('update.tabby_payment_failed'),
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+
+        return redirect('/cart');
+    }
+
+    /**
+     * MisPay verification
+     */
+    public function mispayVerify(Request $request)
+    {
+        try {
+            $checkoutId = $request->get('checkout_id') ?? $request->get('id');
+
+            if (!$checkoutId) {
+                Log::error('MisPay verification: Missing checkout_id', [
+                    'request_data' => $request->all()
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Missing checkout ID',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            // Find order by MisPay checkout ID
+            $order = Order::where('payment_data->mispay_checkout_id', $checkoutId)->first();
+
+            if (!$order) {
+                Log::error('MisPay verification: Order not found', [
+                    'checkout_id' => $checkoutId
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Order not found',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            // Verify payment with MisPay
+            $mispayService = new \App\Services\MisPayService();
+            $verificationResult = $mispayService->verifyPayment($checkoutId);
+
+            if (!$verificationResult['success']) {
+                Log::error('MisPay verification: API verification failed', [
+                    'checkout_id' => $checkoutId,
+                    'order_id' => $order->id,
+                    'error' => $verificationResult['error'] ?? 'Unknown error'
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Payment verification failed',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            $mispayStatus = $verificationResult['status'] ?? 'unknown';
+
+            // Update order status based on MisPay response
+            if ($mispayStatus === 'completed' || $mispayStatus === 'success') {
+                $order->update([
+                    'status' => Order::$paid,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'mispay_verified_at' => now(),
+                        'mispay_status' => $mispayStatus
+                    ])
+                ]);
+
+                // Set payment accounting
+                $this->setPaymentAccounting($order, 'mispay');
+
+                session()->put($this->order_session_key, $order->id);
+                return redirect('/payments/status');
+
+            } elseif (in_array($mispayStatus, ['failed', 'cancelled', 'expired'])) {
+                $order->update([
+                    'status' => Order::$fail,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'mispay_verified_at' => now(),
+                        'mispay_status' => $mispayStatus
+                    ])
+                ]);
+
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => 'Payment was not successful',
+                    'status' => 'error'
+                ];
+                return redirect('/cart')->with(['toast' => $toastData]);
+            }
+
+            // Unknown status
+            Log::warning('MisPay verification: Unknown status', [
+                'checkout_id' => $checkoutId,
+                'order_id' => $order->id,
+                'status' => $mispayStatus
+            ]);
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => 'Payment status unknown',
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+
+        } catch (\Exception $e) {
+            Log::error('MisPay verification exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => 'Payment verification failed',
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+    }
+
+    /**
+     * MisPay success callback
+     */
+    public function mispaySuccess(Request $request)
+    {
+        $checkoutId = $request->get('checkout_id') ?? $request->get('id');
+
+        if ($checkoutId) {
+            return redirect()->route('payments.mispay.verify', ['checkout_id' => $checkoutId]);
+        }
+
+        return redirect('/cart');
+    }
+
+    /**
+     * MisPay cancel callback
+     */
+    public function mispayCancel(Request $request)
+    {
+        $checkoutId = $request->get('checkout_id') ?? $request->get('id');
+
+        if ($checkoutId) {
+            // Find and update order status
+            $order = Order::where('payment_data->mispay_checkout_id', $checkoutId)->first();
+
+            if ($order) {
+                $order->update([
+                    'status' => Order::$fail,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'mispay_cancelled_at' => now(),
+                        'mispay_status' => 'CANCELLED'
+                    ])
+                ]);
+            }
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => trans('update.mispay_payment_cancelled'),
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+
+        return redirect('/cart');
+    }
+
+    /**
+     * MisPay failure callback
+     */
+    public function mispayFailure(Request $request)
+    {
+        $checkoutId = $request->get('checkout_id') ?? $request->get('id');
+
+        if ($checkoutId) {
+            // Find and update order status
+            $order = Order::where('payment_data->mispay_checkout_id', $checkoutId)->first();
+
+            if ($order) {
+                $order->update([
+                    'status' => Order::$fail,
+                    'payment_data' => array_merge($order->payment_data ?? [], [
+                        'mispay_failed_at' => now(),
+                        'mispay_status' => 'FAILED'
+                    ])
+                ]);
+            }
+
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => trans('update.mispay_payment_failed'),
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+
+        return redirect('/cart');
+    }
 }

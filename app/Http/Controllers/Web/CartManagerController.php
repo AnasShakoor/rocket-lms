@@ -13,6 +13,7 @@ use App\Models\Ticket;
 use App\Models\Webinar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 
 class CartManagerController extends Controller
 {
@@ -305,46 +306,65 @@ class CartManagerController extends Controller
 
     public function store(Request $request)
     {
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        $this->validate($request, [
-            'item_id' => 'required',
-            'item_name' => 'nullable',
-        ]);
+            $this->validate($request, [
+                'item_id' => 'required',
+                'item_name' => 'nullable',
+            ]);
 
-        $data = $request->except('_token');
-        $item_name = $data['item_name'];
+            $data = $request->except('_token');
+            $item_name = $data['item_name'];
 
-        if (!empty($user)) { // store in DB
-            $result = null;
+            if (!empty($user)) { // store in DB
+                $result = null;
 
-            if ($item_name == 'webinar_id') {
-                $result = $this->storeUserWebinarCart($user, $data);
-            } elseif ($item_name == 'product_id') {
-                $result = $this->storeUserProductCart($request, $user, $data);
-            } elseif ($item_name == 'bundle_id') {
-                $result = $this->storeUserBundleCart($user, $data);
+                if ($item_name == 'webinar_id') {
+                    $result = $this->storeUserWebinarCart($user, $data);
+                } elseif ($item_name == 'product_id') {
+                    $result = $this->storeUserProductCart($request, $user, $data);
+                } elseif ($item_name == 'bundle_id') {
+                    $result = $this->storeUserBundleCart($user, $data);
+                }
+
+                if ($result != 'ok') {
+                    return $result;
+                }
+            } else { // store in cookie
+                $this->storeCookieCart($data);
             }
 
-            if ($result != 'ok') {
-                return $result;
+            $toastData = [
+                'title' => trans('cart.cart_add_success_title'),
+                'msg' => trans('cart.cart_add_success_msg'),
+                'status' => 'success',
+                'code' => 200,
+            ];
+
+            if ($request->ajax()) {
+                return response()->json($toastData);
             }
-        } else { // store in cookie
-            $this->storeCookieCart($data);
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            Log::error('Cart store error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'error' => 'Failed to add item to cart',
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with(['toast' => [
+                'title' => 'Error',
+                'msg' => 'Failed to add item to cart',
+                'status' => 'error',
+                'code' => 500,
+            ]]);
         }
-
-        $toastData = [
-            'title' => trans('cart.cart_add_success_title'),
-            'msg' => trans('cart.cart_add_success_msg'),
-            'status' => 'success',
-            'code' => 200,
-        ];
-
-        if ($request->ajax()) {
-            return response()->json($toastData);
-        }
-
-        return back()->with(['toast' => $toastData]);
     }
 
     public function quantity(Request $request, $itemId)
@@ -473,42 +493,53 @@ class CartManagerController extends Controller
 
     public function getDrawerInfo()
     {
-        $user = auth()->user();
-        $cartItems = $this->getCarts();
+        try {
+            $user = auth()->user();
+            $cartItems = $this->getCarts();
 
-        $subtotal = 0;
-        $notIsEmpty = (!empty($cartItems) and $cartItems->isNotEmpty());
-        $extraData = [];
+            $subtotal = 0;
+            $notIsEmpty = (!empty($cartItems) and $cartItems->isNotEmpty());
+            $extraData = [];
 
-        if ($notIsEmpty) {
-            $cartController = new CartController();
-            //$calculate = $cartController->calculatePrice($cartItems, $user);
+            if ($notIsEmpty) {
+                $cartController = new CartController();
+                //$calculate = $cartController->calculatePrice($cartItems, $user);
 
-            $subtotal = Cart::getCartsTotalPrice($cartItems);
+                $subtotal = Cart::getCartsTotalPrice($cartItems);
 
-            $data = [
-                'cartItems' => $cartItems,
-            ];
+                $data = [
+                    'cartItems' => $cartItems,
+                ];
 
-            $html = (string)view()->make("design_1.web.cart.drawer.body", $data);
-        } else {
-            $cartDiscount = CartDiscount::query()
-                ->where('show_only_on_empty_cart', true)
-                ->where('enable', true)
-                ->first();
+                $html = (string)view()->make("design_1.web.cart.drawer.body", $data);
+            } else {
+                $cartDiscount = CartDiscount::query()
+                    ->where('show_only_on_empty_cart', true)
+                    ->where('enable', true)
+                    ->first();
 
-            $data = [
-                'cartDiscount' => $cartDiscount,
-            ];
+                $data = [
+                    'cartDiscount' => $cartDiscount,
+                ];
 
-            $html = (string)view()->make("design_1.web.cart.drawer.empty", $data);
+                $html = (string)view()->make("design_1.web.cart.drawer.empty", $data);
+            }
+
+            return response()->json([
+                'code' => 200,
+                'is_empty' => !$notIsEmpty,
+                'subtotal' => $subtotal > 0 ? handlePrice($subtotal) : 0,
+                'html' => $html,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Cart drawer info error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            return response()->json([
+                'code' => 500,
+                'error' => 'Failed to load cart information',
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        return response()->json([
-            'code' => 200,
-            'is_empty' => !$notIsEmpty,
-            'subtotal' => $subtotal > 0 ? handlePrice($subtotal) : 0,
-            'html' => $html,
-        ]);
     }
 }

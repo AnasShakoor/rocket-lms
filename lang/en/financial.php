@@ -89,4 +89,24 @@ return [
     'purchase' => 'Purchase',
     'payouts_requests' => 'Payout Requests',
 
+    // BNPL Providers
+    'bnpl_providers' => 'BNPL Providers',
+    'bnpl_providers_list' => 'Providers List',
+    'new_bnpl_provider' => 'New Provider',
+    'bnpl_provider' => 'BNPL Provider',
+    'bnpl_provider_name' => 'Provider Name',
+    'bnpl_provider_description' => 'Provider Description',
+    'bnpl_provider_logo' => 'Provider Logo',
+    'bnpl_provider_status' => 'Provider Status',
+    'bnpl_provider_active' => 'Active',
+    'bnpl_provider_inactive' => 'Inactive',
+    'bnpl_provider_installment_count' => 'Installment Count',
+    'bnpl_provider_fee_percentage' => 'Fee Percentage',
+    'bnpl_provider_min_amount' => 'Minimum Amount',
+    'bnpl_provider_max_amount' => 'Maximum Amount',
+    'bnpl_provider_terms' => 'Terms & Conditions',
+    'bnpl_provider_created_successfully' => 'BNPL Provider created successfully',
+    'bnpl_provider_updated_successfully' => 'BNPL Provider updated successfully',
+    'bnpl_provider_deleted_successfully' => 'BNPL Provider deleted successfully',
+
 ];

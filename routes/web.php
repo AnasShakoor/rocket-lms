@@ -2,8 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\PurchaseCodeController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -283,40 +281,9 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::get('/status', 'PaymentController@payStatus');
         Route::get('/payku/callback/{id}', 'PaymentController@paykuPaymentVerify')->name('payku.result');
         Route::get('/chapa/callback/{reference}', 'PaymentController@chapaPaymentVerify')->name('chapa.callback');
-        Route::post('/moyasar/webhook', 'MoyasarWebhookController@handleWebhook')->name('moyasar.webhook');
 
-        // Route to get Moyasar payment form data
-        Route::post('/moyasar-form-data', 'PaymentController@getMoyasarFormData')->middleware('auth');
-
-        // Moyasar payment form route (for testing)
-        Route::get('/moyasar/form/{orderId}', function($orderId) {
-            if (!auth()->check()) {
-                return redirect('/login');
-            }
-
-            $order = \App\Models\Order::where('id', $orderId)
-                ->where('user_id', auth()->id())
-                ->first();
-
-            if (!$order) {
-                abort(404);
-            }
-
-            $paymentChannel = \App\Models\PaymentChannel::where('class_name', 'Moyasar')->first();
-
-            if (!$paymentChannel) {
-                abort(404, 'Moyasar payment channel not found');
-            }
-
-            $channel = \App\PaymentChannels\ChannelManager::makeChannel($paymentChannel);
-            $paymentFormData = $channel->paymentRequest($order);
-
-            return view('web.default.payment_content.moyasar', [
-                'paymentFormData' => $paymentFormData
-            ]);
-        })->middleware('auth')->name('moyasar.form');
-
-
+        // Apple Pay merchant validation for Moyasar
+        Route::post('/applepay/validate-merchant', 'PaymentController@applePayValidateMerchant');
     });
 
     Route::group(['prefix' => 'subscribes'], function () {
@@ -521,3 +488,21 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 // Purchase Code Routes
 Route::get('/purchase-code', [PurchaseCodeController::class, 'show'])->name('purchase.code.show');
 Route::post('/purchase-code', [PurchaseCodeController::class, 'store'])->name('purchase.code.store');
+
+Route::get('/payments/verify/Tabby', 'PaymentController@tabbyVerify')->name('payments.tabby.verify');
+Route::get('/payments/tabby/success', 'PaymentController@tabbySuccess')->name('payments.tabby.success');
+Route::get('/payments/tabby/cancel', 'PaymentController@tabbyCancel')->name('payments.tabby.cancel');
+Route::get('/payments/tabby/failure', 'PaymentController@tabbyFailure')->name('payments.tabby.failure');
+
+// MisPay BNPL Routes
+Route::get('/payments/verify/MisPay', 'PaymentController@mispayVerify')->name('payments.mispay.verify');
+Route::get('/payments/mispay/success', 'PaymentController@mispaySuccess')->name('payments.mispay.success');
+Route::get('/payments/mispay/cancel', 'PaymentController@mispayCancel')->name('payments.mispay.cancel');
+Route::get('/payments/mispay/failure', 'PaymentController@mispayFailure')->name('payments.mispay.failure');
+
+// Debug routes for BNPL providers
+Route::get('/debug/tabby/status', function() {
+    $tabbyService = new \App\Services\TabbyService();
+    $status = $tabbyService->getConfigurationStatus();
+    return response()->json($status);
+})->name('debug.tabby.status');

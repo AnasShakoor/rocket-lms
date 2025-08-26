@@ -13,9 +13,9 @@ use App\Models\OrderItem;
 use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\ProductOrder;
+use App\Models\BnplProvider;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -82,15 +82,7 @@ class CartController extends Controller
                     'deliveryEstimateTime' => $deliveryEstimateTime,
                     'totalCashbackAmount' => $totalCashbackAmount,
                     'cartDiscount' => $cartDiscount,
-                    'userCharge' => $user->getAccountingCharge(),
                 ];
-
-                Log::info('Cart overview page data prepared', [
-                    'user_id' => $user->id,
-                    'cart_count' => $carts->count(),
-                    'total_amount' => $calculate['sub_total'] ?? 0,
-                    'user_charge' => $user->getAccountingCharge()
-                ]);
 
                 $data = array_merge($data, $this->getLocationsData($user));
 
@@ -318,24 +310,27 @@ class CartController extends Controller
 
             if (!empty($order) and $order->total_amount > 0) {
                 $razorpay = false;
+                $moyasar = false;
                 $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
 
                 foreach ($paymentChannels as $paymentChannel) {
                     if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
                         $razorpay = true;
                     }
+
+                    if ($paymentChannel->class_name == 'Moyasar' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                        $moyasar = true;
+                    }
                 }
 
                 $totalCashbackAmount = $this->getTotalCashbackAmount($carts, $user, $calculate["sub_total"]);
 
-                // Check if this is an AJAX request for Moyasar
-                if (request()->expectsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'order_id' => $order->id,
-                        'message' => 'Order created successfully'
-                    ]);
-                }
+                // Get available BNPL providers for the total amount
+                $bnplProviders = BnplProvider::active()->get()->filter(function($provider) use ($calculate) {
+                    $minAmount = $provider->config['min_amount'] ?? 0;
+                    $maxAmount = $provider->config['max_amount'] ?? 999999;
+                    return $calculate["total"] >= $minAmount && $calculate["total"] <= $maxAmount;
+                });
 
                 $data = [
                     'pageTitle' => trans('public.checkout_page_title'),
@@ -347,8 +342,11 @@ class CartController extends Controller
                     'count' => $carts->count(),
                     'userCharge' => $user->getAccountingCharge(),
                     'razorpay' => $razorpay,
+                    'moyasar' => $moyasar,
                     'totalCashbackAmount' => $totalCashbackAmount,
+                    'bnplProviders' => $bnplProviders,
                     'previousUrl' => url()->previous(),
+
                 ];
 
                 return view('design_1.web.cart.payment.index', $data);

@@ -15,7 +15,7 @@ class PaymentChannel extends Model
     ];
 
     static $gatewayIgnoreRedirect = [
-       'Payu'
+       'Payu', 'Moyasar'
     ];
 
     static $paypal = 'Paypal';

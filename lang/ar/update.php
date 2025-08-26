@@ -1911,7 +1911,7 @@ return [
 "no_result_following_course_hint" => "يمكنك إضافة فصل مباشر إلى مفضلاتك",
 "expired_quiz" => "اختبار منتهي!",
 "expired_quiz_hint" => "للأسف، لا يمكنك إجراء هذا الاختبار لأنه منتهي",
-"expired_quiz_hint_with_date" => "للأسف، لا يمكنك إجراء هذا الاختبار لأنه منتهي في “:date”",
+"expired_quiz_hint_with_date" => "للأسف، لا يمكنك إجراء هذا الاختبار لأنه منتهي في "دورة",
 "the_quiz_will_expire_on_date" => "سينتهي الاختبار في :date",
 "category_successfully_deleted" => "تم حذف الفئة بنجاح",
 "sub_category_successfully_deleted" => "تم حذف الفئة الفرعية بنجاح",
@@ -2454,5 +2454,12 @@ return [
 'invoices' => 'الفواتير',
 'my_cme_hours' => 'ساعات التعليم الطبي المستمر الخاصة بي',
 
+'tabby_payment_cancelled' => 'لقد ألغيت الدفعة. فضلاً حاول مجددًا أو اختر طريقة دفع أخرى.',
+'tabby_payment_failed' => 'نأسف، تابي غير قادرة على الموافقة على هذه العملية. الرجاء استخدام طريقة دفع أخرى.',
+'tabby_pay_later' => 'ادفع لاحقًا عبر تابي',
+'tabby_use_any_card' => 'استخدم أي بطاقة.',
+'tabby_eligibility_check' => 'جاري فحص الأهلية...',
+'tabby_processing' => 'جاري معالجة الدفع...',
+'tabby_redirecting' => 'جاري التوجيه إلى تابي...',
 
 ];

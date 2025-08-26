@@ -2,7 +2,7 @@
 
 /**
  * Custom Admin Routes File
- * 
+ *
  * This file allows adding custom admin routes without modifying the main admin.php
  * Routes defined here will be loaded by the main admin routes file.
  */
@@ -15,8 +15,8 @@ $prefix = getAdminPanelUrlPrefix();
 /**
  * Define your custom admin panel routes here
  * They will be automatically loaded alongside the main admin routes
- * 
- * All routes will be prefixed with your admin panel prefix 
+ *
+ * All routes will be prefixed with your admin panel prefix
  * and will have 'web' and 'admin' middleware applied automatically
  */
 
@@ -29,7 +29,7 @@ Route::group(['prefix' => 'simulation'], function () {
     Route::post('/{rule}/preview', 'SimulationController@preview')->name('admin.simulation.preview');
     Route::post('/{rule}/execute', 'SimulationController@execute')->name('admin.simulation.execute');
     Route::delete('/{rule}', 'SimulationController@destroy')->name('admin.simulation.destroy');
-    
+
     // Test route for debugging
     Route::get('/test', function() {
         return response()->json([
@@ -43,11 +43,12 @@ Route::group(['prefix' => 'simulation'], function () {
 // BNPL Providers Routes
 Route::group(['prefix' => 'bnpl-providers'], function () {
     Route::get('/', 'BnplProviderController@index')->name('admin.bnpl-providers.index');
-    Route::get('/create', 'BnplProviderController@create')->name('admin.bnpl-providers.create');
-    Route::post('/store', 'BnplProviderController@store')->name('admin.bnpl-providers.store');
-    Route::get('/{provider}/edit', 'BnplProviderController@edit')->name('admin.bnpl-providers.edit');
-    Route::put('/{provider}', 'BnplProviderController@update')->name('admin.bnpl-providers.update');
-    Route::delete('/{provider}', 'BnplProviderController@destroy')->name('admin.bnpl-providers.destroy');
+Route::get('/create', 'BnplProviderController@create')->name('admin.bnpl-providers.create');
+Route::post('/store', 'BnplProviderController@store')->name('admin.bnpl-providers.store');
+Route::get('/{provider}/edit', 'BnplProviderController@edit')->name('admin.bnpl-providers.edit');
+Route::put('/{provider}', 'BnplProviderController@update')->name('admin.bnpl-providers.update');
+Route::delete('/{provider}', 'BnplProviderController@destroy')->name('admin.bnpl-providers.destroy');
+Route::get('/tabby/status', 'BnplProviderController@tabbyStatus')->name('admin.bnpl-providers.tabby-status');
 });
 
 // Enhanced Reports Routes
@@ -63,7 +64,7 @@ Route::group(['prefix' => 'enhanced-reports'], function () {
 });
 
 // Example of custom routes:
-// 
+//
 // Route::group(['prefix' => 'custom-section'], function () {
 //     Route::get('/', 'YourCustomController@index')->name('admin.custom.index');
 //     Route::get('/create', 'YourCustomController@create')->name('admin.custom.create');
@@ -78,6 +79,6 @@ Route::group(['prefix' => 'enhanced-reports'], function () {
 /**
  * To use these routes, you must have your controller in App\Http\Controllers\Admin namespace
  * or specify the complete namespace like:
- * 
+ *
  * Route::get('/custom-page', '\App\Http\Controllers\YourNamespace\YourController@method');
- */ 
+ */

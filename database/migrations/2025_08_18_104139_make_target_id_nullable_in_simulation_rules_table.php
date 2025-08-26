@@ -14,7 +14,7 @@ class MakeTargetIdNullableInSimulationRulesTable extends Migration
     public function up()
     {
         Schema::table('simulation_rules', function (Blueprint $table) {
-            // $table->unsignedBigInteger('target_id')->nullable()->change();
+            $table->unsignedBigInteger('target_id')->nullable()->change();
         });
     }
 

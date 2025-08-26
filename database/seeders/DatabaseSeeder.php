@@ -21,8 +21,14 @@ class DatabaseSeeder extends Seeder
         $this->call(ThemeHeaderFooterSeeder::class);
 
         $this->call(DefaultThemeSeeder::class);
-        
+
         // New seeders for enhanced features
         $this->call(BnplProvidersSeeder::class);
+
+        // Add BNPL permissions
+        $this->call(BnplPermissionsSeeder::class);
+
+        // Add purchased courses for user@gmail.com
+        $this->call(UserPurchasedCoursesSeeder::class);
     }
 }

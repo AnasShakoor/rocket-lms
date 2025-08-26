@@ -1,4 +1,5 @@
 <?php return array (
+    'certificate_request_without_completion' => 'El usuario :u.name ha solicitado un certificado para el curso :c.title sin completar los requisitos del curso.',
   'all_notifications' => 'Todas las notificaciones',
   'sender' => 'Remitente',
   'notifications_page_lists_lead' => 'Lista de notificaciones. Puedes editar o eliminar...',

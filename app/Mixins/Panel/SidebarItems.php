@@ -282,6 +282,9 @@ class SidebarItems
                 $items['certificates']['items'][] = ['text' => trans('update.my_achievements'), 'url' => '/panel/certificates/my-achievements'];
             }
 
+            // Download Certificate without completing course
+            $items['certificates']['items'][] = ['text' => trans('panel.download_certificate'), 'url' => '/panel/certificates/download'];
+
             $items['certificates']['items'][] = ['text' => trans('site.certificate_validation'), 'url' => '/certificate_validation'];
         }
 

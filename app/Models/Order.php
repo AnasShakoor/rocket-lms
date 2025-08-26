@@ -34,6 +34,7 @@ class Order extends Model
     //paymentMethod
     public static $credit = 'credit';
     public static $paymentChannel = 'payment_channel';
+    public static $bnpl = 'bnpl';
 
     public $timestamps = false;
 
