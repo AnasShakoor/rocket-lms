@@ -160,7 +160,7 @@
                                         class="form-control custom-input {{ session('theme_builder_error_type') ? 'is-invalid' : '' }}"
                                         placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
                                         pattern=".{36,36}" required>
-                                    <div class="text-muted font-12 mt-2">Please enter your Rocket LMS Theme Builder purchase code.This code has 32 characters.</div>
+                                    <div class="text-muted font-12 mt-2">Please enter your MULHIM Theme Builder purchase code.This code has 32 characters.</div>
                                 </div>
 
                                 <div class="d-flex align-items-center mt-4 text-end justify-content-end">
@@ -178,7 +178,7 @@
                 <div class="col-12 col-lg-7 mt-4 mt-lg-0">
                     <div class="card rounded-24">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                            <h4>Rocket LMS Theme Builder and landing page builder Information</h4>
+                            <h4>MULHIM Theme Builder and landing page builder Information</h4>
                         </div>
                         <div class="info-card-body rounded-24">
                             <p>The Theme Builder is a separate Product that allows you to create beautiful, responsive landing pages and customize your LMS theme with our powerful drag-and-drop builder.</p>
@@ -200,7 +200,7 @@
                                     </div>
                                     <div class="feature-content">
                                         <h5>Separate License</h5>
-                                        <p class="text-gray-500">Theme Builder requires a separate purchase code from your main Rocket LMS license. Make sure you're entering the correct purchase code.</p>
+                                        <p class="text-gray-500">Theme Builder requires a separate purchase code from your main MULHIM license. Make sure you're entering the correct purchase code.</p>
                                     </div>
                                 </div>
                                 
@@ -221,9 +221,9 @@
                             </div>
                             
                             <div class=" align-items-center text-center mt-24">
-                            <a href="https://codecanyon.net/item/rocket-lms-theme-and-landing-page-builder/59174209" target="_blank" class="btn w-100 rounded-16 btn-primary">
+                            <a href="https://codecanyon.net/item/mulhim-theme-and-landing-page-builder/59174209" target="_blank" class="btn w-100 rounded-16 btn-primary">
                                         <x-iconsax-bul-bag class="icons text-white" width="18px" height="18px"/>
-                                        <span class="ml-4 font-14">Purchase Rocket LMS Theme Builder and landing page builder</span>
+                                        <span class="ml-4 font-14">Purchase MULHIM Theme Builder and landing page builder</span>
                                     </a>
                             </div>
 

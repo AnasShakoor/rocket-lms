@@ -42,7 +42,7 @@
                                     </tr>
 
                                     <tr>
-                                        <td>Rocket LMS</td>
+                                        <td>MULHIM</td>
                                         <td>{{ !empty($mainLicense['code']) ? substr($mainLicense['code'], 0, 32).'****' : '-' }}</td>
                                         <td>{{ !empty($mainLicense['license_type']) ? $mainLicense['license_type'] : '-' }}</td>
                                         <td>
@@ -69,7 +69,7 @@
                                                         <span class="text-gray-500 font-14">Edit Purchase Code</span>
                                                     </a>
                                                     
-                                                    <a href="https://codecanyon.net/item/rocket-lms-learning-management-academy-script/33120735" target="_blank" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
+                                                    <a href="https://codecanyon.net/item/mulhim-learning-management-academy-script/33120735" target="_blank" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
                                                         <x-iconsax-lin-global class="icons text-gray-500 mr-2" width="18px" height="18px"/>
                                                         <span class="text-gray-500 font-14">Product Page</span>
                                                     </a>
@@ -86,7 +86,7 @@
                                     </tr>
                                     
                                     <tr>
-                                        <td>Rocket LMS Plugins Bundle</td>
+                                        <td>MULHIM Plugins Bundle</td>
                                         <td>{{ !empty($pluginBundleLicense['code']) ? substr($pluginBundleLicense['code'], 0, 32).'****' : '-' }}</td>
                                         <td>{{ !empty($pluginBundleLicense['license_type']) ? $pluginBundleLicense['license_type'] : '-' }}</td>
                                         <td>
@@ -113,7 +113,7 @@
                                                         <span class="text-gray-500 font-14">Edit Purchase Code</span>
                                                     </a>
                                                     
-                                                    <a href="https://codecanyon.net/item/universal-plugins-bundle-for-rocket-lms/33297004" target="_blank" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
+                                                    <a href="https://codecanyon.net/item/universal-plugins-bundle-for-mulhim/33297004" target="_blank" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
                                                         <x-iconsax-lin-global class="icons text-gray-500 mr-2" width="18px" height="18px"/>
                                                         <span class="text-gray-500 font-14">Product Page</span>
                                                     </a>
@@ -130,7 +130,7 @@
                                     </tr>
                                     
                                     <tr>
-                                        <td>Rocket LMS Theme and Landing Builder</td>
+                                        <td>MULHIM Theme and Landing Builder</td>
                                         <td>{{ !empty($themeBuilderLicense['code']) ? substr($themeBuilderLicense['code'], 0, 32).'****' : '-' }}</td>
                                         <td>{{ !empty($themeBuilderLicense['license_type']) ? $themeBuilderLicense['license_type'] : '-' }}</td>
                                         <td>
@@ -157,7 +157,7 @@
                                                         <span class="text-gray-500 font-14">Edit Purchase Code</span>
                                                     </a>
                                                     
-                                                    <a href="https://codecanyon.net/item/universal-plugins-bundle-for-rocket-lms/33297004" target="_blank" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
+                                                    <a href="https://codecanyon.net/item/universal-plugins-bundle-for-mulhim/33297004" target="_blank" class="dropdown-item d-flex align-items-center mb-3 py-3 px-0 gap-4">
                                                         <x-iconsax-lin-global class="icons text-gray-500 mr-2" width="18px" height="18px"/>
                                                         <span class="text-gray-500 font-14">Product Page</span>
                                                     </a>
@@ -174,7 +174,7 @@
                                     </tr>
                                     
                                     <tr>
-                                        <td>Rocket LMS Mobile App</td>
+                                        <td>MULHIM Mobile App</td>
                                         <td>{{ !empty($mobileAppLicense['code']) ? substr($mobileAppLicense['code'], 0, 32).'****' : '-' }}</td>
                                         <td>{{ !empty($mobileAppLicense['license_type']) ? $mobileAppLicense['license_type'] : '-' }}</td>
                                         <td>

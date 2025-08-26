@@ -64,7 +64,7 @@
 
                 @if(!empty($post) and $post->pin)
                     <span class="pinned-icon d-flex align-items-center justify-content-center">
-                        <img src="/assets/default/img/learning/un_pin.svg" alt="pin icon" class="">
+                        <img src="/assets/default/img/learning/un_pin.png" alt="pin icon" class="">
                     </span>
                 @endif
             </div>
@@ -77,7 +77,7 @@
                         <div class="post-quotation p-2 rounded-sm border mb-2">
                             <div class="d-flex align-items-center">
                                 <div class="post-quotation-icon rounded-circle">
-                                    <img src="/assets/default/img/icons/quote-right.svg" class="img-cover" alt="quote-right">
+                                    <img src="/assets/default/img/icons/quote-right.png" class="img-cover" alt="quote-right">
                                 </div>
                                 <div class="ml-2">
                                     <span class="d-block">{{ trans('update.reply_to') }}</span>

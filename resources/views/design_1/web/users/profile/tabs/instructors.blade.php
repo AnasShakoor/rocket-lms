@@ -15,7 +15,7 @@
     @endif
 @else
     @include('design_1.panel.includes.no-result',[
-        'file_name' => 'profile_instructors.svg',
+        'file_name' => 'profile_instructors.png',
         'title' => trans('update.user_profile_not_have_instructors'),
         'hint' => trans('update.user_profile_not_have_instructors_hint'),
         'extraClass' => 'mt-0',

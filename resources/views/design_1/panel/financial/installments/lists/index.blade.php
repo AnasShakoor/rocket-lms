@@ -58,7 +58,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-                'file_name' => 'installments.svg',
+                'file_name' => 'installments.png',
                 'title' => trans('update.you_not_have_any_installment'),
                 'hint' =>  trans('update.you_not_have_any_installment_hint'),
         ])

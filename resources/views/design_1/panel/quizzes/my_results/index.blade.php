@@ -59,7 +59,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'my_results.svg',
+            'file_name' => 'my_results.png',
             'title' => trans('quiz.quiz_result_no_result'),
             'hint' => trans('quiz.quiz_result_no_result_hint'),
         ])

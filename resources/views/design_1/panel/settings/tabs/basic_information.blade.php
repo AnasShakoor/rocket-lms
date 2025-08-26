@@ -181,7 +181,7 @@
                 <h3 class="font-14 font-weight-bold mb-24">{{ trans('update.account_options') }}</h3>
 
                 <div class="d-flex-center mt-36 mb-20">
-                    <img src="/assets/design_1/img/panel/settings/account_options.svg" alt="" class="img-fluid" width="231px" height="200px">
+                    <img src="/assets/design_1/img/panel/settings/account_options.png" alt="" class="img-fluid" width="231px" height="200px">
                 </div>
 
                 <div class="form-group d-flex align-items-center">

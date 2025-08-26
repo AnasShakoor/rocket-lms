@@ -15,14 +15,14 @@
 
                         @if(!empty($userNotAccess) and $userNotAccess)
                             <div class="system-status-page-image">
-                                <img src="/assets/design_1/img/courses/private_mode/pending_verification.svg" alt="" class="img-cover">
+                                <img src="/assets/design_1/img/courses/private_mode/pending_verification.png" alt="" class="img-cover">
                             </div>
                             <h1 class="font-16 font-weight-bold mt-16">{{ trans('update.course_pending_verification_title') }}</h1>
                             <p class="font-14 text-gray-500 mt-4">{{ trans('update.course_pending_verification_desc') }}</p>
                             <a href="/" class="btn btn-primary mt-16">{{ trans('update.back_to_home') }}</a>
                         @else
                             <div class="system-status-page-image">
-                                <img src="/assets/design_1/img/courses/private_mode/private_content.svg" alt="" class="img-cover">
+                                <img src="/assets/design_1/img/courses/private_mode/private_content.png" alt="" class="img-cover">
                             </div>
                             <h1 class="font-16 font-weight-bold mt-16">{{ trans('update.course_private_content_title') }}</h1>
                             <p class="font-14 text-gray-500 mt-4">{{ trans('update.course_private_content_desc') }}</p>

@@ -345,7 +345,7 @@ if (function_exists('apache_get_modules')) {
    
 
     <h1>Server Requirements.</h1>
-    <p>Rocket LMS Version : 2.0</p>
+    <p>MULHIM Version : 2.0</p>
     <br/>
 
     <p>

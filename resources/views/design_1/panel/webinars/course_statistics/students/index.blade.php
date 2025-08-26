@@ -39,7 +39,7 @@
     </div>
 @else
     @include('design_1.panel.includes.no-result',[
-        'file_name' => 'course_statistics.svg',
+        'file_name' => 'course_statistics.png',
         'title' => trans('update.course_statistic_students_no_result'),
         'hint' =>  nl2br(trans('update.course_statistic_students_no_result_hint')),
     ])

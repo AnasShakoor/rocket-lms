@@ -63,7 +63,14 @@ return [
             ],
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::ATTR_PERSISTENT => true,
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false,
+                PDO::ATTR_EMULATE_PREPARES => false,
             ]) : [],
+            'pool' => [
+                'min' => env('DB_POOL_MIN', 5),
+                'max' => env('DB_POOL_MAX', 20),
+            ],
         ],
 
         'pgsql' => [

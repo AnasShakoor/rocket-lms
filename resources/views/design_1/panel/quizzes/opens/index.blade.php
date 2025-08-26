@@ -47,7 +47,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'open_quizzes.svg',
+            'file_name' => 'open_quizzes.png',
             'title' => trans('quiz.quiz_result_no_result'),
             'hint' => trans('update.not_participated_quizzes_no_result_hint'),
             'extraClass' => 'mt-0',

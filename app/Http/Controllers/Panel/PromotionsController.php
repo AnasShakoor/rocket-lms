@@ -10,6 +10,7 @@ use App\Models\PaymentChannel;
 use App\Models\Promotion;
 use App\Models\Sale;
 use App\Models\Webinar;
+use App\Models\BnplProvider;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -176,9 +177,14 @@ class PromotionsController extends Controller
 
                 if ($amount > 0) {
                     $razorpay = false;
+                    $moyasar = false;
                     foreach ($paymentChannels as $paymentChannel) {
                         if ($paymentChannel->class_name == 'Razorpay') {
                             $razorpay = true;
+                        }
+
+                        if ($paymentChannel->class_name == 'Moyasar') {
+                            $moyasar = true;
                         }
                     }
 
@@ -190,6 +196,12 @@ class PromotionsController extends Controller
                         'tax_price' => $taxPrice,
                     ];
 
+                    // Get available BNPL providers for the total amount
+                    $bnplProviders = BnplProvider::active()->get()->filter(function($provider) use ($order) {
+                        $minAmount = $provider->config['min_amount'] ?? 0;
+                        $maxAmount = $provider->config['max_amount'] ?? 999999;
+                        return $order->total_amount >= $minAmount && $order->total_amount <= $maxAmount;
+                    });
 
                     $data = [
                         'pageTitle' => trans('public.checkout_page_title'),
@@ -198,7 +210,9 @@ class PromotionsController extends Controller
                         'order' => $order,
                         'count' => 1,
                         'userCharge' => $user->getAccountingCharge(),
-                        'razorpay' => $razorpay
+                        'razorpay' => $razorpay,
+                        'moyasar' => $moyasar,
+                        'bnplProviders' => $bnplProviders
                     ];
 
                     return view('design_1.web.cart.payment.index', $data);

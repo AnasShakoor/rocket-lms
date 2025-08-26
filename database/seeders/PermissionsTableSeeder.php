@@ -358,5 +358,16 @@ class PermissionsTableSeeder extends Seeder
         \App\Models\Permission::updateOrCreate(['id' => 1779], ['role_id' => 2, 'section_id' => 1779, 'allow' => 1]);
         \App\Models\Permission::updateOrCreate(['id' => 1780], ['role_id' => 2, 'section_id' => 1780, 'allow' => 1]);
         \App\Models\Permission::updateOrCreate(['id' => 1781], ['role_id' => 2, 'section_id' => 1781, 'allow' => 1]);
+
+        // BNPL Providers 3186 - 3189
+        \App\Models\Permission::updateOrCreate(['id' => 3186], ['role_id' => 2, 'section_id' => 3186, 'allow' => 1]);
+        \App\Models\Permission::updateOrCreate(['id' => 3187], ['role_id' => 2, 'section_id' => 3187, 'allow' => 1]);
+        \App\Models\Permission::updateOrCreate(['id' => 3188], ['role_id' => 2, 'section_id' => 3188, 'allow' => 1]);
+        \App\Models\Permission::updateOrCreate(['id' => 3189], ['role_id' => 2, 'section_id' => 3189, 'allow' => 1]);
+
+        // Enhanced Reports 3201 - 3203
+        \App\Models\Permission::updateOrCreate(['id' => 3201], ['role_id' => 2, 'section_id' => 3201, 'allow' => 1]);
+        \App\Models\Permission::updateOrCreate(['id' => 3202], ['role_id' => 2, 'section_id' => 3202, 'allow' => 1]);
+        \App\Models\Permission::updateOrCreate(['id' => 3203], ['role_id' => 2, 'section_id' => 3203, 'allow' => 1]);
     }
 }

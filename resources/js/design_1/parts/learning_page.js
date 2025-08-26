@@ -25,7 +25,7 @@
         const html = `<div class="bg-white rounded-24 p-16">
             <div class="d-flex-center flex-column text-center border-gray-200 rounded-12 py-160">
                 <div class="">
-                    <img src="/assets/design_1/img/courses/learning_page/empty_state.svg" alt="" class="img-fluid" width="285px" height="212px">
+                    <img src="/assets/design_1/img/courses/learning_page/empty_state.png" alt="" class="img-fluid" width="285px" height="212px">
                 </div>
 
                 <h3 class="mt-12 font-16">${learningPageEmptyContentTitleLang}</h3>
@@ -84,7 +84,7 @@
         const html = `<div class="bg-white rounded-24 p-16">
             <div class="d-flex-center flex-column text-center border-gray-200 rounded-12 py-160">
                 <div class="">
-                    <img src="/assets/default/img/loading.svg" alt="" class="img-fluid" width="80px" height="80px">
+                    <img src="/assets/default/img/loading.png" alt="" class="img-fluid" width="80px" height="80px">
                 </div>
 
                 <h3 class="mt-12 font-16">${pleaseWaitLang}</h3>

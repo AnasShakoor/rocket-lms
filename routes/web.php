@@ -281,6 +281,9 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::get('/status', 'PaymentController@payStatus');
         Route::get('/payku/callback/{id}', 'PaymentController@paykuPaymentVerify')->name('payku.result');
         Route::get('/chapa/callback/{reference}', 'PaymentController@chapaPaymentVerify')->name('chapa.callback');
+
+        // Apple Pay merchant validation for Moyasar
+        Route::post('/applepay/validate-merchant', 'PaymentController@applePayValidateMerchant');
     });
 
     Route::group(['prefix' => 'subscribes'], function () {
@@ -485,3 +488,21 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 // Purchase Code Routes
 Route::get('/purchase-code', [PurchaseCodeController::class, 'show'])->name('purchase.code.show');
 Route::post('/purchase-code', [PurchaseCodeController::class, 'store'])->name('purchase.code.store');
+
+Route::get('/payments/verify/Tabby', 'PaymentController@tabbyVerify')->name('payments.tabby.verify');
+Route::get('/payments/tabby/success', 'PaymentController@tabbySuccess')->name('payments.tabby.success');
+Route::get('/payments/tabby/cancel', 'PaymentController@tabbyCancel')->name('payments.tabby.cancel');
+Route::get('/payments/tabby/failure', 'PaymentController@tabbyFailure')->name('payments.tabby.failure');
+
+// MisPay BNPL Routes
+Route::get('/payments/verify/MisPay', 'PaymentController@mispayVerify')->name('payments.mispay.verify');
+Route::get('/payments/mispay/success', 'PaymentController@mispaySuccess')->name('payments.mispay.success');
+Route::get('/payments/mispay/cancel', 'PaymentController@mispayCancel')->name('payments.mispay.cancel');
+Route::get('/payments/mispay/failure', 'PaymentController@mispayFailure')->name('payments.mispay.failure');
+
+// Debug routes for BNPL providers
+Route::get('/debug/tabby/status', function() {
+    $tabbyService = new \App\Services\TabbyService();
+    $status = $tabbyService->getConfigurationStatus();
+    return response()->json($status);
+})->name('debug.tabby.status');

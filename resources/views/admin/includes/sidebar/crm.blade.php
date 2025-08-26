@@ -79,7 +79,7 @@
             @endcan
 
             @can('admin_reports')
-                <li class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/reports*', false)) or request()->is(getAdminPanelUrl('/comments/webinars/reports', false)) or request()->is(getAdminPanelUrl('/comments/blog/reports', false))) ? 'active' : '' }}">
+                <li class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/reports*', false)) or request()->is(getAdminPanelUrl('/comments/webinars/reports', false)) or request()->is(getAdminPanelUrl('/comments/blog/reports', false)) or request()->is(getAdminPanelUrl('/enhanced-reports*', false))) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown"><x-iconsax-bul-info-circle class="icons" width="24px" height="24px"/> <span>{{ trans('admin/main.reports') }}</span></a>
 
                     <ul class="dropdown-menu">
@@ -112,6 +112,16 @@
                                 <a class="nav-link" href="{{ getAdminPanelUrl() }}/reports/forum-topics">{{ trans('update.forum_topics') }}</a>
                             </li>
                         @endcan()
+
+                        {{-- Enhanced Reports --}}
+                        @can('admin_enhanced_reports_access')
+                            <li class="{{ (request()->is(getAdminPanelUrl('/enhanced-reports*', false))) ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/enhanced-reports">
+                                    <i class="fas fa-chart-line mr-2"></i>
+                                    Enhanced Reports
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
             @endcan

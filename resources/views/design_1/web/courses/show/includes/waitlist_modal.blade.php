@@ -1,6 +1,6 @@
 <div class="d-flex-center flex-column text-center mt-16">
     <div class="">
-        <img src="/assets/design_1/img/courses/waitlist.svg" alt="{{ trans('update.join_waitlist') }}" class="img-fluid" height="160px">
+        <img src="/assets/design_1/img/courses/waitlist.png" alt="{{ trans('update.join_waitlist') }}" class="img-fluid" height="160px">
     </div>
 
     <h6 class="font-12 font-weight-bold mt-12">{{ trans('update.course_waitlist') }}</h6>

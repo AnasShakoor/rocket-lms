@@ -21,7 +21,7 @@
                     </div>
                 @else
                     @include('design_1.panel.includes.no-result',[
-                        'file_name' => 'upcoming_no_followers.svg',
+                        'file_name' => 'upcoming_no_followers.png',
                         'title' => trans('update.no_followers'),
                         'hint' =>  trans('update.this_course_doesnt_have_any_followers') ,
                         'extraClass' => 'mt-0',
@@ -35,7 +35,7 @@
                 <div class="p-12 rounded-16 border-dashed border-gray-200">
                     <div class="d-flex-center flex-column text-center pt-56 px-32">
                         <div class="">
-                            <img src="/assets/design_1/img/no-result/upcoming_followers.svg" alt="{{ trans('update.followers') }}" width="405px" height="301px">
+                            <img src="/assets/design_1/img/no-result/upcoming_followers.png" alt="{{ trans('update.followers') }}" width="405px" height="301px">
                         </div>
 
                         <h4 class="mt-16 font-14 font-weight-bold">{{ trans('update.send_a_notification') }}</h4>

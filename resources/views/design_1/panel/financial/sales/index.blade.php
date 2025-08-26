@@ -52,7 +52,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-          'file_name' => 'sales.svg',
+          'file_name' => 'sales.png',
           'title' => trans('financial.sales_no_result'),
           'hint' => nl2br(trans('financial.sales_no_result_hint')),
         ])

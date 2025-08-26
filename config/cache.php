@@ -52,6 +52,7 @@ return [
         'file' => [
             'driver' => 'file',
             'path' => storage_path('framework/cache/data'),
+            'permission' => 0755,
         ],
 
         'memcached' => [
@@ -106,5 +107,15 @@ return [
     */
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache TTL (Time To Live)
+    |--------------------------------------------------------------------------
+    |
+    | Default TTL for cache items in seconds
+    |
+    */
+    'ttl' => env('CACHE_TTL', 3600),
 
 ];

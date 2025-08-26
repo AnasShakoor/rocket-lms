@@ -1,5 +1,5 @@
 <div class="mb-12">
-    <img src="/assets/design_1/img/courses/learning_page/certificate.svg" alt="" class="">
+    <img src="/assets/design_1/img/courses/learning_page/certificate.png" alt="" class="">
 </div>
 
 @if(!empty($quizResult))

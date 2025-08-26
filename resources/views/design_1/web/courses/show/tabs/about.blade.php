@@ -79,7 +79,7 @@
                 </div>
 
                 <div class="course-extra-card__float-img">
-                    <img src="/assets/design_1/img/courses/requirements.svg" alt="{{ trans('update.requirements') }}" class="img-fluid">
+                    <img src="/assets/design_1/img/courses/requirements.png" alt="{{ trans('update.requirements') }}" class="img-fluid">
                 </div>
             </div>
         </div>

@@ -32,7 +32,7 @@
 
                     <div class="col-12 col-md-6 mt-20 mt-md-0">
                         <div class="d-flex-center flex-column text-center">
-                            <img src="/assets/design_1/img/panel/settings/setting_zoom.svg" alt="" class="" width="230px" height="200px">
+                            <img src="/assets/design_1/img/panel/settings/setting_zoom.png" alt="" class="" width="230px" height="200px">
 
                             <h4 class="font-14 font-weight-bold mt-12">{{ trans('update.how_to_get_credentials_from_zoom') }}</h4>
                             <p class="mt-8 text-gray-500 font-14">{{ trans('update.how_to_get_credentials_from_zoom_hint') }}</p>

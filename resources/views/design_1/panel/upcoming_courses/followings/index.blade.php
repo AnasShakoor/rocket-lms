@@ -23,7 +23,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'upcoming_courses.svg',
+            'file_name' => 'upcoming_courses.png',
             'title' => trans('update.no_result_following_course'),
             'hint' =>  trans('update.no_result_following_course_hint'),
             'extraClass' => 'mt-0',

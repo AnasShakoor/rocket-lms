@@ -23,5 +23,6 @@ class VerifyCsrfToken extends Middleware
         '/payments/verify/Paytabs',
         '/payments/verify/Cintepay',
         '/payments/verify/Clickpay',
+        '/payments/verify/Moyasar',
     ];
 }

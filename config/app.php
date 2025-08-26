@@ -197,6 +197,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\PerformanceServiceProvider::class,
+        App\Providers\ImageOptimizationServiceProvider::class,
 
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Mews\Captcha\CaptchaServiceProvider::class,
@@ -220,6 +222,7 @@ return [
         App\Providers\PluginBundleLicenseServiceProvider::class,
         App\Providers\ThemeBuilderLicenseServiceProvider::class,
         App\Providers\MobileAppLicenseServiceProvider::class,
+        App\Providers\AdminMenuServiceProvider::class,
     ],
 
     /*

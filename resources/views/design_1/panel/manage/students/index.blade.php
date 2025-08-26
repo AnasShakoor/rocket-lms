@@ -52,7 +52,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'students.svg',
+            'file_name' => 'students.png',
             'title' => trans('panel.students_no_result'),
             'hint' =>  nl2br(trans('panel.students_no_result_hint')),
             'btn' => ['url' => '/panel/manage/students/new','text' => trans('panel.add_an_student')]

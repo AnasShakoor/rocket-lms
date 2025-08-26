@@ -8,7 +8,7 @@
                 <h4 class="font-14 font-weight-bold">{{ trans('update.basic_settings') }}</h4>
 
                 <div class="meeting-basic-settings-image d-flex justify-content-center align-items-center" style="width:100%;text-align:center;min-height:160px;">
-                    <img src="/assets/design_1/img/panel/meeting/basic_settings.svg" alt="" class="img-fluid" style="display:inline-block;">
+                    <img src="/assets/design_1/img/panel/meeting/basic_settings.png" alt="" class="img-fluid" style="display:inline-block;">
                 </div>
 
                 <div class="form-group d-flex align-items-center mt-16">

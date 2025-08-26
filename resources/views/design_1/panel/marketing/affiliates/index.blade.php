@@ -12,7 +12,7 @@
 
                 <div class="d-flex-center mt-32">
                     <div class="affiliate-summary-img">
-                        <img src="/assets/design_1/img/panel/affiliate/affiliate_summary.svg" alt="affiliate_summary" class="img-cover">
+                        <img src="/assets/design_1/img/panel/affiliate/affiliate_summary.png" alt="affiliate_summary" class="img-cover">
                     </div>
                 </div>
 
@@ -65,7 +65,7 @@
 
                 <div class="d-flex-center flex-column text-center mt-32">
                     <div class="affiliate-summary-img">
-                        <img src="/assets/design_1/img/panel/affiliate/your_affiliate_information.svg" alt="your_affiliate_information" class="img-cover">
+                        <img src="/assets/design_1/img/panel/affiliate/your_affiliate_information.png" alt="your_affiliate_information" class="img-cover">
                     </div>
 
                     <div class="d-flex-center mt-16 p-8 rounded-32 bg-gray-100 form-group mb-0">
@@ -155,7 +155,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'affiliate.svg',
+            'file_name' => 'affiliate.png',
             'title' => trans('update.your_affiliate_list_is_empty'),
             'hint' => nl2br(trans('update.when_a_user_Referred_by_you_it_will_be_appeared_here')),
         ])

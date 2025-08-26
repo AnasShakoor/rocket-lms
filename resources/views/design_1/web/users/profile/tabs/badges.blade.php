@@ -18,7 +18,7 @@
     </div>
 @else
     @include('design_1.panel.includes.no-result',[
-        'file_name' => 'profile_badges.svg',
+        'file_name' => 'profile_badges.png',
         'title' => trans('update.user_profile_not_have_badges'),
         'hint' => trans('update.user_profile_not_have_badges_hint'),
         'extraClass' => 'mt-0',

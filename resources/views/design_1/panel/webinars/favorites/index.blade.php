@@ -23,7 +23,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'favorites.svg',
+            'file_name' => 'favorites.png',
             'title' => trans('panel.no_result_favorites'),
             'hint' =>  trans('panel.no_result_favorites_hint'),
             'extraClass' => 'mt-0',

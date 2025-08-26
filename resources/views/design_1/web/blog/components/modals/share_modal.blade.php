@@ -1,7 +1,7 @@
 <div class="d-flex-center flex-column text-center mt-22">
 
     <div class="">
-        <img src="/assets/design_1/img/courses/share.svg" alt="{{ trans('public.share') }}" class="img-fluid" width="215px" height="160px">
+        <img src="/assets/design_1/img/courses/share.png" alt="{{ trans('public.share') }}" class="img-fluid" width="215px" height="160px">
     </div>
 
     <h4 class="font-14 font-weight-bold mt-16 text-dark">{{ trans('update.share_this_post_with_others') }}</h4>

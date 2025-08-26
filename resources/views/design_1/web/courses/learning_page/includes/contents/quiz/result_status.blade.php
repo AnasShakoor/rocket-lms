@@ -1,5 +1,5 @@
 <div class="">
-    <img src="/assets/design_1/img/courses/learning_page/quiz_{{ $quiz->result->status }}.svg" alt="" class="img-fluid" width="285px" height="212px">
+    <img src="/assets/design_1/img/courses/learning_page/quiz_{{ $quiz->result->status }}.png" alt="" class="img-fluid" width="285px" height="212px">
 </div>
 
 <h3 class="font-16 text-dark mt-12">

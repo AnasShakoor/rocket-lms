@@ -16,10 +16,10 @@
                     {{-- Header Section --}}
                     <div class="d-flex align-items-center p-16 rounded-16" style="background: var(--primary);">
                         <div class="d-flex-center size-56 bg-white rounded-circle shadow-sm">
-                            <img src="{{ asset('assets/design_1/img/logo.jpg') }}" alt="Rocket LMS" class="size-48 rounded-circle" style="object-fit: cover;">
+                            <img src="{{ !empty($generalSettings['logo']) ? $generalSettings['logo'] : asset('assets/design_1/img/logo.jpg') }}" alt="MULHIM" class="size-48 rounded-circle" style="object-fit: cover;">
                         </div>
                         <div class="ml-12">
-                            <h4 class="font-16 font-weight-bold text-white mb-0">Rocket LMS V2.0</h4>
+                            <h4 class="font-16 font-weight-bold text-white mb-0">MULHIM V2.0</h4>
                             <span class="font-12 text-white" style="opacity: 0.75;">Learning Management System</span>
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                     {{-- Footer --}}
                     <div class="mt-16 pt-12 border-top text-center">
                         <span class="font-12 text-gray-500">
-                        All rights reserved for Rocket Soft on Codecanyon
+                        All rights reserved for MULHIM on Codecanyon
                         </span>
                         <div class="d-flex align-items-center justify-content-center mt-8" style="gap: 8px;">
                             <a href="https://crm.rocket-soft.org/index.php/tickets" target="_blank" class="badge badge-soft-primary font-10 px-8 py-4 text-decoration-none">Support Center</a>

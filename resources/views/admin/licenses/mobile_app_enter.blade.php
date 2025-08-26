@@ -176,7 +176,7 @@
                                     @enderror
                                     
                                     <div class="text-muted font-12 mt-2">
-                                        Please enter your Rocket LMS Mobile App purchase code. This code has 36 characters.
+                                        Please enter your MULHIM Mobile App purchase code. This code has 36 characters.
                                     </div>
                                 </div>
 
@@ -194,7 +194,7 @@
                 <div class="col-12 col-lg-7 mt-4 mt-lg-0">
                     <div class="card rounded-24">
                          <div class="card-header d-flex align-items-center justify-content-between">
-                            <h4>Rocket LMS Mobile App Information</h4>
+                            <h4>MULHIM Mobile App Information</h4>
                         </div>
                          <div class="info-card-body rounded-24">
                             <p>The Mobile App is a separate Product that allows your users to access your LMS platform from mobile devices.</p>
@@ -207,7 +207,7 @@
                                     </div>
                                     <div class="feature-content">
                                        <h5>What is the Mobile App?</h5>
-                                        <p class="text-gray-500">The Rocket LMS Mobile App extends the capabilities of your main Rocket LMS installation with a native mobile application for iOS and Android devices.</p>
+                                        <p class="text-gray-500">The MULHIM Mobile App extends the capabilities of your main MULHIM installation with a native mobile application for iOS and Android devices.</p>
                                     </div>
                                 </div>
 
@@ -217,7 +217,7 @@
                                     </div>
                                     <div class="feature-content">
                                         <h5>Separate License</h5>
-                                        <p class="text-gray-500">Mobile App requires a separate purchase code from your main Rocket LMS license. Make sure you're entering the correct purchase code.</p>
+                                        <p class="text-gray-500">Mobile App requires a separate purchase code from your main MULHIM license. Make sure you're entering the correct purchase code.</p>
                                     </div>
                                 </div>
                                 
@@ -240,9 +240,9 @@
                             </div>
 
                             <div class=" align-items-center text-center mt-24">
-                            <a href="https://codecanyon.net/item/rocket-lms-mobile-app-android-ios/37341216" target="_blank" class="btn w-100 rounded-16 btn-primary">
+                            <a href="https://codecanyon.net/item/mulhim-mobile-app-android-ios/37341216" target="_blank" class="btn w-100 rounded-16 btn-primary">
                                         <x-iconsax-bul-bag class="icons text-white" width="18px" height="18px"/>
-                                        <span class="ml-4 font-14">Purchase Rocket LMS Mobile App</span>
+                                        <span class="ml-4 font-14">Purchase MULHIM Mobile App</span>
                                     </a>
                             </div>
                                                         

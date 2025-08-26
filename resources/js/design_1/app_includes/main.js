@@ -123,7 +123,7 @@
     * loading Swl
     * */
     window.loadingSwl = () => {
-        const loadingHtml = '<div class="d-flex align-items-center justify-content-center py-56 "><img src="/assets/default/images/loading.svg" width="80" height="80"></div>';
+        const loadingHtml = '<div class="d-flex align-items-center justify-content-center py-56 "><img src="/assets/default/images/loading.png" width="80" height="80"></div>';
         Swal.fire({
             html: loadingHtml,
             showCancelButton: false,
@@ -899,7 +899,7 @@
 
         const html = `<div class="basic-modal-body">
                 <div class="js-loading-card d-flex align-items-center justify-content-center py-40">
-                    <img src="/assets/design_1/img/loading.svg" width="80" height="80">
+                    <img src="/assets/design_1/img/loading.png" width="80" height="80">
                 </div>
             </div>`;
 

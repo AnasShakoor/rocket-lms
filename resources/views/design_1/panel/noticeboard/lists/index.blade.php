@@ -55,7 +55,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-          'file_name' => 'noticeboard.svg',
+          'file_name' => 'noticeboard.png',
             'title' => trans('update.noticeboard_no_result'),
             'hint' =>  nl2br(trans('update.noticeboard_no_result_hint')) ,
         ])

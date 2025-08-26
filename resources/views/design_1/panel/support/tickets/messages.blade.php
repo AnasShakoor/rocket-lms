@@ -159,7 +159,7 @@
 
 
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'support_tickets.svg',
+            'file_name' => 'support_tickets.png',
             'title' => trans('panel.select_support'),
             'hint' => nl2br(trans('panel.select_support_hint')),
             'extraClass' => 'mt-0',

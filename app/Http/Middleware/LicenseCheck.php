@@ -32,6 +32,14 @@ class LicenseCheck
                 return $next($request);
             }
             
+            // Skip license check for local domains
+            $currentDomain = $request->getHost();
+            $isLocalDomain = $this->licenseService->isLocalDomain($currentDomain);
+            
+            if ($isLocalDomain) {
+                return $next($request);
+            }
+            
             // If user is on the purchase code page, allow access
             if ($request->is('purchase-code*')) {
                 return $next($request);

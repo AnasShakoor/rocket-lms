@@ -1,6 +1,6 @@
 <div class="d-flex-center flex-column text-center my-16">
     <div class="">
-        <img src="/assets/design_1/img/courses/learning_page/access_denied.svg" alt="" class="img-fluid" height="160px">
+        <img src="/assets/design_1/img/courses/learning_page/access_denied.png" alt="" class="img-fluid" height="160px">
     </div>
 
     <h4 class="mt-12 font-14 text-dark">{{ trans('update.restricted_content') }}</h4>

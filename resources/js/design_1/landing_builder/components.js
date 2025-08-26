@@ -21,7 +21,7 @@
         if (icon && icon.selected) {
             const $element = $(icon.element);
 
-            icon.svg = $element.attr('data-svg')
+            icon.png = $element.attr('data-svg')
         } else if (!icon || typeof icon.id === "undefined") {
             return ""
         } else if (icon.id === "" && icon.text) {
@@ -29,7 +29,7 @@
         }
 
         return $(`<div class="d-flex align-items-center gap-8">
-                    ${icon.svg}
+                    ${icon.png}
                     <span class="">${icon.text}</span>
                 </div>`)
     }

@@ -32,7 +32,7 @@
         </div>
     @else
         @include('design_1.panel.includes.no-result',[
-            'file_name' => 'purchased_courses.svg',
+            'file_name' => 'purchased_courses.png',
             'title' => trans('panel.no_result_purchases') ,
             'hint' => trans('panel.no_result_purchases_hint') ,
             'btn' => ['url' => '/classes?sort=newest','text' => trans('panel.start_learning')]

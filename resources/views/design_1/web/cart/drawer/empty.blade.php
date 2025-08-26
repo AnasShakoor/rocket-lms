@@ -1,7 +1,7 @@
 <div class="d-flex-center flex-column h-100 px-16">
 
     <div class="d-flex-center flex-column text-center">
-        <img src="/assets/design_1/img/cart/drawer-empty.svg" alt="basket" width="292px" height="217px">
+        <img src="/assets/design_1/img/cart/drawer-empty.png" alt="basket" width="292px" height="217px">
 
         <h4 class="font-16 mt-8">{{ trans('update.cart_is_empty') }}</h4>
         <p class="text-gray-500 mt-4">{{ trans('update.cart_is_empty_message') }}</p>

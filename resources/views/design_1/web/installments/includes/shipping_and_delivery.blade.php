@@ -119,7 +119,7 @@
 @if(!empty($deliveryEstimateTime))
     <div class="d-flex align-items-center mt-16 rounded-16 border-gray-200 p-16">
         <div class="appointment-timezone-icon">
-            <img src="/assets/default/img/icons/timezone.svg" alt="appointment timezone">
+            <img src="/assets/default/img/icons/timezone.png" alt="appointment timezone">
         </div>
 
         <div class="ml-16">

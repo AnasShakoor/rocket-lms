@@ -2327,6 +2327,63 @@ function getRazorpayApiKey(): array
     ];
 }
 
+function getMoyasarApiKey(): string
+{
+    $api_key = "";
+
+    $paymentChannel = \App\Models\PaymentChannel::query()->where('class_name', 'Moyasar')->first();
+
+    if (!empty($paymentChannel) and !empty($paymentChannel->credentials)) {
+        if (!empty($paymentChannel->credentials['publishable_key'])) {
+            $api_key = $paymentChannel->credentials['publishable_key'];
+        }
+    }
+
+    return $api_key;
+}
+
+function getMoyasarSecretKey(): string
+{
+    $api_secret = "";
+
+    $paymentChannel = \App\Models\PaymentChannel::query()->where('class_name', 'Moyasar')->first();
+
+    if (!empty($paymentChannel) and !empty($paymentChannel->credentials)) {
+        if (!empty($paymentChannel->credentials['api_secret'])) {
+            $api_secret = $paymentChannel->credentials['api_secret'];
+        }
+    }
+
+    return $api_secret;
+}
+
+/**
+ * Convert amount to SAR currency for Moyasar payments
+ * @param float $amount
+ * @return float
+ */
+function convertAmountToSAR($amount): float
+{
+    // Get the user's current currency item
+    $userCurrencyItem = getUserCurrencyItem();
+
+    // If user is already using SAR, no conversion needed
+    if ($userCurrencyItem->currency === 'SAR') {
+        return $amount;
+    }
+
+    // Convert from user's currency to default currency (usually USD)
+    $amountInDefaultCurrency = convertPriceToDefaultCurrency($amount, $userCurrencyItem);
+
+    // Get SAR currency item for conversion
+    $sarCurrencyItem = getUserCurrencyItem(null, 'SAR');
+
+    // Convert from default currency to SAR
+    $amountInSAR = convertPriceToUserCurrency($amountInDefaultCurrency, $sarCurrencyItem);
+
+    return $amountInSAR;
+}
+
 function checkTimestampInToday($timestamp)
 {
     $now = now();

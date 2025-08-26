@@ -7,7 +7,7 @@
                     {{-- Phone --}}
                     @if(!empty($themeHeaderTopNavData['phone']))
                         <div class="d-flex align-items-center gap-8 opacity-75">
-                            <x-iconsax-lin-call-calling class="icons text-white" width="16px" height="16x"/>
+                            <x-iconsax-lin-call-calling class="icons text-white" width="16px" height="16px"/>
                             <span class="text-white">{{ $themeHeaderTopNavData['phone'] }}</span>
                         </div>
                     @endif
@@ -15,7 +15,7 @@
                     {{-- Email --}}
                     @if(!empty($themeHeaderTopNavData['email']))
                         <div class="d-flex align-items-center gap-8 opacity-75">
-                            <x-iconsax-lin-sms class="icons text-white" width="16px" height="16x"/>
+                            <x-iconsax-lin-sms class="icons text-white" width="16px" height="16px"/>
                             <span class="text-white">{{ $themeHeaderTopNavData['email'] }}</span>
                         </div>
                     @endif
@@ -47,7 +47,7 @@
                         <div class="col-12 col-lg-8 mt-12 mt-lg-4">
                     @else
                     <div class="col-12 col-lg-8 mt-12 mt-lg-8">
-                     @endif    
+                     @endif
                         <div class="d-flex align-items-center justify-content-between gap-12 gap-lg-24">
                             <div class="d-flex align-items-center gap-12 gap-lg-24">
                                 {{-- Language --}}

@@ -13,7 +13,7 @@
     @endif
 @else
     @include('design_1.panel.includes.no-result',[
-        'file_name' => 'profile_products.svg',
+        'file_name' => 'profile_products.png',
         'title' => trans('update.user_profile_not_have_products'),
         'hint' => trans('update.user_profile_not_have_products_hint'),
         'extraClass' => 'mt-0',
