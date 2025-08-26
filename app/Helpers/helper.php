@@ -2009,7 +2009,7 @@ function getAgoraResolutions(): array
 
 function getUserCurrencyItem($user = null, $userCurrency = null)
 {
-    $multiCurrency = new MultiCurrency();
+    $multiCurrency = new App\Mixins\Financial\MultiCurrency();
     $currencies = $multiCurrency->getCurrencies();
 
     if (empty($userCurrency)) {

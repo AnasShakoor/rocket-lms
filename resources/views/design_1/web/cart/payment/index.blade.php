@@ -1097,8 +1097,9 @@
                         clearTimeout(libraryTimeout);
                         console.log('🔵 Moyasar: Library loaded, initializing form');
 
+                        @php $samsungServiceId = env('SAMSUNG_PAY_SERVICE_ID'); @endphp
                         const config = {
-                            element: '#moyasar-form-container',
+                            element: '.mysr-form',
                             // Amount in the smallest currency unit (e.g., 1000 for 10.00 SAR)
                             // Moyasar only supports SAR currency, so we need to convert
                             amount: {{ (int)(convertAmountToSAR($order->total_amount) * 100) }},
@@ -1107,7 +1108,24 @@
                             publishable_api_key: '{{ getMoyasarApiKey() ?? "pk_test_..." }}',
                             callback_url: '{{ url("/payments/verify/Moyasar") }}?order_id={{ $order->id }}',
                             supported_networks: ['visa', 'mastercard', 'mada'],
-                            methods: ['creditcard'],
+                            methods: [
+                                'stcpay',
+                                'applepay'@if(!empty($samsungServiceId)), 'samsungpay'@endif
+                            ],
+                            apple_pay: {
+                                country: 'SA',
+                                label: '{{ addslashes(getGeneralSettings('site_name') ?? 'Store') }}',
+                                validate_merchant_url: 'https://api.moyasar.com/v1/applepay/initiate',
+                            },
+                            @if(!empty($samsungServiceId))
+                            samsung_pay: {
+                                service_id: '{{ $samsungServiceId }}',
+                                order_number: 'order-{{ $order->id }}-{{ time() }}',
+                                country: 'SA',
+                                label: '{{ addslashes(getGeneralSettings('site_name') ?? 'Store') }}',
+                                environment: '{{ env('SAMSUNG_PAY_ENV', 'TEST') }}',
+                            },
+                            @endif
                             // Add required fields for better compatibility
                             on_ready: function() {
                                 console.log('🟢 Moyasar: Form is ready and loaded');
@@ -2258,48 +2276,8 @@
             }
             console.log('🔵 Moyasar: Processing working payment with method:', method);
 
-            // Show processing message
-            const container = document.querySelector('#moyasar-form-container');
-            if (container) {
-                container.innerHTML = `
-                    <div class="text-center p-5">
-                        <div class="spinner-border text-primary mb-3" role="status">
-                            <span class="visually-hidden">Processing...</span>
-                        </div>
-                        <h5>Processing Payment</h5>
-                        <p class="text-muted">Please wait while we process your ${method.toUpperCase()} payment...</p>
-                        <div class="alert alert-info">
-                            <strong>Selected Method:</strong> ${method.toUpperCase()}<br>
-                            <strong>Amount:</strong> SAR {{ convertAmountToSAR($order->total_amount) }}<br>
-                            <strong>Order ID:</strong> {{ $order->id }}
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Simulate payment processing
-            setTimeout(() => {
-                if (container) {
-                    container.innerHTML = `
-                        <div class="text-center p-5">
-                            <div class="text-success mb-3">
-                                <i class="fas fa-check-circle fa-3x"></i>
-                            </div>
-                            <h5 class="text-success">Payment Method Selected!</h5>
-                            <p class="text-muted">You have successfully selected ${method.toUpperCase()} as your payment method.</p>
-                            <div class="alert alert-success">
-                                <strong>Next Steps:</strong><br>
-                                1. Complete payment details<br>
-                                2. Verify transaction<br>
-                                3. Receive confirmation
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="location.reload()">
-                                <i class="fas fa-refresh"></i> Refresh Page
-                            </button>
-                        </div>
-                    `;
-                }
-            }, 3000);
+            // Initialize Moyasar payment form directly
+            initMoyasar();
         }
 
         // Function to process fallback payment

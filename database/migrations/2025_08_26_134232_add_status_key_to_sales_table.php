@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        // Schema::table('sales', function (Blueprint $table) {
-        //     $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'refunded'])->default('pending');
-        //     $table->index('status');
-        // });
+        Schema::table('sales', function (Blueprint $table) {
+            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'refunded'])->default('pending');
+            $table->index('status');
+        });
     }
 
     /**

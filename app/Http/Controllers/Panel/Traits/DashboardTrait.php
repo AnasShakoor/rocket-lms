@@ -72,7 +72,7 @@ trait DashboardTrait
 
         return [
             'coursesCount' => $coursesCount,
-            'meetingsCount' => $meetingsCount,
+            // 'meetingsCount' => $meetingsCount,
             'certificatesCount' => $certificatesCount,
             'passedQuizCount' => $passedQuizCount,
             'continueLearningCourses' => $continueLearningCourses,
