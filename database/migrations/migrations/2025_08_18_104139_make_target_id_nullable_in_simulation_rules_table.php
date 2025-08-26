@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class MakeTargetIdNullableInSimulationRulesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('sales', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'refunded'])->default('pending');
-            $table->index('status');
+        Schema::table('simulation_rules', function (Blueprint $table) {
+            // $table->unsignedBigInteger('target_id')->nullable()->change();
         });
     }
 
@@ -26,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('sales', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('simulation_rules', function (Blueprint $table) {
+            $table->unsignedBigInteger('target_id')->nullable(false)->change();
         });
     }
-};
+}

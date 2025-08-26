@@ -35,9 +35,9 @@ return new class extends Migration
             }
             
             // Add indexes for performance
-            $table->index(['user_id', 'status']);
-            $table->index(['webinar_id', 'status']);
-            $table->index('status');
+            // $table->index(['user_id', 'status']);
+            // $table->index(['webinar_id', 'status']);
+            // $table->index('status');
         });
     }
 

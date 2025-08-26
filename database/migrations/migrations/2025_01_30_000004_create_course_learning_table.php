@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
+   if (!Schema::hasTable('course_learning')) {
         Schema::create('course_learning', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->foreign('webinar_id')->references('id')->on('webinars')->onDelete('cascade');
         });
     }
+}
 
     public function down()
     {

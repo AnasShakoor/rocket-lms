@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
+   public function up(): void
+{
+    if (!Schema::hasTable('bnpl_providers')) {
         Schema::create('bnpl_providers', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique()->comment('Provider name: Tamara, Tabby, MICB, etc.');
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->index('is_active');
         });
     }
+}
 
     public function down(): void
     {

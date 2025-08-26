@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
+        if(!Schema::hasTable('bundle_webinars')) {     
         Schema::create('bundle_webinars', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('bundle_id');
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->foreign('webinar_id')->references('id')->on('webinars')->onDelete('cascade');
         });
     }
+}
 
     public function down()
     {

@@ -28,7 +28,7 @@ return new class extends Migration
             // Add foreign key constraints
             $table->foreign('rule_id')->references('id')->on('simulation_rules')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('course_id')->references('id')->on('webinars')->onDelete('cascade');
+            // $table->foreign('course_id')->references('id')->on('webinars')->onDelete('cascade');
         });
     }
 

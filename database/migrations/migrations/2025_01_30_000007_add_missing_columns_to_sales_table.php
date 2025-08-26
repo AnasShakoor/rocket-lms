@@ -18,7 +18,7 @@ return new class extends Migration
             }
 
             // Add the status column properly
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'refunded'])->default('completed')->after('payment_method');
+            // $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'refunded'])->default('completed')->after('payment_method');
         });
 
         // Update existing enum columns to include new values
