@@ -70,23 +70,25 @@ class WebinarAssignment extends Model implements TranslatableContract
     public function getDeadlineTimestamp($user = null)
     {
         $deadline = null; // default can access
-
+    
         if (empty($user)) {
             $user = auth()->user();
         }
-
+    
         if (!empty($this->deadline)) {
             $sale = $this->getSale($user);
-
+    
             if (!empty($sale)) {
-                $deadline = strtotime("+{$this->deadline} days", $sale->created_at);
+                // Convert created_at (Carbon) to timestamp
+                $deadline = strtotime("+{$this->deadline} days", $sale->created_at->getTimestamp());
             } else {
                 $deadline = false;
             }
         }
-
+    
         return $deadline;
     }
+    
 
     public function getSale($user = null)
     {

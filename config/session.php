@@ -138,7 +138,7 @@ return [
     |
     | The session cookie path determines the path for which the cookie will
     | be regarded as available. Typically, this will be the root path of
-    | your application but you are free to change this when necessary.
+    | your application but you are free to adjust this when necessary.
     |
     */
 
@@ -164,7 +164,7 @@ return [
     |
     | By setting this option to true, session cookies will only be sent back
     | to the server if the browser has a HTTPS connection. This will keep
-    | the cookie from being sent to you if it can not be done securely.
+    | the cookie from being sent to you when it can't be done securely.
     |
     */
 
@@ -192,10 +192,21 @@ return [
     | take place, and can be used to mitigate CSRF attacks. By default, we
     | will set this value to "lax" since this is a secure default value.
     |
-    | Supported: "lax", "strict", "none", null
-    |
     */
 
     'same_site' => 'lax',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Session Garbage Collection
+    |--------------------------------------------------------------------------
+    |
+    | Session garbage collection settings for better performance
+    |
+    */
+
+    'gc_probability' => env('SESSION_GC_PROBABILITY', 1),
+    'gc_divisor' => env('SESSION_GC_DIVISOR', 100),
+    'gc_maxlifetime' => env('SESSION_GC_MAXLIFETIME', 1440),
 
 ];

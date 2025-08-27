@@ -1,4 +1,5 @@
 <?php return array (
+    'certificate_request_without_completion' => 'طلب المستخدم :u.name شهادة للدورة :c.title دون إكمال متطلبات الدورة.',
   'all_notifications' => 'كل الإشعارات',
   'sender' => 'مرسل',
   'notifications_page_lists_lead' => 'قائمة الإخطارات. يمكنك تحرير أو حذف ...',

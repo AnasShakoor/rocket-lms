@@ -39,6 +39,7 @@ class ThemeHeaderFooter extends Model implements TranslatableContract
 
     static $headers = [ // component_name => title
         'header_1' => 'header 1',
+        'header_2' => 'header 2',
     ];
 
     static $footers = [ // component_name => title

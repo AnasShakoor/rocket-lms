@@ -286,6 +286,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['web
         Route::get('/status', 'PaymentController@payStatus');
         Route::get('/payku/callback/{id}', 'PaymentController@paykuPaymentVerify')->name('payku.result');
         Route::get('/chapa/callback/{reference}', 'PaymentController@chapaPaymentVerify')->name('chapa.callback');
+
+        // Apple Pay merchant validation for Moyasar
+        Route::post('/applepay/validate-merchant', 'PaymentController@applePayValidateMerchant');
     });
 
     Route::group(['prefix' => 'subscribes'], function () {
@@ -491,19 +494,20 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['web
 Route::get('/purchase-code', [PurchaseCodeController::class, 'show'])->name('purchase.code.show');
 Route::post('/purchase-code', [PurchaseCodeController::class, 'store'])->name('purchase.code.store');
 
-// BNPL Routes
-Route::group(['prefix' => 'bnpl', 'middleware' => ['web.auth']], function () {
-    Route::get('/checkout', 'Web\BnplController@checkout')->name('bnpl.checkout');
-    Route::post('/process-checkout', 'Web\BnplController@processCheckout')->name('bnpl.process-checkout');
-    Route::get('/success/{order_id}', 'Web\BnplController@success')->name('bnpl.success');
-    Route::get('/payment-details/{order_id}', 'Web\BnplController@getPaymentDetails')->name('bnpl.payment-details');
-    Route::get('/providers', 'Web\BnplController@getProviders')->name('bnpl.providers');
-    Route::post('/calculate', 'Web\BnplController@calculatePayment')->name('bnpl.calculate');
-    Route::post('/check-eligibility', 'Web\BnplController@checkEligibility')->name('bnpl.check-eligibility');
-});
+Route::get('/payments/verify/Tabby', 'PaymentController@tabbyVerify')->name('payments.tabby.verify');
+Route::get('/payments/tabby/success', 'PaymentController@tabbySuccess')->name('payments.tabby.success');
+Route::get('/payments/tabby/cancel', 'PaymentController@tabbyCancel')->name('payments.tabby.cancel');
+Route::get('/payments/tabby/failure', 'PaymentController@tabbyFailure')->name('payments.tabby.failure');
 
-// BNPL Payment Processing
-Route::group(['prefix' => 'payments/bnpl', 'middleware' => ['web.auth']], function () {
-    Route::get('/process/{order_id}', 'Web\BnplController@processCheckout')->name('payments.bnpl.process');
-    Route::get('/success/{order_id}', 'Web\BnplController@success')->name('payments.bnpl.success');
-});
+// MisPay BNPL Routes
+Route::get('/payments/verify/MisPay', 'PaymentController@mispayVerify')->name('payments.mispay.verify');
+Route::get('/payments/mispay/success', 'PaymentController@mispaySuccess')->name('payments.mispay.success');
+Route::get('/payments/mispay/cancel', 'PaymentController@mispayCancel')->name('payments.mispay.cancel');
+Route::get('/payments/mispay/failure', 'PaymentController@mispayFailure')->name('payments.mispay.failure');
+
+// Debug routes for BNPL providers
+Route::get('/debug/tabby/status', function() {
+    $tabbyService = new \App\Services\TabbyService();
+    $status = $tabbyService->getConfigurationStatus();
+    return response()->json($status);
+})->name('debug.tabby.status');

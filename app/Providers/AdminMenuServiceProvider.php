@@ -40,15 +40,15 @@ class AdminMenuServiceProvider extends ServiceProvider
                         'url' => getAdminPanelUrl('/simulation'),
                         'active' => request()->is(getAdminPanelUrl('/simulation*', false)),
                         'permission' => 'admin_simulation_access'
-                    ],
-                    'bnpl_providers' => [
-                        'title' => 'BNPL Providers',
-                        'icon' => 'fas fa-credit-card',
-                        'url' => getAdminPanelUrl('/bnpl-providers'),
-                        'active' => request()->is(getAdminPanelUrl('/bnpl-providers*', false)),
-                        'permission' => 'admin_bnpl_providers_access'
                     ]
                 ]
+            ],
+            'bnpl_providers' => [
+                'title' => 'BNPL Providers',
+                'icon' => 'fas fa-credit-card',
+                'url' => getAdminPanelUrl('/bnpl-providers'),
+                'active' => request()->is(getAdminPanelUrl('/bnpl-providers*', false)),
+                'permission' => 'admin_bnpl_providers_access'
             ],
             'enhanced_reports' => [
                 'title' => 'Enhanced Reports',

@@ -21,11 +21,11 @@
                 <div class="col-6">
                     <div class="d-flex align-items-center">
                         <div class="d-flex-center size-48 bg-white-20 rounded-circle">
-                            <x-iconsax-bul-video class="icons text-white" width="24px" height="24px"/>
+                            <x-iconsax-bul-clock class="icons text-white" width="24px" height="24px"/>
                         </div>
                         <div class="ml-8">
-                            <span class="d-block font-weight-bold text-white">{{ $helloBox['meetingsCount'] }}</span>
-                            <span class="d-block mt-4 text-white opacity-75 text-ellipsis">{{ trans('panel.meetings') }}</span>
+                            {{-- <span class="d-block font-weight-bold text-white">{{ $helloBox['cmeHours'] }}</span> --}}
+                            <span class="d-block mt-4 text-white opacity-75 text-ellipsis">{{ trans('update.cme_hours') }}</span>
                         </div>
                     </div>
                 </div>

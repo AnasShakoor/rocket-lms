@@ -28,6 +28,7 @@
                                     <th>Logo</th>
                                     <th>Name</th>
                                     <th>Fee %</th>
+                                    <th>Surcharge %</th>
                                     <th>Installments</th>
                                     <th>Status</th>
                                     <th>Created At</th>
@@ -40,9 +41,9 @@
                                         <td>{{ $provider->id }}</td>
                                         <td>
                                             @if($provider->logo_path)
-                                                <img src="{{ asset('storage/' . $provider->logo_path) }}" 
-                                                     alt="{{ $provider->name }}" 
-                                                     class="img-thumbnail" 
+                                                <img src="{{ asset('storage/' . $provider->logo_path) }}"
+                                                     alt="{{ $provider->name }}"
+                                                     class="img-thumbnail"
                                                      style="max-width: 50px; max-height: 50px;">
                                             @else
                                                 <span class="text-muted">No Logo</span>
@@ -50,6 +51,7 @@
                                         </td>
                                         <td>{{ $provider->name }}</td>
                                         <td>{{ $provider->fee_percentage }}%</td>
+                                        <td>{{ $provider->surcharge_percentage ?? 8 }}%</td>
                                         <td>{{ $provider->installment_count }}</td>
                                         <td>
                                             <span class="badge badge-{{ $provider->is_active ? 'success' : 'secondary' }}">
@@ -59,12 +61,12 @@
                                         <td>{{ $provider->created_at->format('Y-m-d H:i') }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('admin.bnpl-providers.edit', $provider) }}" 
+                                                <a href="{{ route('admin.bnpl-providers.edit', $provider) }}"
                                                    class="btn btn-sm btn-warning" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('admin.bnpl-providers.destroy', $provider) }}" 
-                                                      method="POST" 
+                                                <form action="{{ route('admin.bnpl-providers.destroy', $provider) }}"
+                                                      method="POST"
                                                       class="d-inline"
                                                       onsubmit="return confirm('Are you sure you want to delete this provider?')">
                                                     @csrf

@@ -24,6 +24,19 @@ return [
     'no_result_hint' => 'Crea tu primera Cursos y deja que otros aprendan de ti.',
     'choose_webinar' => 'Seleccionar un Webinar',
     'certificate' => 'Certificados',
+    'certificates' => 'Certificados',
+    'download_certificate' => 'Descargar Certificado',
+    'download_certificate_description' => 'Descarga certificados para tus cursos comprados. Puedes descargar certificados sin completar el curso.',
+    'certificate_already_generated' => 'Certificado ya generado',
+    'certificate_not_generated_yet' => 'Certificado aún no generado',
+    'generate_and_download_certificate' => 'Generar y Descargar Certificado',
+    'purchased_on' => 'Comprado el',
+    'no_certificate_courses' => 'Sin Cursos de Certificados',
+    'no_certificate_courses_description' => 'No tienes cursos con certificados habilitados. Navega por nuestro catálogo de cursos para encontrar cursos que ofrezcan certificados.',
+    'browse_courses' => 'Navegar Cursos',
+'certificate_request_sent' => '¡Solicitud de certificado enviada al administrador exitosamente!',
+'purchased_on' => 'Comprado el',
+'generate_and_download_certificate' => 'Generar y Descargar Certificado',
     'quizzes' => 'Pruebas',
     'financial' => 'Financias',
     'request' => 'Solicitudes',
@@ -143,7 +156,7 @@ return [
     'noticeboards' => 'Avisos',
     'not_verified_alert' => 'Su identidad e información financiera no se verificaron, por lo que podría causar demoras en el proceso de pago. Por favor defínalos desde ',
     'this_link' => 'configuración',
-    
+
 // Conversaciones
     'conversations' => 'Conversaciones',
     'create_support_message' => 'Nuevo mensaje de soporte',

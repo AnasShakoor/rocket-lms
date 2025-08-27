@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 class Sale extends Model
 {
@@ -299,22 +300,88 @@ class Sale extends Model
     // Static method for backward compatibility
     public static function createSales($orderItem, $paymentMethod)
     {
-        return self::create([
-            'buyer_id' => $orderItem->buyer_id ?? auth()->id(),
-            'webinar_id' => $orderItem->webinar_id ?? null,
-            'bundle_id' => $orderItem->bundle_id ?? null,
-            'order_number' => $orderItem->order_number ?? self::generateOrderNumber(),
+        // Prepare data with fallbacks for missing columns
+        $data = [
             'amount' => $orderItem->amount ?? 0,
-            'vat_amount' => $orderItem->vat_amount ?? 0,
-            'bnpl_fee' => $orderItem->bnpl_fee ?? 0,
-            'bnpl_provider' => $orderItem->bnpl_provider ?? null,
-            'installments' => $orderItem->installments ?? 1,
             'payment_method' => $paymentMethod,
-            'status' => 'completed',
-            'purchased_at' => now(),
-            'paid_at' => now(),
-            'payment_details' => $orderItem->payment_details ?? []
-        ]);
+        ];
+
+        // Add columns that might not exist in older database schemas
+        if (Schema::hasColumn('sales', 'buyer_id')) {
+            $data['buyer_id'] = $orderItem->buyer_id ?? auth()->id();
+        }
+
+        if (Schema::hasColumn('sales', 'webinar_id')) {
+            $data['webinar_id'] = $orderItem->webinar_id ?? null;
+        }
+
+        if (Schema::hasColumn('sales', 'bundle_id')) {
+            $data['bundle_id'] = $orderItem->bundle_id ?? null;
+        }
+
+        if (Schema::hasColumn('sales', 'order_number')) {
+            $data['order_number'] = $orderItem->order_number ?? self::generateOrderNumber();
+        }
+
+        if (Schema::hasColumn('sales', 'vat_amount')) {
+            $data['vat_amount'] = $orderItem->vat_amount ?? 0;
+        }
+
+        if (Schema::hasColumn('sales', 'bnpl_fee')) {
+            $data['bnpl_fee'] = $orderItem->bnpl_fee ?? 0;
+        }
+
+        if (Schema::hasColumn('sales', 'bnpl_provider')) {
+            $data['bnpl_provider'] = $orderItem->bnpl_provider ?? null;
+        }
+
+        if (Schema::hasColumn('sales', 'installments')) {
+            $data['installments'] = $orderItem->installments ?? 1;
+        }
+
+        if (Schema::hasColumn('sales', 'status')) {
+            $data['status'] = 'completed';
+        }
+
+        if (Schema::hasColumn('sales', 'purchased_at')) {
+            $data['purchased_at'] = now();
+        }
+
+        if (Schema::hasColumn('sales', 'paid_at')) {
+            $data['paid_at'] = now();
+        }
+
+        if (Schema::hasColumn('sales', 'payment_details')) {
+            $data['payment_details'] = $orderItem->payment_details ?? [];
+        }
+
+        // Add legacy columns for backward compatibility
+        if (Schema::hasColumn('sales', 'user_id')) {
+            $data['user_id'] = $orderItem->buyer_id ?? auth()->id();
+        }
+
+        if (Schema::hasColumn('sales', 'order_id')) {
+            $data['order_id'] = $orderItem->order_id ?? null;
+        }
+
+        if (Schema::hasColumn('sales', 'type')) {
+            $data['type'] = $orderItem->webinar_id ? 'webinar' : 'bundle';
+        }
+
+        if (Schema::hasColumn('sales', 'total_amount')) {
+            $data['total_amount'] = $orderItem->amount ?? 0;
+        }
+
+                if (Schema::hasColumn('sales', 'created_at')) {
+            $data['created_at'] = time();
+        }
+
+                        // Add updated_at column if it exists
+        if (Schema::hasColumn('sales', 'updated_at')) {
+            $data['updated_at'] = time();
+        }
+
+        return self::create($data);
     }
 
     private static function generateOrderNumber()

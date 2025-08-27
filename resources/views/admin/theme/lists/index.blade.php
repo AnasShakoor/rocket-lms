@@ -105,5 +105,5 @@
 @push('scripts_bottom')
 
     <script src="/assets/vendors/jquery-image-scroll/jquery-image-scroll.js"></script>
-    <script src="/assets/admin/js/parts/landing_lists.min.js"></script>
+    <script src="/assets/default/js/admin/landing_lists.min.js"></script>
 @endpush

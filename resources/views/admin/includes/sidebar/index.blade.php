@@ -70,6 +70,30 @@
             {{-- Settings --}}
             @include('admin.includes.sidebar.settings')
 
+            {{-- BNPL Providers --}}
+            @can('admin_bnpl_providers_access')
+                <li class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bnpl-providers*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <x-iconsax-bul-convert-card class="icons" width="24px" height="24px"/>
+                        <span>{{ trans('financial.bnpl_providers') }}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="{{ (request()->is(getAdminPanelUrl('/bnpl-providers', false))) ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ getAdminPanelUrl() }}/bnpl-providers">
+                                <i class="fas fa-list mr-2"></i>
+                                {{ trans('financial.bnpl_providers_list') }}
+                            </a>
+                        </li>
+                        <li class="{{ (request()->is(getAdminPanelUrl('/bnpl-providers/create', false))) ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ getAdminPanelUrl() }}/bnpl-providers/create">
+                                <i class="fas fa-plus mr-2"></i>
+                                {{ trans('financial.new_bnpl_provider') }}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endcan
+
             <li>
                 <a class="nav-link" href="{{ getAdminPanelUrl() }}/logout">
                 <x-iconsax-bul-logout class="icons text-danger" width="24px" height="24px"/>

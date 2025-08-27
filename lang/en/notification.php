@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'certificate_request_without_completion' => 'User :u.name has requested a certificate for course :c.title without completing the course requirements.',
 
     /*
     |--------------------------------------------------------------------------
