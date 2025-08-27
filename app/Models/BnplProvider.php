@@ -12,14 +12,26 @@ class BnplProvider extends Model
         'fee_percentage',
         'installment_count',
         'is_active',
-        'config'
+        'config',
+        'surcharge_percentage',
+        'fee_description',
+        'bnpl_fee',
+        'public_api_key',
+        'secret_api_key',
+        'merchant_code',
+        'merchant_id',
+        'app_id',
+        'app_secret_key',
+        'widget_access_key'
     ];
 
     protected $casts = [
         'fee_percentage' => 'decimal:2',
         'installment_count' => 'integer',
         'is_active' => 'boolean',
-        'config' => 'array'
+        'config' => 'array',
+        'surcharge_percentage' => 'decimal:2',
+        'bnpl_fee' => 'decimal:2'
     ];
 
     public function scopeActive($query)
@@ -37,6 +49,10 @@ class BnplProvider extends Model
 
     public function calculateInstallmentAmount($basePrice, $vatPercentage = 15)
     {
+        // Ensure all values are numeric
+        $basePrice = (float) $basePrice;
+        $vatPercentage = (float) $vatPercentage;
+
         $priceWithVat = $basePrice * (1 + ($vatPercentage / 100));
         $priceWithFee = $priceWithVat * (1 + ($this->fee_percentage / 100));
         return round($priceWithFee / $this->installment_count, 2);

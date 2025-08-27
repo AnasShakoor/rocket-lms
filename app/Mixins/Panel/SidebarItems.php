@@ -31,12 +31,13 @@ class SidebarItems
             'items' => []
         ];
 
-        $items['events'] = [
-            'icon' => self::getIcon('events'),
-            'text' => trans('update.events_calendar'),
-            'url' => '/panel/events',
-            'items' => []
-        ];
+        // Events calendar removed for user role
+        // $items['events'] = [
+        //     'icon' => self::getIcon('events'),
+        //     'text' => trans('update.events_calendar'),
+        //     'url' => '/panel/events',
+        //     'items' => []
+        // ];
 
 
         return $items;
@@ -139,28 +140,29 @@ class SidebarItems
             }
         }
 
-        if (!empty(getFeaturesSettings('upcoming_courses_status')) and $user->can('panel_upcoming_courses')) {
-            $items['upcoming_courses'] = [
-                'icon' => self::getIcon('upcoming_courses'),
-                'text' => trans('update.upcoming_courses'),
-                'url' => '/panel/upcoming_courses',
-                'items' => []
-            ];
+        // Upcoming courses removed for user role
+        // if (!empty(getFeaturesSettings('upcoming_courses_status')) and $user->can('panel_upcoming_courses')) {
+        //     $items['upcoming_courses'] = [
+        //         'icon' => self::getIcon('upcoming_courses'),
+        //         'text' => trans('update.upcoming_courses'),
+        //         'url' => '/panel/upcoming_courses',
+        //         'items' => []
+        //     ];
 
-            if ($user->isOrganization() || $user->isTeacher()) {
-                if ($user->can('panel_upcoming_courses_create')) {
-                    $items['upcoming_courses']['items'][] = ['text' => trans('public.new'), 'url' => '/panel/upcoming_courses/new'];
-                }
+        //     if ($user->isOrganization() || $user->isTeacher()) {
+        //         if ($user->can('panel_upcoming_courses_create')) {
+        //             $items['upcoming_courses']['items'][] = ['text' => trans('public.new'), 'url' => '/panel/upcoming_courses/new'];
+        //         }
 
-                if ($user->can('panel_upcoming_courses_lists')) {
-                    $items['upcoming_courses']['items'][] = ['text' => trans('update.my_upcoming_courses'), 'url' => '/panel/upcoming_courses'];
-                }
-            }
+        //         if ($user->can('panel_upcoming_courses_lists')) {
+        //             $items['upcoming_courses']['items'][] = ['text' => trans('update.my_upcoming_courses'), 'url' => '/panel/upcoming_courses'];
+        //         }
+        //     }
 
-            if ($user->can('panel_upcoming_courses_followings')) {
-                $items['upcoming_courses']['items'][] = ['text' => trans('update.following_courses'), 'url' => '/panel/upcoming_courses/followings'];
-            }
-        }
+        //     if ($user->can('panel_upcoming_courses_followings')) {
+        //         $items['upcoming_courses']['items'][] = ['text' => trans('update.following_courses'), 'url' => '/panel/upcoming_courses/followings'];
+        //     }
+        // }
 
 
         if (($user->isOrganization() or $user->isTeacher()) and $user->can('panel_bundles')) {
@@ -280,8 +282,25 @@ class SidebarItems
                 $items['certificates']['items'][] = ['text' => trans('update.my_achievements'), 'url' => '/panel/certificates/my-achievements'];
             }
 
+            // Download Certificate without completing course
+            $items['certificates']['items'][] = ['text' => trans('panel.download_certificate'), 'url' => '/panel/certificates/download'];
+
             $items['certificates']['items'][] = ['text' => trans('site.certificate_validation'), 'url' => '/certificate_validation'];
         }
+
+        // CME Hours for user role
+        // if ($user->isUser() and $user->can('panel_meetings')) {
+        //     $items['cme_hours'] = [
+        //         'icon' => self::getIcon('meetings'),
+        //         'text' => trans('update.cme_hours'),
+        //         'url' => '/panel/meetings',
+        //         'items' => []
+        //     ];
+
+        //     if ($user->can('panel_meetings_my_reservation')) {
+        //         $items['cme_hours']['items'][] = ['text' => trans('update.my_cme_hours'), 'url' => '/panel/meetings/reservation'];
+        //     }
+        // }
 
         return $items;
     }
@@ -290,77 +309,55 @@ class SidebarItems
     {
         $items = [];
 
-        if ($user->checkCanAccessToStore() and $user->can('panel_products')) {
-            $items['store'] = [
-                'icon' => self::getIcon('store'),
-                'text' => trans('update.store'),
-                'url' => '/panel/store',
-                'items' => []
-            ];
+        // Store removed for user role
+        // if ($user->checkCanAccessToStore() and $user->can('panel_products')) {
+        //     $items['store'] = [
+        //         'icon' => self::getIcon('store'),
+        //         'text' => trans('update.store'),
+        //         'url' => '/panel/store',
+        //         'items' => []
+        //     ];
 
-            if ($user->isOrganization() || $user->isTeacher()) {
+        //     if ($user->isOrganization() || $user->isTeacher()) {
 
-                if ($user->can('panel_products_create')) {
-                    $items['store']['items'][] = ['text' => trans('update.new_product'), 'url' => '/panel/store/products/new'];
-                }
+        //         if ($user->can('panel_products_create')) {
+        //             $items['store']['items'][] = ['text' => trans('update.new_product'), 'url' => '/panel/store/products/new'];
+        //         }
 
-                if ($user->can('panel_products_lists')) {
-                    $items['store']['items'][] = ['text' => trans('update.products'), 'url' => '/panel/store/products'];
-                }
+        //         if ($user->can('panel_products_lists')) {
+        //             $items['store']['items'][] = ['text' => trans('update.products'), 'url' => '/panel/store/products'];
+        //         }
 
-                if ($user->can('panel_products_sales')) {
-                    $items['store']['items'][] = ['text' => trans('panel.sales'), 'url' => '/panel/store/sales'];
-                }
-            }
+        //         if ($user->can('panel_products_sales')) {
+        //             $items['store']['items'][] = ['text' => trans('panel.sales'), 'url' => '/panel/store/sales'];
+        //         }
+        //     }
 
-            if ($user->can('panel_products_purchases')) {
-                $items['store']['items'][] = ['text' => trans('panel.my_purchases'), 'url' => '/panel/store/purchases'];
-            }
+        //     if ($user->can('panel_products_purchases')) {
+        //         $items['store']['items'][] = ['text' => trans('panel.my_purchases'), 'url' => '/panel/store/purchases'];
+        //     }
 
-            if (($user->isOrganization() || $user->isTeacher()) and $user->can('panel_products_comments')) {
-                $items['store']['items'][] = ['text' => trans('update.product_comments'), 'url' => '/panel/store/products/comments'];
-            }
+        //     if (($user->isOrganization() || $user->isTeacher()) and $user->can('panel_products_comments')) {
+        //         $items['store']['items'][] = ['text' => trans('update.product_comments'), 'url' => '/panel/store/products/comments'];
+        //     }
 
-            if ($user->can('panel_products_my_comments')) {
-                $items['store']['items'][] = ['text' => trans('panel.my_comments'), 'url' => '/panel/store/products/my-comments'];
-            }
-        }
+        //     if ($user->can('panel_products_my_comments')) {
+        //         $items['store']['items'][] = ['text' => trans('panel.my_comments'), 'url' => '/panel/store/products/my-comments'];
+        //     }
+        // }
 
+        // Invoices (renamed from Financial) - only show financial invoices for user role
         if ($user->can('panel_financial')) {
 
-            $items['financial'] = [
+            $items['invoices'] = [
                 'icon' => self::getIcon('financial'),
-                'text' => trans('panel.financial'),
+                'text' => trans('update.invoices'),
                 'url' => '/panel/financial',
                 'items' => []
             ];
 
-            if (($user->isOrganization() || $user->isTeacher()) and $user->can('panel_financial_sales_reports')) {
-                $items['financial']['items'][] = ['text' => trans('financial.sales_report'), 'url' => '/panel/financial/sales'];
-            }
-
             if ($user->can('panel_financial_summary')) {
-                $items['financial']['items'][] = ['text' => trans('financial.financial_summary'), 'url' => '/panel/financial/summary'];
-            }
-
-            if ($user->can('panel_financial_payout')) {
-                $items['financial']['items'][] = ['text' => trans('financial.payout'), 'url' => '/panel/financial/payout'];
-            }
-
-            if ($user->can('panel_financial_charge_account')) {
-                $items['financial']['items'][] = ['text' => trans('financial.charge_account'), 'url' => '/panel/financial/account'];
-            }
-
-            if ($user->can('panel_financial_subscribes')) {
-                $items['financial']['items'][] = ['text' => trans('financial.subscribes'), 'url' => '/panel/financial/subscribes'];
-            }
-
-            if (($user->isOrganization() || $user->isTeacher()) and getRegistrationPackagesGeneralSettings('status') and $user->can('panel_financial_registration_packages')) {
-                $items['financial']['items'][] = ['text' => trans('update.registration_packages'), 'url' => route('panelRegistrationPackagesLists')];
-            }
-
-            if (getInstallmentsSettings('status') and $user->can('panel_financial_installments')) {
-                $items['financial']['items'][] = ['text' => trans('update.installments'), 'url' => '/panel/financial/installments'];
+                $items['invoices']['items'][] = ['text' => trans('financial.financial_summary'), 'url' => '/panel/financial/summary'];
             }
 
         }
@@ -456,31 +453,32 @@ class SidebarItems
             }
         }
 
-        // Forums
-        if (getForumsGeneralSettings('forums_status') and $user->can('panel_forums')) {
-            $items['forums'] = [
-                'icon' => self::getIcon('forums'),
-                'text' => trans('update.forums'),
-                'url' => '/panel/forums',
-                'items' => []
-            ];
+        // Forums removed for user role
+        // // Forums
+        // if (getForumsGeneralSettings('forums_status') and $user->can('panel_forums')) {
+        //     $items['forums'] = [
+        //         'icon' => self::getIcon('forums'),
+        //         'text' => trans('update.forums'),
+        //         'url' => '/panel/forums',
+        //         'items' => []
+        //     ];
 
-            if ($user->can('panel_forums_new_topic')) {
-                $items['forums']['items'][] = ['text' => trans('update.new_topic'), 'url' => '/forums/create-topic'];
-            }
+        //     if ($user->can('panel_forums_new_topic')) {
+        //         $items['forums']['items'][] = ['text' => trans('update.new_topic'), 'url' => '/forums/create-topic'];
+        //     }
 
-            if ($user->can('panel_forums_my_topics')) {
-                $items['forums']['items'][] = ['text' => trans('update.my_topics'), 'url' => '/panel/forums/topics'];
-            }
+        //     if ($user->can('panel_forums_my_topics')) {
+        //         $items['forums']['items'][] = ['text' => trans('update.my_topics'), 'url' => '/panel/forums/topics'];
+        //     }
 
-            if ($user->can('panel_forums_my_posts')) {
-                $items['forums']['items'][] = ['text' => trans('update.my_posts'), 'url' => '/panel/forums/posts'];
-            }
+        //     if ($user->can('panel_forums_my_posts')) {
+        //         $items['forums']['items'][] = ['text' => trans('update.my_posts'), 'url' => '/panel/forums/posts'];
+        //     }
 
-            if ($user->can('panel_forums_bookmarks')) {
-                $items['forums']['items'][] = ['text' => trans('update.bookmarks'), 'url' => '/panel/forums/bookmarks'];
-            }
-        }
+        //     if ($user->can('panel_forums_bookmarks')) {
+        //         $items['forums']['items'][] = ['text' => trans('update.bookmarks'), 'url' => '/panel/forums/bookmarks'];
+        //     }
+        // }
 
 
         // Articles

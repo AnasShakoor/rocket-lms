@@ -1,45 +1,65 @@
-@extends('admin.layouts.app')
-
-@section('content')
-    <section class="section">
-        <div class="section-header">
-            <h1>{{ $pageTitle }}</h1>
-            <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a href="/admin/">{{trans('admin/main.dashboard')}}</a>
-                </div>
-                <div class="breadcrumb-item">{{ $pageTitle}}</div>
-            </div>
-        </div>
-
-        <div class="section-body">
-
-            <div class="row">
-                <div class="col-12 col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-
-                            <div class="empty-state mx-auto d-block"  data-width="900" >
-                                <img class="img-fluid col-md-6" src="/assets/default/img/plugin.png" alt="image"><br/>
-                                <a class="mt-10 font-24 font-weight-bold">This is a separate product!</a> <br/>
-                                <a class="font-16 mt-12 text-gray-500">
-                                    MULHIM Theme & Landing Builder is not included in your current purchase. It is sold separately, and you can purchase it by clicking <strong><a class="font-16" href="https://codecanyon.net/item/mulhim-theme-and-landing-page-builder/59174209">this link</a></strong> <a class="font-16 text-gray-500"> on Codecanyon.
-                                </a>             
-                              </div>
-                        </div>
-                      
-
+<div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="card-statistic">
+            <div class="card-statistic__mask"></div>
+            <div class="card-statistic__wrap">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-gray-500 mt-8">{{ trans('update.total_landing_pages') }}</span>
+                    <div class="d-flex-center size-48 bg-primary-30 rounded-12">
+                        <x-iconsax-bul-colorfilter class="icons text-primary" width="24px" height="24px"/>
                     </div>
                 </div>
+
+                <h5 class="font-24 mt-12 line-height-1 text-black">{{ $totalLandingPages }}</h5>
             </div>
         </div>
-    </section>
+    </div>
 
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="card-statistic">
+            <div class="card-statistic__mask"></div>
+            <div class="card-statistic__wrap">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-gray-500 mt-8">{{ trans('update.active_landing_pages') }}</span>
+                    <div class="d-flex-center size-48 bg-success-30 rounded-12">
+                        <x-iconsax-bul-colorfilter class="icons text-success" width="24px" height="24px"/>
+                    </div>
+                </div>
 
+                <h5 class="font-24 mt-12 line-height-1 text-black">{{ $activeLandingPages }}</h5>
+            </div>
+        </div>
+    </div>
 
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="card-statistic">
+            <div class="card-statistic__mask"></div>
+            <div class="card-statistic__wrap">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-gray-500 mt-8">{{ trans('update.disabled_landing_pages') }}</span>
+                    <div class="d-flex-center size-48 bg-danger-30 rounded-12">
+                        <x-iconsax-bul-colorfilter class="icons text-danger" width="24px" height="24px"/>
+                    </div>
+                </div>
 
+                <h5 class="font-24 mt-12 line-height-1 text-black">{{ $disabledLandingPages }}</h5>
+            </div>
+        </div>
+    </div> 
 
-@endsection
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="card-statistic">
+            <div class="card-statistic__mask"></div>
+            <div class="card-statistic__wrap">
+                <div class="d-flex align-items-start justify-content-between">
+                    <span class="text-gray-500 mt-8">{{ trans('update.landing_components') }}</span>
+                    <div class="d-flex-center size-48 bg-info-30 rounded-12">
+                        <x-iconsax-bul-category class="icons text-info" width="24px" height="24px"/>
+                    </div>
+                </div>
 
-@push('scripts_bottom')
-
-@endpush
+                <h5 class="font-24 mt-12 line-height-1 text-black">{{ $totalLandingComponents }}</h5>
+            </div>
+        </div>
+    </div>
+</div>

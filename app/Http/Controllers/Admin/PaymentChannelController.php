@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PaymentChannelRequest;
 use App\Models\PaymentChannel;
 use App\PaymentChannels\ChannelManager;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PaymentChannelController extends Controller
 {
@@ -14,6 +15,11 @@ class PaymentChannelController extends Controller
         $this->authorize('admin_payment_channel_list');
 
         $paymentChannels = PaymentChannel::orderBy('created_at', 'desc')->paginate(10);
+
+        Log::info('Payment channels list accessed', [
+            'count' => $paymentChannels->count(),
+            'user_id' => auth()->id()
+        ]);
 
         $data = [
             'pageTitle' => trans('admin/pages/paymentChannels.payment_channels'),
@@ -28,9 +34,20 @@ class PaymentChannelController extends Controller
         $this->authorize('admin_payment_channel_edit');
 
         $paymentChannel = PaymentChannel::findOrFail($id);
-        $channelManager = ChannelManager::makeChannel($paymentChannel);
-        $credentialItems = $channelManager->getCredentialItems();
-        $showTestModeToggle = $channelManager->getShowTestModeToggle();
+        $channel = ChannelManager::makeChannel($paymentChannel);
+        $credentialItems = $channel->getCredentialItems();
+        $showTestModeToggle = $channel->getShowTestModeToggle();
+
+        Log::info('Payment channel edit page accessed', [
+            'payment_channel_id' => $id,
+            'class_name' => $paymentChannel->class_name,
+            'status' => $paymentChannel->status,
+            'credential_items' => $credentialItems,
+            'show_test_mode_toggle' => $showTestModeToggle,
+            'has_credentials' => !empty($paymentChannel->credentials),
+            'currencies' => $paymentChannel->currencies,
+            'user_id' => auth()->id()
+        ]);
 
         $data = [
             'pageTitle' => trans('admin/pages/paymentChannels.payment_channel_edit'),
@@ -42,17 +59,24 @@ class PaymentChannelController extends Controller
         return view('admin.settings.financial.payment_channel.create', $data);
     }
 
-    public function update(Request $request, $id)
+    public function update(PaymentChannelRequest $request, $id)
     {
         $this->authorize('admin_payment_channel_edit');
 
-        $this->validate($request, [
-            'title' => 'required',
-        ]);
-
-        $data = $request->all();
+        $data = $request->validated();
         $paymentChannel = PaymentChannel::findOrFail($id);
 
+        Log::info('Payment channel update started', [
+            'payment_channel_id' => $id,
+            'class_name' => $paymentChannel->class_name,
+            'old_status' => $paymentChannel->status,
+            'new_status' => $data['status'],
+            'old_credentials' => $paymentChannel->credentials,
+            'new_credentials' => $data['credentials'] ?? null,
+            'old_currencies' => $paymentChannel->currencies,
+            'new_currencies' => $data['currencies'] ?? null,
+            'user_id' => auth()->id()
+        ]);
 
         $paymentChannel->update([
             'title' => $data['title'],
@@ -60,6 +84,15 @@ class PaymentChannelController extends Controller
             'status' => $data['status'],
             'credentials' => !empty($data['credentials']) ? json_encode($data['credentials']) : null,
             'currencies' => !empty($data['currencies']) ? json_encode($data['currencies']) : null,
+        ]);
+
+        Log::info('Payment channel updated successfully', [
+            'payment_channel_id' => $id,
+            'class_name' => $paymentChannel->class_name,
+            'new_status' => $data['status'],
+            'has_credentials' => !empty($data['credentials']),
+            'credentials_count' => !empty($data['credentials']) ? count($data['credentials']) : 0,
+            'currencies_count' => !empty($data['currencies']) ? count($data['currencies']) : 0
         ]);
 
         return redirect(getAdminPanelUrl("/settings/payment_channels/{$paymentChannel->id}/edit"));
@@ -70,9 +103,19 @@ class PaymentChannelController extends Controller
         $this->authorize('admin_payment_channel_toggle_status');
 
         $channel = PaymentChannel::findOrFail($id);
+        $oldStatus = $channel->status;
+        $newStatus = ($channel->status == 'active') ? 'inactive' : 'active';
+
+        Log::info('Payment channel status toggle', [
+            'payment_channel_id' => $id,
+            'class_name' => $channel->class_name,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'user_id' => auth()->id()
+        ]);
 
         $channel->update([
-            'status' => ($channel->status == 'active') ? 'inactive' : 'active'
+            'status' => $newStatus
         ]);
 
         return redirect(getAdminPanelUrl() . '/settings/financial');

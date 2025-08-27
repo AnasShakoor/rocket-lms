@@ -11,6 +11,7 @@ use App\Models\PaymentChannel;
 use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\Subscribe;
+use App\Models\BnplProvider;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -101,14 +102,19 @@ class SubscribesController extends Controller
             'created_at' => time(),
         ]);
 
-        if ($amount > 0) {
+                    if ($amount > 0) {
 
-            $razorpay = false;
-            foreach ($paymentChannels as $paymentChannel) {
-                if ($paymentChannel->class_name == 'Razorpay') {
-                    $razorpay = true;
+                $razorpay = false;
+                $moyasar = false;
+                foreach ($paymentChannels as $paymentChannel) {
+                    if ($paymentChannel->class_name == 'Razorpay') {
+                        $razorpay = true;
+                    }
+
+                    if ($paymentChannel->class_name == 'Moyasar') {
+                        $moyasar = true;
+                    }
                 }
-            }
 
             $calculatePrices = [
                 'total' => $order->total_amount,
@@ -118,17 +124,25 @@ class SubscribesController extends Controller
                 'tax_price' => $taxPrice,
             ];
 
+            // Get available BNPL providers for the total amount
+            $bnplProviders = BnplProvider::active()->get()->filter(function($provider) use ($order) {
+                $minAmount = $provider->config['min_amount'] ?? 0;
+                $maxAmount = $provider->config['max_amount'] ?? 999999;
+                return $order->total_amount >= $minAmount && $order->total_amount <= $maxAmount;
+            });
 
-            $data = [
-                'pageTitle' => trans('public.checkout_page_title'),
-                'paymentChannels' => $paymentChannels,
-                'total' => $order->total_amount,
-                'order' => $order,
-                'calculatePrices' => $calculatePrices,
-                'count' => 1,
-                'userCharge' => $user->getAccountingCharge(),
-                'razorpay' => $razorpay
-            ];
+                                $data = [
+                        'pageTitle' => trans('public.checkout_page_title'),
+                        'paymentChannels' => $paymentChannels,
+                        'total' => $order->total_amount,
+                        'order' => $order,
+                        'calculatePrices' => $calculatePrices,
+                        'count' => 1,
+                        'userCharge' => $user->getAccountingCharge(),
+                        'razorpay' => $razorpay,
+                        'moyasar' => $moyasar,
+                        'bnplProviders' => $bnplProviders
+                    ];
 
             return view('design_1.web.cart.payment.index', $data);
         }

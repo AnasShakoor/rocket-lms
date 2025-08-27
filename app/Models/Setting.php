@@ -131,9 +131,12 @@ class Setting extends Model implements TranslatableContract
     static function getSetting(&$static, $name, $key = null)
     {
         if (!isset($static)) {
-            $static = cache()->remember('settings.' . $name, 24 * 60 * 60, function () use ($name) {
-                return self::where('name', $name)->first();
+            // Use a single cache key for all settings to avoid multiple cache calls
+            $allSettings = cache()->remember('settings.all', 24 * 60 * 60, function () {
+                return self::all()->keyBy('name');
             });
+            
+            $static = $allSettings->get($name);
         }
 
         $value = [];
@@ -155,6 +158,32 @@ class Setting extends Model implements TranslatableContract
         }
 
         return $value;
+    }
+
+    /**
+     * Clear all settings cache
+     */
+    static function clearSettingsCache()
+    {
+        cache()->forget('settings.all');
+        // Also clear individual setting caches for backward compatibility
+        $settingNames = [
+            self::$seoMetasName,
+            self::$socialsName,
+            self::$generalName,
+            self::$financialName,
+            self::$featuresName,
+            self::$cookieSettingsName,
+            self::$currencySettingsName,
+            self::$offlineBanksName,
+            self::$referralName,
+            self::$notificationTemplatesName,
+            self::$contactPageName,
+        ];
+        
+        foreach ($settingNames as $name) {
+            cache()->forget('settings.' . $name);
+        }
     }
 
     /**

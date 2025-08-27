@@ -110,7 +110,7 @@
 
         <button type="button" class="{{ !empty($isCartPaymentPage) ? 'js-cart-payment-btn' : 'js-cart-checkout' }} btn btn-lg btn-block btn-primary mt-20">
             @if(!empty($isCartPaymentPage))
-                {{ trans('update.pay_now') }}
+                {{ trans('update.pay_with_gateway') }}
             @else
                 {{ trans('cart.checkout') }}
             @endif

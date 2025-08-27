@@ -32,11 +32,49 @@
 
             const channelName = $selectedChannel.attr('data-class');
 
-            if (channelName === 'Razorpay') {
-                $('.razorpay-payment-button').trigger('click');
-            } else {
-                $form.trigger('submit');
-            }
+                    if (channelName === 'Razorpay') {
+            $('.razorpay-payment-button').trigger('click');
+        } else if (channelName === 'Moyasar') {
+            // Handle Moyasar payment form display
+            e.preventDefault();
+            $this.removeClass('loadingbar').prop('disabled', false);
+
+            // Get order ID from form
+            const orderId = $form.find('input[name="order_id"]').val();
+
+            // Fetch Moyasar payment form data
+            $.ajax({
+                url: '/payments/moyasar-form-data',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: JSON.stringify({
+                    order_id: orderId,
+                    gateway: $selectedChannel.val()
+                }),
+                success: function(data) {
+                    if (data.success) {
+                        // Store form data globally and show form
+                        if (typeof moyasarFormData !== 'undefined') {
+                            moyasarFormData = data.payment_form_data;
+                            if (typeof showMoyasarForm === 'function') {
+                                showMoyasarForm();
+                            }
+                        }
+                    } else {
+                        showToast('error', 'Error', data.message || 'Failed to load payment form');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching Moyasar form data:', error);
+                    showToast('error', 'Error', 'Failed to load payment form. Please try again.');
+                }
+            });
+        } else {
+            $form.trigger('submit');
+        }
         } else {
             showToast('error', '', selectPaymentGatewayLang)
         }

@@ -36,7 +36,29 @@ Route::group(['prefix' => '/development'], function () {
 
     Route::prefix('instructor')->middleware(['api.auth', 'api.level-access:teacher'])->namespace('Instructor')->group(base_path('routes/api/instructor.php'));
 
+    Route::post('/tabby/check-eligibility', [App\Http\Controllers\Api\TabbyController::class, 'checkEligibility']);
+    Route::post('/mispay/check-eligibility', [App\Http\Controllers\Api\MisPayController::class, 'checkEligibility']);
 
+    // Debug endpoint for Tabby
+    Route::get('/debug/tabby/test', function() {
+        try {
+            $tabbyService = new \App\Services\TabbyService();
+            $configStatus = $tabbyService->getConfigurationStatus();
+
+            return response()->json([
+                'configured' => $tabbyService->isConfigured(),
+                'config_status' => $configStatus,
+                'api_key_length' => strlen($tabbyService->apiKey ?? ''),
+                'merchant_code_length' => strlen($tabbyService->merchantCode ?? ''),
+                'endpoint' => $tabbyService->apiEndpoint ?? 'not_set'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    });
 
 
 });

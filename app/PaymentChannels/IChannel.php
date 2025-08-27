@@ -31,4 +31,8 @@ interface IChannel
      * */
     public function getCredentialItems(): array;
 
+    /**
+     * @return bool
+     */
+    public function getShowTestModeToggle(): bool;
 }

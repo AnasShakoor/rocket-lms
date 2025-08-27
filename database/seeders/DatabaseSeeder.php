@@ -25,7 +25,10 @@ class DatabaseSeeder extends Seeder
         // New seeders for enhanced features
         $this->call(BnplProvidersSeeder::class);
 
-        // Update sales table with missing columns data
-        $this->call(UpdateSalesTypeSeeder::class);
+        // Add BNPL permissions
+        $this->call(BnplPermissionsSeeder::class);
+
+        // Add purchased courses for user@gmail.com
+        $this->call(UserPurchasedCoursesSeeder::class);
     }
 }

@@ -51,6 +51,13 @@ return [
         'industry_type' => env('PAYTM_INDUSTRY_TYPE'),
     ],
 
+    'tabby' => [
+        'secret_key' => env('TABBY_SECRET_KEY'),
+        'merchant_code' => env('TABBY_MERCHANT_CODE'),
+        'api_endpoint' => env('TABBY_API_ENDPOINT', 'https://api.tabby.ai'),
+        'test_mode' => env('TABBY_TEST_MODE', true),
+    ],
+
     // SMS Channel
     "msg91" => [
         'key' => '', // set from Channel

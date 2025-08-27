@@ -170,9 +170,9 @@
                                 <p class="font-10 text-gray-500 mt-2">{{ $provider->installment_count }} {{ trans('update.installments') }}</p>
                             </div>
                             <div class="text-right">
-                                <div class="font-12 font-weight-bold text-primary js-bnpl-installment-amount" data-provider="{{ $provider->name }}">
-                                    {{ currency() }} {{ number_format(($product->getPriceWithActiveDiscountPrice() * (1 + (getFinancialSettings('tax') ?? 15) / 100) * (1 + $provider->fee_percentage / 100)) / $provider->installment_count, 2) }}
-                                </div>
+                                                            <div class="font-12 font-weight-bold text-primary js-bnpl-installment-amount" data-provider="{{ $provider->name }}">
+                                {{ currency() }} {{ number_format(((float) $product->getPriceWithActiveDiscountPrice() * (1 + ((float) (getFinancialSettings('tax') ?? 15)) / 100) * (1 + (float) $provider->fee_percentage / 100)) / (float) $provider->installment_count, 2) }}
+                            </div>
                                 <div class="font-10 text-gray-500 mt-1">{{ trans('update.per_month') }}</div>
                             </div>
                         </div>

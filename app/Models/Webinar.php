@@ -362,6 +362,30 @@ class Webinar extends Model implements TranslatableContract
         return $capacity > 0 ? $capacity : 0;
     }
 
+
+    public function checkHasExpiredAccessDays($purchaseDate, $giftId = null)
+    {
+        // true => has access
+        // false => not access (expired)
+
+        if (!empty($giftId)) {
+            $gift = Gift::query()->where('id', $giftId)
+                ->where('status', 'active')
+                ->first();
+
+            if (!empty($gift) && !empty($gift->date)) {
+                $purchaseDate = $gift->date;
+            }
+        }
+
+        if ($purchaseDate instanceof \DateTimeInterface) {
+            $purchaseDate = $purchaseDate->getTimestamp();
+        }
+
+        $time = time();
+
+        return strtotime("+{$this->access_days} days", $purchaseDate) > $time;
+    }
     public function getExpiredAccessDays($purchaseDate, $giftId = null)
     {
         if (!empty($giftId)) {
@@ -374,27 +398,12 @@ class Webinar extends Model implements TranslatableContract
             }
         }
 
-        return strtotime("+{$this->access_days} days", $purchaseDate);
-    }
-
-    public function checkHasExpiredAccessDays($purchaseDate, $giftId = null)
-    {
-        // true => has access
-        // false => not access (expired)
-
-        if (!empty($giftId)) {
-            $gift = Gift::query()->where('id', $giftId)
-                ->where('status', 'active')
-                ->first();
-
-            if (!empty($gift) and !empty($gift->date)) {
-                $purchaseDate = $gift->date;
-            }
+        // Fix: Ensure $purchaseDate is an integer timestamp
+        if ($purchaseDate instanceof \DateTimeInterface) {
+            $purchaseDate = $purchaseDate->getTimestamp();
         }
 
-        $time = time();
-
-        return strtotime("+{$this->access_days} days", $purchaseDate) > $time;
+        return strtotime("+{$this->access_days} days", $purchaseDate);
     }
 
     public function getSaleItem($user = null, $checkBundle = false)
@@ -1077,7 +1086,8 @@ class Webinar extends Model implements TranslatableContract
 
     public function getPrice()
     {
-        $price = $this->price;
+        // Ensure price is numeric
+        $price = (float) $this->price;
 
         $specialOffer = $this->activeSpecialOffer();
         if (!empty($specialOffer)) {

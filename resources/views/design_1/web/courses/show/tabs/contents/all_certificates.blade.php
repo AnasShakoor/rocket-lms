@@ -4,9 +4,17 @@
     if ($course->certificate) {
         $courseCertificatesCount += 1;
     }
-
-    $userPassedCourseCertificate = $course->getUserPassedCourseCertificate($authUser);
 @endphp
+
+@php
+    $userPassedCourseCertificate = null;
+@endphp
+
+@auth
+    @php
+        $userPassedCourseCertificate = $course->getUserPassedCourseCertificate(auth()->user());
+    @endphp
+@endauth
 
 @if($courseCertificatesCount > 0)
     <div id="allCertificatesAccordion">

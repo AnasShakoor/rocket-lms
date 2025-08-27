@@ -13,6 +13,7 @@ use App\Models\OrderItem;
 use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\ProductOrder;
+use App\Models\BnplProvider;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -312,15 +313,27 @@ class CartController extends Controller
 
             if (!empty($order) and $order->total_amount > 0) {
                 $razorpay = false;
+                $moyasar = false;
                 $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
 
                 foreach ($paymentChannels as $paymentChannel) {
                     if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
                         $razorpay = true;
                     }
+
+                    if ($paymentChannel->class_name == 'Moyasar' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                        $moyasar = true;
+                    }
                 }
 
                 $totalCashbackAmount = $this->getTotalCashbackAmount($carts, $user, $calculate["sub_total"]);
+
+                // Get available BNPL providers for the total amount
+                $bnplProviders = BnplProvider::active()->get()->filter(function($provider) use ($calculate) {
+                    $minAmount = $provider->config['min_amount'] ?? 0;
+                    $maxAmount = $provider->config['max_amount'] ?? 999999;
+                    return $calculate["total"] >= $minAmount && $calculate["total"] <= $maxAmount;
+                });
 
                 $data = [
                     'pageTitle' => trans('public.checkout_page_title'),
@@ -333,8 +346,11 @@ class CartController extends Controller
                     'count' => $carts->count(),
                     'userCharge' => $user->getAccountingCharge(),
                     'razorpay' => $razorpay,
+                    'moyasar' => $moyasar,
                     'totalCashbackAmount' => $totalCashbackAmount,
+                    'bnplProviders' => $bnplProviders,
                     'previousUrl' => url()->previous(),
+
                 ];
 
                 return view('design_1.web.cart.payment.index', $data);

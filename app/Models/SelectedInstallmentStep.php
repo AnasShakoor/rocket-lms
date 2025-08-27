@@ -48,10 +48,14 @@ class SelectedInstallmentStep extends Model
 
     public function getPrice($itemPrice = 1)
     {
+        // Ensure values are numeric
+        $itemPrice = (float) $itemPrice;
+        $amount = (float) $this->amount;
+
         if ($this->amount_type == 'percent') {
-            return ($itemPrice * $this->amount) / 100;
+            return ($itemPrice * $amount) / 100;
         } else {
-            return $this->amount;
+            return $amount;
         }
     }
 

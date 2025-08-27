@@ -156,7 +156,8 @@ class Subscribe extends Model implements TranslatableContract
 
     public function getPrice()
     {
-        $price = $this->price;
+        // Ensure price is numeric
+        $price = (float) $this->price;
 
         $specialOffer = $this->activeSpecialOffer();
         if (!empty($specialOffer)) {

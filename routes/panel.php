@@ -245,6 +245,8 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
         Route::get('/students', 'GeneratedCertificatesController@index');
         Route::get('/students/{certificateId}/show', 'GeneratedCertificatesController@download');
         Route::get('/{type}/{typeItemId}/details', 'GeneratedCertificatesController@index')->where('type', 'quiz|courses|bundles');
+        Route::get('/download', 'CertificatesDownloadController@index');
+        Route::get('/download/{courseId}', 'CertificatesDownloadController@download');
 
         /* My */
         Route::group(['prefix' => 'my-achievements'], function () {

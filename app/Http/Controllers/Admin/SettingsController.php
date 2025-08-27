@@ -183,7 +183,8 @@ class SettingsController extends Controller
                 ]
             );
 
-            cache()->forget('settings.' . $name);
+            // Clear all settings cache when any setting is updated
+            Setting::clearSettingsCache();
 
             if ($name == 'general') {
                 cache()->forget('settings.getDefaultLocale');
