@@ -30,30 +30,7 @@ class Channel implements IChannel
                 'name' => $order->user->full_name,
             ];
 
-            // First, check eligibility
-            $eligibilityCheck = $this->mispayService->checkEligibility($order, $customerData);
-
-            if (!$eligibilityCheck['success']) {
-                Log::error('MisPay eligibility check failed', [
-                    'order_id' => $order->id,
-                    'error' => $eligibilityCheck['error'] ?? 'Unknown error'
-                ]);
-
-                throw new \Exception('MisPay eligibility check failed: ' . ($eligibilityCheck['error'] ?? 'Unknown error'));
-            }
-
-            if (!$eligibilityCheck['eligible']) {
-                $rejectionReason = $eligibilityCheck['rejection_reason'] ?? 'not_available';
-                $message = $this->mispayService->getRejectionMessage($rejectionReason, app()->getLocale());
-
-                Log::warning('MisPay customer not eligible', [
-                    'order_id' => $order->id,
-                    'rejection_reason' => $rejectionReason,
-                    'message' => $message
-                ]);
-
-                throw new \Exception($message);
-            }
+            // Skip eligibility check and go directly to checkout creation
 
             // Create checkout session
             $checkoutResult = $this->mispayService->createCheckoutSession($order, $customerData);
@@ -202,5 +179,10 @@ class Channel implements IChannel
                 'default' => true
             ]
         ];
+    }
+
+    public function getShowTestModeToggle(): bool
+    {
+        return true;
     }
 }

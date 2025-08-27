@@ -39,7 +39,7 @@ class PaymentController extends Controller
 
         if ($request->input('gateway') === 'bnpl') {
             $this->validate($request, [
-                'bnpl_provider' => 'required|string|exists:bnpl_providers,name'
+                'bnpl_provider' => 'required|integer|exists:bnpl_providers,id'
             ]);
         }
 

@@ -3,6 +3,8 @@
 use App\Mixins\Financial\MultiCurrency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 require 'assets_helpers.php';
 require 'settings.php';
@@ -1692,7 +1694,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
                 if (!empty($user) and !empty($user->email)) {
                     try {
-                        \Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
+                        Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
                     } catch (Exception $exception) {
                         // dd($exception)
                     }
@@ -1721,7 +1723,7 @@ function sendNotificationToEmail($template, $options, $email)
 
         if (env('APP_ENV') == 'production') {
             try {
-                \Mail::to($email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
+                Mail::to($email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
             } catch (Exception $exception) {
                 // dd($exception)
             }
@@ -2519,4 +2521,30 @@ function getDefaultAvatarPath()
     }
 
     return $avatarUrl;
+}
+
+function calculateBnplBreakdown(float $baseAmount, float $vatPercentage, float $surchargePercentage, int $installmentsCount = 4): array
+{
+    $baseAmount = max(0.0, $baseAmount);
+    $vatPercentage = max(0.0, $vatPercentage);
+    $surchargePercentage = max(0.0, $surchargePercentage);
+    $installmentsCount = max(1, $installmentsCount);
+
+    $vatAmount = round($baseAmount * ($vatPercentage / 100), 2);
+    $subtotalWithVat = round($baseAmount + $vatAmount, 2);
+    $surchargeAmount = round($subtotalWithVat * ($surchargePercentage / 100), 2);
+    $totalWithSurcharge = round($subtotalWithVat + $surchargeAmount, 2);
+    $perInstallment = round($totalWithSurcharge / $installmentsCount, 2);
+
+    return [
+        'base_amount' => $baseAmount,
+        'vat_percentage' => $vatPercentage,
+        'vat_amount' => $vatAmount,
+        'subtotal_with_vat' => $subtotalWithVat,
+        'surcharge_percentage' => $surchargePercentage,
+        'surcharge_amount' => $surchargeAmount,
+        'total_with_surcharge' => $totalWithSurcharge,
+        'installments_count' => $installmentsCount,
+        'per_installment' => $perInstallment,
+    ];
 }

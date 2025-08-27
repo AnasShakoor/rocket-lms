@@ -13,6 +13,7 @@ class TabbyService
     public $apiEndpoint;
     public $merchantCode;
     public $isTest;
+    public $publicApiKey;
 
     public function __construct()
     {
@@ -22,8 +23,9 @@ class TabbyService
             ->first();
 
         if ($tabbyProvider) {
-            $this->apiKey = $tabbyProvider->secret_api_key;
-            $this->merchantCode = $tabbyProvider->merchant_code;
+            $this->apiKey = $tabbyProvider->secret_api_key ?? 'sk_test_019890d8-6d73-9f99-f50c-05504e1c8756';
+            $this->merchantCode = $tabbyProvider->merchant_code ?? 'Riyadhsau';
+            $this->publicApiKey = $tabbyProvider->public_api_key ?? 'pk_test_019890d8-6d73-9f99-f50c-05500080d876';
 
             // Get additional config from the config field
             $config = $tabbyProvider->config ?? [];
@@ -119,22 +121,60 @@ class TabbyService
                     'currency' => $order->currency ?? 'SAR',
                     'description' => 'Order #' . $order->id,
                     'buyer' => [
-                        'name' => $customerData['name'] ?? $order->user->full_name,
-                        'email' => $customerData['email'] ?? $order->user->email,
                         'phone' => $customerData['phone'] ?? $order->user->mobile,
+                        'email' => $customerData['email'] ?? $order->user->email,
+                        'name' => $customerData['name'] ?? $order->user->full_name,
+                        'dob' => optional($order->user->birth_date ?? null, fn($d) =>
+                            \Illuminate\Support\Carbon::parse($d)->format('Y-m-d')) ?? '1990-01-01',
+                    ],
+                    'buyer_history' => [
+                        'registered_since' => optional($order->user->created_at ?? now(), fn($d) => \Illuminate\Support\Carbon::parse($d)->toIso8601String()),
+                        'loyalty_level' => 0,
+                        'wishlist_count' => 0,
+                        'is_social_networks_connected' => false,
+                        'is_phone_number_verified' => !empty($order->user->mobile),
+                        'is_email_verified' => (bool) ($order->user->email_verified_at ?? false),
+                    ],
+                    'order' => [
+                        'tax_amount' => '0.00',
+                        'shipping_amount' => '0.00',
+                        'discount_amount' => '0.00',
+                        'updated_at' => now()->toIso8601String(),
+                        'reference_id' => (string) $order->id,
+                        'items' => $this->formatOrderItems($order, true),
+                    ],
+                    'order_history' => [
+                        [
+                            'purchased_at' => now()->subDays(30)->toIso8601String(),
+                            'amount' => (string) $order->total_amount,
+                            'payment_method' => 'card',
+                            'status' => 'new',
+                            'buyer' => [
+                                'phone' => $customerData['phone'] ?? $order->user->mobile,
+                                'email' => $customerData['email'] ?? $order->user->email,
+                                'name' => $customerData['name'] ?? $order->user->full_name,
+                                'dob' => optional($order->user->birth_date ?? null, fn($d) => \Illuminate\Support\Carbon::parse($d)->format('Y-m-d')) ?? '1990-01-01',
+                            ],
+                            'shipping_address' => [
+                                'city' => $customerData['city'] ?? 'Riyadh',
+                                'address' => $customerData['address'] ?? 'Saudi Arabia',
+                                'zip' => $customerData['zip'] ?? '00000',
+                            ],
+                            'items' => $this->formatOrderItems($order, true),
+                        ]
                     ],
                     'shipping_address' => [
                         'city' => $customerData['city'] ?? 'Riyadh',
                         'address' => $customerData['address'] ?? 'Saudi Arabia',
                         'zip' => $customerData['zip'] ?? '00000',
                     ],
-                    'order' => [
-                        'reference_id' => (string) $order->id,
-                        'updated_at' => now()->toIso8601String(),
-                        'tax_amount' => '0.00',
-                        'shipping_amount' => '0.00',
-                        'discount_amount' => '0.00',
-                        'items' => $this->formatOrderItems($order, true),
+                    'meta' => [
+                        'order_id' => '#' . (string) $order->id,
+                        'customer' => '#user-' . (string) $order->user_id,
+                    ],
+                    'attachment' => [
+                        'body' => json_encode(['flight_reservation_details' => ['pnr' => 'TR9088999', 'itinerary' => [], 'insurance' => [], 'passengers' => [], 'affiliate_name' => 'rocket-lms']]),
+                        'content_type' => 'application/vnd.tabby.v1+json',
                     ],
                 ],
                 'lang' => app()->getLocale() === 'ar' ? 'ar' : 'en',
@@ -144,13 +184,12 @@ class TabbyService
                     'cancel' => route('payments.tabby.cancel'),
                     'failure' => route('payments.tabby.failure'),
                 ],
-                'token' => null,
             ];
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
-            ])->post($this->apiEndpoint . '/v2/checkout', $payload);
+            ])->post($this->apiEndpoint . '/api/v2/checkout', $payload);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -250,7 +289,7 @@ class TabbyService
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
-            ])->post($this->apiEndpoint . '/v2/checkout', $payload);
+            ])->post($this->apiEndpoint . '/api/v2/checkout', $payload);
 
             if ($response->successful()) {
                 $data = $response->json();

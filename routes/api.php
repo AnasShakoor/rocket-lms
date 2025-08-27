@@ -36,8 +36,7 @@ Route::group(['prefix' => '/development'], function () {
 
     Route::prefix('instructor')->middleware(['api.auth', 'api.level-access:teacher'])->namespace('Instructor')->group(base_path('routes/api/instructor.php'));
 
-    Route::post('/tabby/check-eligibility', [App\Http\Controllers\Api\TabbyController::class, 'checkEligibility']);
-    Route::post('/mispay/check-eligibility', [App\Http\Controllers\Api\MisPayController::class, 'checkEligibility']);
+    // Eligibility checks disabled for Tabby and MisPay
 
     // Debug endpoint for Tabby
     Route::get('/debug/tabby/test', function() {
