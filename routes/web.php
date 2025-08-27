@@ -488,22 +488,23 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['web
     Route::group(['prefix' => 'landings'], function () {
         Route::get('/{landing_url}', 'LandingController@index');
     });
+
+    // Tabby BNPL Routes
+    Route::get('/payments/verify/Tabby', 'PaymentController@tabbyVerify')->name('payments.tabby.verify');
+    Route::get('/payments/tabby/success', 'PaymentController@tabbySuccess')->name('payments.tabby.success');
+    Route::get('/payments/tabby/cancel', 'PaymentController@tabbyCancel')->name('payments.tabby.cancel');
+    Route::get('/payments/tabby/failure', 'PaymentController@tabbyFailure')->name('payments.tabby.failure');
+
+    // MisPay BNPL Routes
+    Route::get('/payments/verify/MisPay', 'PaymentController@mispayVerify')->name('payments.mispay.verify');
+    Route::get('/payments/mispay/success', 'PaymentController@mispaySuccess')->name('payments.mispay.success');
+    Route::get('/payments/mispay/cancel', 'PaymentController@mispayCancel')->name('payments.mispay.cancel');
+    Route::get('/payments/mispay/failure', 'PaymentController@mispayFailure')->name('payments.mispay.failure');
 });
 
 // Purchase Code Routes
 Route::get('/purchase-code', [PurchaseCodeController::class, 'show'])->name('purchase.code.show');
 Route::post('/purchase-code', [PurchaseCodeController::class, 'store'])->name('purchase.code.store');
-
-Route::get('/payments/verify/Tabby', 'PaymentController@tabbyVerify')->name('payments.tabby.verify');
-Route::get('/payments/tabby/success', 'PaymentController@tabbySuccess')->name('payments.tabby.success');
-Route::get('/payments/tabby/cancel', 'PaymentController@tabbyCancel')->name('payments.tabby.cancel');
-Route::get('/payments/tabby/failure', 'PaymentController@tabbyFailure')->name('payments.tabby.failure');
-
-// MisPay BNPL Routes
-Route::get('/payments/verify/MisPay', 'PaymentController@mispayVerify')->name('payments.mispay.verify');
-Route::get('/payments/mispay/success', 'PaymentController@mispaySuccess')->name('payments.mispay.success');
-Route::get('/payments/mispay/cancel', 'PaymentController@mispayCancel')->name('payments.mispay.cancel');
-Route::get('/payments/mispay/failure', 'PaymentController@mispayFailure')->name('payments.mispay.failure');
 
 // Debug routes for BNPL providers
 Route::get('/debug/tabby/status', function() {
