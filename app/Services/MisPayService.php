@@ -17,8 +17,10 @@ class MisPayService
 
     public function __construct()
     {
-        // Get MisPay configuration from database
-        $mispayProvider = \App\Models\BnplProvider::where('name', 'MisPay')->first();
+        // Get MisPay configuration from database (normalize provider name: remove spaces, lowercase)
+        $mispayProvider = \App\Models\BnplProvider::query()
+            ->whereRaw("REPLACE(LOWER(name), ' ', '') = ?", ['mispay'])
+            ->first();
 
         if ($mispayProvider) {
             // MIS Pay uses app_id and app_secret_key fields
@@ -67,7 +69,9 @@ class MisPayService
      */
     public function getConfigurationStatus(): array
     {
-        $mispayProvider = \App\Models\BnplProvider::where('name', 'MisPay')->first();
+        $mispayProvider = \App\Models\BnplProvider::query()
+            ->whereRaw("REPLACE(LOWER(name), ' ', '') = ?", ['mispay'])
+            ->first();
 
         if (!$mispayProvider) {
             return [

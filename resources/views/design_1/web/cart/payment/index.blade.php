@@ -859,6 +859,7 @@
         </div>
     </div>
 </div>
+    @endif
 
     {{-- Tabby Payment Modal --}}
     <div id="tabby-modal" class="tabby-modal" style="display: none;">
@@ -906,6 +907,7 @@
         </div>
     </div>
 
+    @if(!empty($moyasar) and $moyasar)
 <script src="https://cdn.jsdelivr.net/npm/moyasar-payment-form@2.0.17/dist/moyasar.umd.min.js"></script>
 <script>
                     document.addEventListener('DOMContentLoaded', function() {
@@ -2492,6 +2494,7 @@
         var selectPaymentGatewayLang = '{{ trans('update.select_a_payment_gateway') }}';
         var pleaseWaitLang = '{{ trans('update.please_wait') }}';
         var transferringToLang = '{{ trans('update.transferring_to_the_payment_gateway') }}';
+        var mispayEligibilityUrl = '{{ url('/api/development/mispay/check-eligibility') }}';
 
         // Global payment method selection function
         function selectPaymentMethod(method) {
@@ -2576,22 +2579,40 @@
                 });
 
                 // Handle BNPL provider selection
+                const handleBnplChange = function(radio) {
+                    if (radio && radio.checked) {
+                        const rawName = (radio.getAttribute('data-provider-name') || '').toLowerCase().trim();
+                        const normalizedName = rawName.replace(/[^a-z0-9]/g, '');
+                        console.log('BNPL provider selected:', radio.value, 'name:', rawName);
+
+                        if (normalizedName.includes('tabby')) {
+                            showTabbyModal();
+                        } else if (normalizedName.includes('mispay')) {
+                            showMisPayModal();
+                        }
+                    }
+                };
+
                 bnplProviderRadios.forEach(radio => {
                     radio.addEventListener('change', function() {
-                        if (this.checked) {
-                            console.log('BNPL provider selected:', this.value);
-
-                            // Check if it's Tabby and show popup
-                            if (this.getAttribute('data-provider-name') === 'Tabby') {
-                                showTabbyModal();
-                            }
-                            // Check if it's MisPay and show popup
-                            else if (this.getAttribute('data-provider-name') === 'MisPay') {
-                                showMisPayModal();
-                            }
-                        }
+                        handleBnplChange(this);
                     });
+
+                    // Also attach via label click for robustness
+                    const label = document.querySelector(`label[for="${radio.id}"]`);
+                    if (label) {
+                        label.addEventListener('click', function() {
+                            // Delay to allow the radio to become checked
+                            setTimeout(() => handleBnplChange(radio), 0);
+                        });
+                    }
                 });
+
+                // If a BNPL provider is preselected, trigger the modal
+                const initiallyChecked = Array.from(bnplProviderRadios).find(r => r.checked);
+                if (initiallyChecked) {
+                    handleBnplChange(initiallyChecked);
+                }
             }
         });
 
@@ -2824,6 +2845,16 @@
         }
 
         function checkMisPayEligibility() {
+            // Debug: print MisPay credentials from bnpl_providers table
+            @php
+                $mispayProvider = \App\Models\BnplProvider::query()
+                    ->whereRaw("REPLACE(LOWER(name), ' ', '') = ?", ['mispay'])
+                    ->first();
+                $mispayDebug = $mispayProvider ? $mispayProvider->only(['id','name','app_id','app_secret_key','widget_access_key','config']) : null;
+            @endphp
+            const mispayProviderDebug = {!! json_encode($mispayDebug) !!};
+            console.log('MisPay provider (from DB):', mispayProviderDebug);
+
             const container = document.getElementById('mispay-form-container');
 
             // Show loading state
@@ -2842,7 +2873,7 @@
             const currency = '{{ $order->currency ?? "SAR" }}';
 
             // Make AJAX call to check eligibility
-            fetch('/api/mispay/check-eligibility', {
+            fetch(mispayEligibilityUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -16,8 +16,10 @@ class TabbyService
 
     public function __construct()
     {
-        // Get Tabby configuration from database
-        $tabbyProvider = \App\Models\BnplProvider::where('name', 'Tabby')->first();
+        // Get Tabby configuration from database (normalize provider name: remove spaces, lowercase)
+        $tabbyProvider = \App\Models\BnplProvider::query()
+            ->whereRaw("REPLACE(LOWER(name), ' ', '') = ?", ['tabby'])
+            ->first();
 
         if ($tabbyProvider) {
             $this->apiKey = $tabbyProvider->secret_api_key;
@@ -65,7 +67,9 @@ class TabbyService
      */
     public function getConfigurationStatus(): array
     {
-        $tabbyProvider = \App\Models\BnplProvider::where('name', 'Tabby')->first();
+        $tabbyProvider = \App\Models\BnplProvider::query()
+            ->whereRaw("REPLACE(LOWER(name), ' ', '') = ?", ['tabby'])
+            ->first();
 
         if (!$tabbyProvider) {
             return [
@@ -110,21 +114,37 @@ class TabbyService
 
         try {
             $payload = [
-                'amount' => $order->total_amount,
-                'currency' => $order->currency ?? 'SAR',
-                'buyer' => [
-                    'email' => $customerData['email'] ?? $order->user->email,
-                    'phone' => $customerData['phone'] ?? $order->user->mobile,
-                    'name' => $customerData['name'] ?? $order->user->full_name,
+                'payment' => [
+                    'amount' => (string) $order->total_amount,
+                    'currency' => $order->currency ?? 'SAR',
+                    'description' => 'Order #' . $order->id,
+                    'buyer' => [
+                        'name' => $customerData['name'] ?? $order->user->full_name,
+                        'email' => $customerData['email'] ?? $order->user->email,
+                        'phone' => $customerData['phone'] ?? $order->user->mobile,
+                    ],
+                    'shipping_address' => [
+                        'city' => $customerData['city'] ?? 'Riyadh',
+                        'address' => $customerData['address'] ?? 'Saudi Arabia',
+                        'zip' => $customerData['zip'] ?? '00000',
+                    ],
+                    'order' => [
+                        'reference_id' => (string) $order->id,
+                        'updated_at' => now()->toIso8601String(),
+                        'tax_amount' => '0.00',
+                        'shipping_amount' => '0.00',
+                        'discount_amount' => '0.00',
+                        'items' => $this->formatOrderItems($order, true),
+                    ],
                 ],
-                'shipping_address' => [
-                    'city' => $customerData['city'] ?? 'Riyadh',
-                    'address' => $customerData['address'] ?? 'Saudi Arabia',
-                    'zip' => $customerData['zip'] ?? '00000',
-                ],
-                'items' => $this->formatOrderItems($order),
                 'lang' => app()->getLocale() === 'ar' ? 'ar' : 'en',
-                'test' => $this->isTest,
+                'merchant_code' => $this->merchantCode,
+                'merchant_urls' => [
+                    'success' => route('payments.tabby.success'),
+                    'cancel' => route('payments.tabby.cancel'),
+                    'failure' => route('payments.tabby.failure'),
+                ],
+                'token' => null,
             ];
 
             $response = Http::withHeaders([
@@ -194,26 +214,37 @@ class TabbyService
 
         try {
             $payload = [
-                'amount' => $order->total_amount,
-                'currency' => $order->currency ?? 'SAR',
-                'buyer' => [
-                    'email' => $customerData['email'] ?? $order->user->email,
-                    'phone' => $customerData['phone'] ?? $order->user->mobile,
-                    'name' => $customerData['name'] ?? $order->user->full_name,
+                'payment' => [
+                    'amount' => (string) $order->total_amount,
+                    'currency' => $order->currency ?? 'SAR',
+                    'description' => 'Order #' . $order->id,
+                    'buyer' => [
+                        'name' => $customerData['name'] ?? $order->user->full_name,
+                        'email' => $customerData['email'] ?? $order->user->email,
+                        'phone' => $customerData['phone'] ?? $order->user->mobile,
+                    ],
+                    'shipping_address' => [
+                        'city' => $customerData['city'] ?? 'Riyadh',
+                        'address' => $customerData['address'] ?? 'Saudi Arabia',
+                        'zip' => $customerData['zip'] ?? '00000',
+                    ],
+                    'order' => [
+                        'reference_id' => (string) $order->id,
+                        'updated_at' => now()->toIso8601String(),
+                        'tax_amount' => '0.00',
+                        'shipping_amount' => '0.00',
+                        'discount_amount' => '0.00',
+                        'items' => $this->formatOrderItems($order, true),
+                    ],
                 ],
-                'shipping_address' => [
-                    'city' => $customerData['city'] ?? 'Riyadh',
-                    'address' => $customerData['address'] ?? 'Saudi Arabia',
-                    'zip' => $customerData['zip'] ?? '00000',
-                ],
-                'items' => $this->formatOrderItems($order),
                 'lang' => app()->getLocale() === 'ar' ? 'ar' : 'en',
-                'test' => $this->isTest,
+                'merchant_code' => $this->merchantCode,
                 'merchant_urls' => [
                     'success' => route('payments.tabby.success'),
                     'cancel' => route('payments.tabby.cancel'),
                     'failure' => route('payments.tabby.failure'),
                 ],
+                'token' => null,
             ];
 
             $response = Http::withHeaders([
@@ -334,17 +365,31 @@ class TabbyService
     /**
      * Format order items for Tabby API
      */
-    protected function formatOrderItems(Order $order): array
+    protected function formatOrderItems(Order $order, bool $detailed = false): array
     {
         $items = [];
 
         foreach ($order->orderItems as $item) {
-            $items[] = [
-                'title' => $item->title ?? 'Course',
-                'quantity' => 1,
-                'unit_price' => $item->amount,
-                'category' => 'education'
-            ];
+            if ($detailed) {
+                $items[] = [
+                    'reference_id' => (string) ($item->id ?? $order->id),
+                    'title' => $item->title ?? 'Course',
+                    'description' => $item->title ?? 'Course',
+                    'quantity' => 1,
+                    'unit_price' => (string) ($item->amount ?? $order->total_amount),
+                    'image_url' => url('/assets/default/img/default/course.png'),
+                    'product_url' => url('/'),
+                    'category' => 'education',
+                    'is_refundable' => true,
+                ];
+            } else {
+                $items[] = [
+                    'title' => $item->title ?? 'Course',
+                    'quantity' => 1,
+                    'unit_price' => $item->amount,
+                    'category' => 'education'
+                ];
+            }
         }
 
         return $items;
