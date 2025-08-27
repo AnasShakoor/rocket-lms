@@ -2597,15 +2597,6 @@
                     radio.addEventListener('change', function() {
                         handleBnplChange(this);
                     });
-
-                    // Also attach via label click for robustness
-                    const label = document.querySelector(`label[for="${radio.id}"]`);
-                    if (label) {
-                        label.addEventListener('click', function() {
-                            // Delay to allow the radio to become checked
-                            setTimeout(() => handleBnplChange(radio), 0);
-                        });
-                    }
                 });
 
                 // If a BNPL provider is preselected, trigger the modal
@@ -2631,8 +2622,8 @@
             modal.classList.add('active');
             modal.style.display = 'block';
 
-            // Bypass eligibility and proceed directly
-            proceedWithMisPay();
+            // Start MisPay checkout and open hosted form in iframe
+            startMisPayCheckout();
         }
 
         function hideTabbyModal() {
@@ -2953,6 +2944,49 @@
                     </button>
                 </div>
             `;
+        }
+
+        async function startMisPayCheckout() {
+            // Prevent multiple simultaneous calls
+            if (window.mispayCheckoutInProgress) {
+                console.log('MisPay checkout already in progress, skipping...');
+                return;
+            }
+            window.mispayCheckoutInProgress = true;
+
+            try {
+                const orderId = document.querySelector('input[name="order_id"]').value;
+                const res = await fetch('/api/development/mispay/start-checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') || '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ order_id: orderId })
+                });
+                const data = await res.json();
+                if (!data.success || !data.web_url) {
+                    throw new Error(data.error || 'Failed to start MisPay checkout');
+                }
+
+                const container = document.getElementById('mispay-form-container');
+                container.innerHTML = `
+                    <div class="ratio ratio-16x9">
+                        <iframe src="${data.web_url}" style="width:100%; height:600px; border:0;" allow="payment *; fullscreen"></iframe>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('MisPay start checkout error:', e);
+                const container = document.getElementById('mispay-form-container');
+                container.innerHTML = `
+                    <div class="tabby-eligibility-status error">
+                        <i class="fas fa-times-circle"></i> ${e.message}
+                    </div>
+                `;
+            } finally {
+                // Reset the flag when done
+                window.mispayCheckoutInProgress = false;
+            }
         }
 
         function proceedWithMisPay() {

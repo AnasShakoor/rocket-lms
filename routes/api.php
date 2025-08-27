@@ -38,6 +38,9 @@ Route::group(['prefix' => '/development'], function () {
 
     // Eligibility checks disabled for Tabby and MisPay
 
+    // Start MisPay checkout session
+    Route::post('/mispay/start-checkout', [App\Http\Controllers\Api\MisPayController::class, 'startCheckout']);
+
     // Debug endpoint for Tabby
     Route::get('/debug/tabby/test', function() {
         try {

@@ -29,7 +29,7 @@ class MisPayService
 
             // Get additional config from the config field
             $config = $mispayProvider->config ?? [];
-            $this->baseUrl = $config['api_endpoint'] ?? 'https://api.mispay.co/sandbox/v1/api';
+            $this->baseUrl = $config['api_endpoint'] ?? 'https://api.mispay.co/sandbox/v1/api/';
             $this->isTest = $config['test_mode'] ?? true;
 
             // Log configuration for debugging
@@ -43,7 +43,7 @@ class MisPayService
         } else {
             // Fallback to config file if no database record found
             $this->appId = config('services.mispay.app_id');
-            $this->baseUrl = config('services.mispay.base_url', 'https://api.mispay.co/sandbox/v1/api');
+            $this->baseUrl = config('services.mispay.base_url', 'https://api.mispay.co/sandbox/v1/api/');
             $this->appSecret = config('services.mispay.app_secret');
             $this->isTest = config('services.mispay.test_mode', true);
 
@@ -254,9 +254,12 @@ class MisPayService
     public function createCheckoutSession(Order $order, array $customerData): array
     {
         if (!$this->isConfigured()) {
+            $configStatus = $this->getConfigurationStatus();
+            Log::error('MisPay not configured for checkout', $configStatus);
             return [
                 'success' => false,
-                'error' => 'MisPay is not properly configured'
+                'error' => 'MisPay is not properly configured: ' . $configStatus['message'],
+                'config_status' => $configStatus
             ];
         }
 

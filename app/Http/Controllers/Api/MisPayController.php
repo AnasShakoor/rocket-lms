@@ -90,4 +90,50 @@ class MisPayController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Start MisPay checkout and return session data
+     */
+    public function startCheckout(Request $request)
+    {
+        try {
+            $request->validate([
+                'order_id' => 'required|integer'
+            ]);
+
+            $order = Order::find($request->input('order_id'));
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Order not found'
+                ], 404);
+            }
+
+            $customerData = [
+                'email' => $order->user->email ?? '',
+                'phone' => $order->user->mobile ?? '',
+                'name' => $order->user->full_name ?? '',
+            ];
+
+            $result = $this->mispayService->createCheckoutSession($order, $customerData);
+            return response()->json($result, $result['success'] ? 200 : 400);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Validation failed',
+                'details' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('MisPay start checkout API error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Internal server error'
+            ], 500);
+        }
+    }
 }
