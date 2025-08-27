@@ -2074,6 +2074,9 @@ function handlePrice($price, $showCurrency = true, $format = true, $coursePagePr
         return 0;
     }
 
+    // Ensure price is numeric
+    $price = (float) $price;
+
     $userCurrencyItem = getUserCurrencyItem($user);
     $priceDisplay = getFinancialSettings('price_display') ?? 'only_price';
 
@@ -2153,13 +2156,16 @@ function convertPriceToUserCurrency($price, $userCurrencyItem = null)
         $userCurrencyItem = getUserCurrencyItem();
     }
 
+    // Ensure price is numeric
+    $price = (float) $price;
+
     $exchangeRate = (!empty($userCurrencyItem) and $userCurrencyItem->exchange_rate) ? $userCurrencyItem->exchange_rate : 0;
 
     if ($exchangeRate > 0) {
         return $price * $exchangeRate;
     }
 
-    return $price + 0;
+    return $price;
 }
 
 function convertPriceToDefaultCurrency($price, $userCurrencyItem = null)
@@ -2167,6 +2173,9 @@ function convertPriceToDefaultCurrency($price, $userCurrencyItem = null)
     if (empty($userCurrencyItem)) {
         $userCurrencyItem = getUserCurrencyItem();
     }
+
+    // Ensure price is numeric
+    $price = (float) $price;
 
     $exchangeRate = (!empty($userCurrencyItem) and $userCurrencyItem->exchange_rate) ? $userCurrencyItem->exchange_rate : 0;
 

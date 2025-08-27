@@ -23,7 +23,8 @@ class InstallmentStep extends Model implements TranslatableContract
 
     public function getAmountAttribute()
     {
-        return $this->attributes['amount'] + 0;
+        // Ensure amount is numeric
+        return (float) $this->attributes['amount'];
     }
 
 
@@ -41,10 +42,14 @@ class InstallmentStep extends Model implements TranslatableContract
 
     public function getPrice($itemPrice = 1)
     {
+        // Ensure values are numeric
+        $itemPrice = (float) $itemPrice;
+        $amount = (float) $this->amount;
+
         if ($this->amount_type == 'percent') {
-            return ($itemPrice * $this->amount) / 100;
+            return ($itemPrice * $amount) / 100;
         } else {
-            return $this->amount;
+            return $amount;
         }
     }
 

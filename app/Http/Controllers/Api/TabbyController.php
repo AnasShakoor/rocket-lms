@@ -22,6 +22,7 @@ class TabbyController extends Controller
      */
     public function checkEligibility(Request $request)
     {
+        dd($request->all());
         try {
             $request->validate([
                 'order_id' => 'required|integer',

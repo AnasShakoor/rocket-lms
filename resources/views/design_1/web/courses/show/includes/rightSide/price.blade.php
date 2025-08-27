@@ -76,12 +76,12 @@
     <div class="mt-20 px-16">
         <h6 class="font-12 font-weight-bold text-dark">{{ trans('update.buy_now_pay_later') }}</h6>
         <p class="font-10 text-gray-500 mt-4">{{ trans('update.split_your_payment') }}</p>
-        
+
         <div class="d-grid grid-columns-2 gap-12 mt-12">
             @foreach($bnplProviders as $provider)
-                <div class="bnpl-option-card p-12 rounded-12 border border-gray-200 cursor-pointer js-bnpl-option" 
-                     data-provider="{{ $provider->name }}" 
-                     data-installments="{{ $provider->installment_count }}" 
+                <div class="bnpl-option-card p-12 rounded-12 border border-gray-200 cursor-pointer js-bnpl-option"
+                     data-provider="{{ $provider->name }}"
+                     data-installments="{{ $provider->installment_count }}"
                      data-fee="{{ $provider->fee_percentage }}"
                      data-course-price="{{ $course->getPrice() }}">
                     <div class="d-flex align-items-center justify-content-between">
@@ -91,7 +91,7 @@
                         </div>
                         <div class="text-right">
                             <div class="font-12 font-weight-bold text-primary js-bnpl-installment-amount" data-provider="{{ $provider->name }}">
-                                {{ currency() }} {{ number_format(($course->getPrice() * (1 + (getFinancialSettings('tax') ?? 15) / 100) * (1 + $provider->fee_percentage / 100)) / $provider->installment_count, 2) }}
+                                {{ currency() }} {{ number_format(((float) $course->getPrice() * (1 + ((float) (getFinancialSettings('tax') ?? 15)) / 100) * (1 + (float) $provider->fee_percentage / 100)) / (float) $provider->installment_count, 2) }}
                             </div>
                             <div class="font-10 text-gray-500 mt-1">{{ trans('update.per_month') }}</div>
                         </div>
@@ -99,7 +99,7 @@
                 </div>
             @endforeach
         </div>
-        
+
         {{-- BNPL Breakdown Modal Trigger --}}
         <button type="button" class="js-bnpl-breakdown-btn btn btn-outline-primary btn-sm mt-12">
             <x-iconsax-lin-info-circle class="icons" width="16px" height="16px"/>

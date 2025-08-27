@@ -49,6 +49,10 @@ class BnplProvider extends Model
 
     public function calculateInstallmentAmount($basePrice, $vatPercentage = 15)
     {
+        // Ensure all values are numeric
+        $basePrice = (float) $basePrice;
+        $vatPercentage = (float) $vatPercentage;
+
         $priceWithVat = $basePrice * (1 + ($vatPercentage / 100));
         $priceWithFee = $priceWithVat * (1 + ($this->fee_percentage / 100));
         return round($priceWithFee / $this->installment_count, 2);

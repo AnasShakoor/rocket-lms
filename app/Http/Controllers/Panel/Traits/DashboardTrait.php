@@ -32,13 +32,12 @@ trait DashboardTrait
     {
         $coursesCount = count($userBoughtWebinarsIds);
 
-        // Calculate CME hours from completed meetings
-        // $cmeHours = ReserveMeeting::where('user_id', $user->id)
-        //     ->whereNotNull('reserved_at')
-        //     ->whereHas('sale', function ($query) {
-        //         $query->whereNull('refund_at');
-        //     })->where('status', ReserveMeeting::$finished)
-        //     ->sum('duration');
+        // Calculate meetings count
+        $meetingsCount = ReserveMeeting::where('user_id', $user->id)
+            ->whereNotNull('reserved_at')
+            ->whereHas('sale', function ($query) {
+                $query->whereNull('refund_at');
+            })->count();
 
         $certificatesCount = Certificate::query()->where('student_id', $user->id)->count();
 

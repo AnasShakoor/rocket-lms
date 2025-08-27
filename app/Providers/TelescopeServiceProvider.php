@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
-use Laravel\Telescope\TelescopeApplicationServiceProvider;
 
-class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
+class TelescopeServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -31,6 +31,14 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     }
 
     /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        $this->gate();
+    }
+
+    /**
      * Prevent sensitive request details from being logged by Telescope.
      */
     protected function hideSensitiveRequestDetails(): void
@@ -38,7 +46,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         if ($this->app->environment('local')) {
             return;
         }
-        
+
         Telescope::hideRequestParameters(['_token']);
         Telescope::hideRequestHeaders([
             'cookie',

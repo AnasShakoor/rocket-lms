@@ -57,6 +57,9 @@ class Ticket extends Model implements TranslatableContract
 
     public function getPriceWithDiscount($price, $activeSpecialOffer = null)
     {
+        // Ensure price is numeric
+        $price = (float) $price;
+
         $percent = $this->discount;
 
         if (!empty($activeSpecialOffer)) {

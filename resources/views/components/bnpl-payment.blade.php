@@ -4,7 +4,7 @@
     if (!$providers) {
         $providers = \App\Models\BnplProvider::active()->get();
     }
-    
+
     $priceWithVat = $price * (1 + ($vatPercentage / 100));
 @endphp
 
@@ -14,14 +14,14 @@
             <i class="fas fa-credit-card mr-2"></i>
             Pay in Installments
         </h6>
-        
+
         <div class="row">
             @foreach($providers as $provider)
                 @php
                     $installmentAmount = $provider->calculateInstallmentAmount($price, $vatPercentage);
-                    $totalWithFee = $priceWithVat * (1 + ($provider->fee_percentage / 100));
+                    $totalWithFee = $priceWithVat * (1 + ((float) $provider->fee_percentage / 100));
                 @endphp
-                
+
                 <div class="col-md-6 mb-3">
                     <div class="bnpl-option-card">
                         <div class="d-flex align-items-center mb-2">
@@ -32,7 +32,7 @@
                             @endif
                             <h6 class="mb-0">{{ $provider->name }}</h6>
                         </div>
-                        
+
                         <div class="installment-details">
                             <div class="row text-center">
                                 <div class="col-4">
@@ -48,7 +48,7 @@
                                     <strong>{{ number_format($totalWithFee, 2) }} SAR</strong>
                                 </div>
                             </div>
-                            
+
                             @if($provider->fee_percentage > 0)
                                 <div class="fee-notice mt-2">
                                     <small class="text-muted">
@@ -58,8 +58,8 @@
                                 </div>
                             @endif
                         </div>
-                        
-                        <button class="btn btn-outline-primary btn-sm btn-block mt-2" 
+
+                        <button class="btn btn-outline-primary btn-sm btn-block mt-2"
                                 onclick="selectBnplProvider('{{ $provider->id }}', '{{ $provider->name }}')">
                             Choose {{ $provider->name }}
                         </button>
@@ -67,7 +67,7 @@
                 </div>
             @endforeach
         </div>
-        
+
         <div class="text-center mt-3">
             <small class="text-muted">
                 <i class="fas fa-shield-alt"></i>
@@ -133,7 +133,7 @@ function selectBnplProvider(providerId, providerName) {
     // This function would typically integrate with your payment system
     // For now, we'll just show an alert
     alert(`Selected ${providerName} for installment payment. Provider ID: ${providerId}`);
-    
+
     // You could also:
     // - Update a hidden form field
     // - Redirect to payment page

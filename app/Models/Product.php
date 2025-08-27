@@ -261,7 +261,8 @@ class Product extends Model implements TranslatableContract
     {
         $activeDiscount = $this->getActiveDiscount();
 
-        $price = $this->price ?? 0;
+        // Ensure price is numeric
+        $price = (float) ($this->price ?? 0);
 
         if (!empty($activeDiscount)) {
             $price = $price - ($price * $activeDiscount->percent / 100);
