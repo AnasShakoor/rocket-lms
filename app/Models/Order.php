@@ -44,7 +44,8 @@ class Order extends Model
         'bnpl_fee' => 'decimal:2',
         'bnpl_fee_percentage' => 'decimal:2',
         'installment_count' => 'integer',
-        'bnpl_payment_schedule' => 'array'
+        'bnpl_payment_schedule' => 'array',
+        'payment_data' => 'array'
     ];
 
     protected static function boot()

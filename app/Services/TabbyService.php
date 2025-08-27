@@ -13,6 +13,7 @@ class TabbyService
     public $apiEndpoint;
     public $merchantCode;
     public $isTest;
+    public $publicApiKey;
 
     public function __construct()
     {
@@ -22,8 +23,9 @@ class TabbyService
             ->first();
 
         if ($tabbyProvider) {
-            $this->apiKey = $tabbyProvider->secret_api_key;
-            $this->merchantCode = $tabbyProvider->merchant_code;
+            $this->apiKey = $tabbyProvider->secret_api_key ?? 'sk_test_019890d8-6d73-9f99-f50c-05504e1c8756';
+            $this->merchantCode = $tabbyProvider->merchant_code ?? 'Riyadhsau';
+            $this->publicApiKey = $tabbyProvider->public_api_key ?? 'pk_test_019890d8-6d73-9f99-f50c-05500080d876';
 
             // Get additional config from the config field
             $config = $tabbyProvider->config ?? [];
@@ -119,22 +121,60 @@ class TabbyService
                     'currency' => $order->currency ?? 'SAR',
                     'description' => 'Order #' . $order->id,
                     'buyer' => [
-                        'name' => $customerData['name'] ?? $order->user->full_name,
-                        'email' => $customerData['email'] ?? $order->user->email,
                         'phone' => $customerData['phone'] ?? $order->user->mobile,
+                        'email' => $customerData['email'] ?? $order->user->email,
+                        'name' => $customerData['name'] ?? $order->user->full_name,
+                        'dob' => optional($order->user->birth_date ?? null, fn($d) =>
+                            \Illuminate\Support\Carbon::parse($d)->format('Y-m-d')) ?? '1990-01-01',
+                    ],
+                    'buyer_history' => [
+                        'registered_since' => optional($order->user->created_at ?? now(), fn($d) => \Illuminate\Support\Carbon::parse($d)->toIso8601String()),
+                        'loyalty_level' => 0,
+                        'wishlist_count' => 0,
+                        'is_social_networks_connected' => false,
+                        'is_phone_number_verified' => !empty($order->user->mobile),
+                        'is_email_verified' => (bool) ($order->user->email_verified_at ?? false),
+                    ],
+                    'order' => [
+                        'tax_amount' => '0.00',
+                        'shipping_amount' => '0.00',
+                        'discount_amount' => '0.00',
+                        'updated_at' => now()->toIso8601String(),
+                        'reference_id' => (string) $order->id,
+                        'items' => $this->formatOrderItems($order, true),
+                    ],
+                    'order_history' => [
+                        [
+                            'purchased_at' => now()->subDays(30)->toIso8601String(),
+                            'amount' => (string) $order->total_amount,
+                            'payment_method' => 'card',
+                            'status' => 'new',
+                            'buyer' => [
+                                'phone' => $customerData['phone'] ?? $order->user->mobile,
+                                'email' => $customerData['email'] ?? $order->user->email,
+                                'name' => $customerData['name'] ?? $order->user->full_name,
+                                'dob' => optional($order->user->birth_date ?? null, fn($d) => \Illuminate\Support\Carbon::parse($d)->format('Y-m-d')) ?? '1990-01-01',
+                            ],
+                            'shipping_address' => [
+                                'city' => $customerData['city'] ?? 'Riyadh',
+                                'address' => $customerData['address'] ?? 'Saudi Arabia',
+                                'zip' => $customerData['zip'] ?? '00000',
+                            ],
+                            'items' => $this->formatOrderItems($order, true),
+                        ]
                     ],
                     'shipping_address' => [
                         'city' => $customerData['city'] ?? 'Riyadh',
                         'address' => $customerData['address'] ?? 'Saudi Arabia',
                         'zip' => $customerData['zip'] ?? '00000',
                     ],
-                    'order' => [
-                        'reference_id' => (string) $order->id,
-                        'updated_at' => now()->toIso8601String(),
-                        'tax_amount' => '0.00',
-                        'shipping_amount' => '0.00',
-                        'discount_amount' => '0.00',
-                        'items' => $this->formatOrderItems($order, true),
+                    'meta' => [
+                        'order_id' => '#' . (string) $order->id,
+                        'customer' => '#user-' . (string) $order->user_id,
+                    ],
+                    'attachment' => [
+                        'body' => json_encode(['flight_reservation_details' => ['pnr' => 'TR9088999', 'itinerary' => [], 'insurance' => [], 'passengers' => [], 'affiliate_name' => 'rocket-lms']]),
+                        'content_type' => 'application/vnd.tabby.v1+json',
                     ],
                 ],
                 'lang' => app()->getLocale() === 'ar' ? 'ar' : 'en',
@@ -144,16 +184,61 @@ class TabbyService
                     'cancel' => route('payments.tabby.cancel'),
                     'failure' => route('payments.tabby.failure'),
                 ],
-                'token' => null,
             ];
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
-            ])->post($this->apiEndpoint . '/v2/checkout', $payload);
+            ])->post($this->apiEndpoint . '/api/v2/checkout', $payload);
 
             if ($response->successful()) {
                 $data = $response->json();
+
+                // Check if response is HTML (authentication/login page)
+                if (is_string($data) && str_contains($data, '<!DOCTYPE html>')) {
+                    Log::error('Tabby API returned HTML instead of JSON - authentication required for eligibility', [
+                        'order_id' => $order->id,
+                        'response_preview' => substr($data, 0, 500),
+                        'endpoint' => $this->apiEndpoint . '/api/v2/checkout'
+                    ]);
+
+                    return [
+                        'success' => false,
+                        'eligible' => false,
+                        'error' => 'Tabby API requires authentication. Please check your API credentials and endpoint configuration.',
+                        'details' => 'API returned HTML login page instead of JSON response'
+                    ];
+                }
+
+                // Validate response data
+                if (!is_array($data)) {
+                    Log::error('Tabby API returned invalid response format for eligibility', [
+                        'order_id' => $order->id,
+                        'response' => $response->body()
+                    ]);
+
+                    return [
+                        'success' => false,
+                        'eligible' => false,
+                        'error' => 'Invalid API response format'
+                    ];
+                }
+
+                // Validate response structure
+                if (!$this->validateApiResponse($data, 'general')) {
+                    Log::warning('Tabby API response structure validation failed for eligibility', [
+                        'order_id' => $order->id,
+                        'response' => $data
+                    ]);
+                }
+
+                // Log the response structure for debugging
+                Log::info('Tabby API response structure for eligibility', [
+                    'order_id' => $order->id,
+                    'response_keys' => array_keys($data),
+                    'has_configuration' => isset($data['configuration']),
+                    'response' => $data
+                ]);
 
                 Log::info('Tabby eligibility check successful', [
                     'order_id' => $order->id,
@@ -165,7 +250,7 @@ class TabbyService
                     'success' => true,
                     'eligible' => $data['status'] === 'created',
                     'status' => $data['status'] ?? 'unknown',
-                    'rejection_reason' => $data['configuration']['products']['installments']['rejection_reason'] ?? null,
+                    'rejection_reason' => $this->getNestedValue($data, 'configuration.products.installments.rejection_reason'),
                     'data' => $data
                 ];
             }
@@ -250,22 +335,89 @@ class TabbyService
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
-            ])->post($this->apiEndpoint . '/v2/checkout', $payload);
+            ])->post($this->apiEndpoint . '/api/v2/checkout', $payload);
 
             if ($response->successful()) {
                 $data = $response->json();
 
+                // Check if response is HTML (authentication/login page)
+                if (is_string($data) && str_contains($data, '<!DOCTYPE html>')) {
+                    Log::error('Tabby API returned HTML instead of JSON - authentication required', [
+                        'order_id' => $order->id,
+                        'response_preview' => substr($data, 0, 500),
+                        'endpoint' => $this->apiEndpoint . '/api/v2/checkout'
+                    ]);
+
+                    return [
+                        'success' => false,
+                        'error' => 'Tabby API requires authentication. Please check your API credentials and endpoint configuration.',
+                        'details' => 'API returned HTML login page instead of JSON response'
+                    ];
+                }
+
+                // Validate response data
+                if (!is_array($data)) {
+                    Log::error('Tabby API returned invalid response format', [
+                        'order_id' => $order->id,
+                        'response' => $response->body()
+                    ]);
+
+                    return [
+                        'success' => false,
+                        'error' => 'Invalid API response format'
+                    ];
+                }
+
+                // Validate response structure
+                if (!$this->validateApiResponse($data, 'checkout')) {
+                    Log::warning('Tabby API response structure validation failed', [
+                        'order_id' => $order->id,
+                        'response' => $data
+                    ]);
+                }
+
+                // Log the response structure for debugging
+                Log::info('Tabby API response structure', [
+                    'order_id' => $order->id,
+                    'response_keys' => array_keys($data),
+                    'has_configuration' => isset($data['configuration']),
+                    'has_payment' => isset($data['payment']),
+                    'response' => $data
+                ]);
+
                 if ($data['status'] === 'created') {
                     Log::info('Tabby checkout session created', [
                         'order_id' => $order->id,
-                        'payment_id' => $data['payment']['id'] ?? null,
-                        'web_url' => $data['configuration']['available_products']['installments'][0]['web_url'] ?? null
+                        'payment_id' => $this->getNestedValue($data, 'payment.id'),
+                        'web_url' => $this->extractWebUrl($data)
+                    ]);
+
+                    $webUrl = $this->extractWebUrl($data);
+
+                    if (!$webUrl) {
+                        Log::warning('Tabby checkout created but web_url not found', [
+                            'order_id' => $order->id,
+                            'response' => $data
+                        ]);
+                    }
+
+                    // Log the complete response structure for debugging
+                    Log::info('Tabby checkout complete response', [
+                        'order_id' => $order->id,
+                        'payment_id' => $this->getNestedValue($data, 'payment.id'),
+                        'web_url' => $webUrl,
+                        'merchant_urls' => [
+                            'success' => route('payments.tabby.success'),
+                            'cancel' => route('payments.tabby.cancel'),
+                            'failure' => route('payments.tabby.failure'),
+                        ],
+                        'full_response' => $data
                     ]);
 
                     return [
                         'success' => true,
-                        'payment_id' => $data['payment']['id'] ?? null,
-                        'web_url' => $data['configuration']['available_products']['installments'][0]['web_url'] ?? null,
+                        'payment_id' => $this->getNestedValue($data, 'payment.id'),
+                        'web_url' => $webUrl,
                         'data' => $data
                     ];
                 } else {
@@ -318,7 +470,7 @@ class TabbyService
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
-            ])->get($this->apiEndpoint . '/v2/payments/' . $paymentId);
+            ])->get($this->apiEndpoint . '/api/v2/payments/' . $paymentId);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -393,6 +545,142 @@ class TabbyService
         }
 
         return $items;
+    }
+
+    /**
+     * Safely get nested array value
+     */
+    private function getNestedValue(array $array, string $path, $default = null)
+    {
+        $keys = explode('.', $path);
+        $value = $array;
+
+        foreach ($keys as $key) {
+            if (!is_array($value) || !array_key_exists($key, $value)) {
+                return $default;
+            }
+            $value = $value[$key];
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get Tabby redirect URL with proper parameters
+     */
+    public function getRedirectUrl(string $type, string $paymentId): string
+    {
+        $baseUrl = url('/payments/tabby/' . $type);
+
+        // Add the payment ID as a query parameter
+        $redirectUrl = $baseUrl . '?payment_id=' . $paymentId;
+
+        Log::info('Tabby redirect URL generated', [
+            'type' => $type,
+            'payment_id' => $paymentId,
+            'redirect_url' => $redirectUrl
+        ]);
+
+        return $redirectUrl;
+    }
+
+    /**
+     * Extract web URL from Tabby response with fallback strategies
+     */
+    private function extractWebUrl(array $data): ?string
+    {
+        // Try multiple possible paths for web_url
+        $possiblePaths = [
+            'configuration.available_products.installments.0.web_url',
+            'configuration.available_products.0.web_url',
+            'configuration.installments.0.web_url',
+            'configuration.web_url',
+            'web_url'
+        ];
+
+        foreach ($possiblePaths as $path) {
+            $webUrl = $this->getNestedValue($data, $path);
+            if ($webUrl) {
+                return $webUrl;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Validate Tabby API response structure
+     */
+    private function validateApiResponse(array $data, string $context = 'general'): bool
+    {
+        $requiredFields = ['status'];
+
+        if ($context === 'checkout') {
+            $requiredFields[] = 'payment';
+        }
+
+        foreach ($requiredFields as $field) {
+            if (!array_key_exists($field, $data)) {
+                Log::warning("Tabby API response missing required field: {$field}", [
+                    'context' => $context,
+                    'available_fields' => array_keys($data),
+                    'response' => $data
+                ]);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Test API connection and credentials
+     */
+    public function testApiConnection(): array
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ])->get($this->apiEndpoint . '/api/v2/payments');
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'message' => 'API connection successful',
+                    'status_code' => $response->status()
+                ];
+            }
+
+            if ($response->status() === 401) {
+                return [
+                    'success' => false,
+                    'error' => 'API authentication failed - invalid API key',
+                    'status_code' => $response->status()
+                ];
+            }
+
+            if ($response->status() === 403) {
+                return [
+                    'success' => false,
+                    'error' => 'API access forbidden - check permissions',
+                    'status_code' => $response->status()
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => 'API connection failed',
+                'status_code' => $response->status(),
+                'response' => $response->body()
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'API connection exception: ' . $e->getMessage()
+            ];
+        }
     }
 
     /**

@@ -39,7 +39,7 @@ class PaymentController extends Controller
 
         if ($request->input('gateway') === 'bnpl') {
             $this->validate($request, [
-                'bnpl_provider' => 'required|string|exists:bnpl_providers,name'
+                'bnpl_provider' => 'required|integer|exists:bnpl_providers,id'
             ]);
         }
 
@@ -296,14 +296,52 @@ class PaymentController extends Controller
         }
     }
 
-        public function paymentVerify(Request $request, $gateway)
+    public function paymentVerify(Request $request, $gateway)
     {
+        Log::info('Payment verification started', [
+            'gateway' => $gateway,
+            'request_data' => $request->all()
+        ]);
+
+        // First, check if it's a BNPL provider
+        $bnplProvider = \App\Models\BnplProvider::where('name', $gateway)
+            ->where('is_active', true)
+            ->first();
+
+        if ($bnplProvider) {
+            Log::info('BNPL provider found, using BNPL verification', [
+                'gateway' => $gateway,
+                'provider_id' => $bnplProvider->id
+            ]);
+
+            // Route to the appropriate BNPL verification method
+            switch (strtolower($gateway)) {
+                case 'tabby':
+                    return $this->tabbyVerify($request);
+                case 'mispay':
+                    return $this->mispayVerify($request);
+                default:
+                    Log::error('Unknown BNPL provider', [
+                        'gateway' => $gateway,
+                        'provider_id' => $bnplProvider->id
+                    ]);
+
+                    $toastData = [
+                        'title' => trans('cart.fail_purchase'),
+                        'msg' => 'Unknown BNPL provider',
+                        'status' => 'error'
+                    ];
+                    return redirect('cart')->with(['toast' => $toastData]);
+            }
+        }
+
+        // If not BNPL, check traditional payment channels
         $paymentChannel = PaymentChannel::where('class_name', $gateway)
             ->where('status', 'active')
             ->first();
 
         if (!$paymentChannel) {
-            Log::error('Payment verification failed: Payment channel not found or inactive', [
+            Log::error('Payment verification failed: Neither BNPL provider nor payment channel found', [
                 'gateway' => $gateway,
                 'user_id' => auth()->id()
             ]);
@@ -315,6 +353,11 @@ class PaymentController extends Controller
             ];
             return redirect('cart')->with(['toast' => $toastData]);
         }
+
+        Log::info('Traditional payment channel found, using channel manager', [
+            'gateway' => $gateway,
+            'channel_id' => $paymentChannel->id
+        ]);
 
         try {
             $channelManager = ChannelManager::makeChannel($paymentChannel);
@@ -528,6 +571,25 @@ class PaymentController extends Controller
     }
 
     /**
+     * Safely merge payment data arrays, handling both array and JSON string inputs
+     */
+    private function mergePaymentData($order, array $newData): array
+    {
+        $existingData = $order->payment_data;
+
+        if (is_array($existingData)) {
+            return array_merge($existingData, $newData);
+        }
+
+        if (is_string($existingData)) {
+            $decoded = json_decode($existingData, true);
+            return array_merge($decoded ?: [], $newData);
+        }
+
+        return $newData;
+    }
+
+    /**
      * Tabby payment verification
      */
     public function tabbyVerify(Request $request)
@@ -589,7 +651,7 @@ class PaymentController extends Controller
             if ($tabbyStatus === 'AUTHORIZED') {
                 $order->update([
                     'status' => Order::$paid,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'tabby_verified_at' => now(),
                         'tabby_status' => $tabbyStatus
                     ])
@@ -604,7 +666,7 @@ class PaymentController extends Controller
             } elseif (in_array($tabbyStatus, ['REJECTED', 'EXPIRED', 'CANCELLED'])) {
                 $order->update([
                     'status' => Order::$fail,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'tabby_verified_at' => now(),
                         'tabby_status' => $tabbyStatus
                     ])
@@ -652,11 +714,27 @@ class PaymentController extends Controller
      */
     public function tabbySuccess(Request $request)
     {
-        $paymentId = $request->get('payment_id');
+        Log::info('Tabby success callback received', [
+            'request_data' => $request->all(),
+            'query_params' => $request->query()
+        ]);
+
+        // Tabby might send different parameters, try multiple possibilities
+        $paymentId = $request->get('payment_id') ??
+                    $request->get('session_id') ??
+                    $request->get('id') ??
+                    $request->get('sessionId');
 
         if ($paymentId) {
+            Log::info('Tabby success callback: Redirecting to verification', [
+                'payment_id' => $paymentId
+            ]);
             return redirect()->route('payments.tabby.verify', ['payment_id' => $paymentId]);
         }
+
+        Log::warning('Tabby success callback: No payment ID found', [
+            'request_data' => $request->all()
+        ]);
 
         return redirect('/cart');
     }
@@ -666,7 +744,15 @@ class PaymentController extends Controller
      */
     public function tabbyCancel(Request $request)
     {
-        $paymentId = $request->get('payment_id');
+        Log::info('Tabby cancel callback received', [
+            'request_data' => $request->all()
+        ]);
+
+        // Tabby might send different parameters, try multiple possibilities
+        $paymentId = $request->get('payment_id') ??
+                    $request->get('session_id') ??
+                    $request->get('id') ??
+                    $request->get('sessionId');
 
         if ($paymentId) {
             // Find and update order status
@@ -675,7 +761,7 @@ class PaymentController extends Controller
             if ($order) {
                 $order->update([
                     'status' => Order::$fail,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'tabby_cancelled_at' => now(),
                         'tabby_status' => 'CANCELLED'
                     ])
@@ -690,6 +776,10 @@ class PaymentController extends Controller
             return redirect('/cart')->with(['toast' => $toastData]);
         }
 
+        Log::warning('Tabby cancel callback: No payment ID found', [
+            'request_data' => $request->all()
+        ]);
+
         return redirect('/cart');
     }
 
@@ -698,7 +788,15 @@ class PaymentController extends Controller
      */
     public function tabbyFailure(Request $request)
     {
-        $paymentId = $request->get('payment_id');
+        Log::info('Tabby failure callback received', [
+            'request_data' => $request->all()
+        ]);
+
+        // Tabby might send different parameters, try multiple possibilities
+        $paymentId = $request->get('payment_id') ??
+                    $request->get('session_id') ??
+                    $request->get('id') ??
+                    $request->get('sessionId');
 
         if ($paymentId) {
             // Find and update order status
@@ -707,7 +805,7 @@ class PaymentController extends Controller
             if ($order) {
                 $order->update([
                     'status' => Order::$fail,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'tabby_failed_at' => now(),
                         'tabby_status' => 'REJECTED'
                     ])
@@ -721,6 +819,10 @@ class PaymentController extends Controller
             ];
             return redirect('/cart')->with(['toast' => $toastData]);
         }
+
+        Log::warning('Tabby failure callback: No payment ID found', [
+            'request_data' => $request->all()
+        ]);
 
         return redirect('/cart');
     }
@@ -787,7 +889,7 @@ class PaymentController extends Controller
             if ($mispayStatus === 'completed' || $mispayStatus === 'success') {
                 $order->update([
                     'status' => Order::$paid,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'mispay_verified_at' => now(),
                         'mispay_status' => $mispayStatus
                     ])
@@ -802,7 +904,7 @@ class PaymentController extends Controller
             } elseif (in_array($mispayStatus, ['failed', 'cancelled', 'expired'])) {
                 $order->update([
                     'status' => Order::$fail,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'mispay_verified_at' => now(),
                         'mispay_status' => $mispayStatus
                     ])
@@ -873,7 +975,7 @@ class PaymentController extends Controller
             if ($order) {
                 $order->update([
                     'status' => Order::$fail,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'mispay_cancelled_at' => now(),
                         'mispay_status' => 'CANCELLED'
                     ])
@@ -905,7 +1007,7 @@ class PaymentController extends Controller
             if ($order) {
                 $order->update([
                     'status' => Order::$fail,
-                    'payment_data' => array_merge($order->payment_data ?? [], [
+                    'payment_data' => $this->mergePaymentData($order, [
                         'mispay_failed_at' => now(),
                         'mispay_status' => 'FAILED'
                     ])

@@ -52,10 +52,10 @@ return [
     ],
 
     'tabby' => [
-        'secret_key' => env('TABBY_SECRET_KEY'),
-        'merchant_code' => env('TABBY_MERCHANT_CODE'),
-        'api_endpoint' => env('TABBY_API_ENDPOINT', 'https://api.tabby.ai'),
-        'test_mode' => env('TABBY_TEST_MODE', true),
+        'secret_key' => 'sk_test_019890d8-6d73-9f99-f50c-05504e1c8756',
+        'merchant_code' => 'Riyadhsau',
+        'api_endpoint' => 'https://api.tabby.ai',
+        'test_mode' => true,
     ],
 
     // SMS Channel

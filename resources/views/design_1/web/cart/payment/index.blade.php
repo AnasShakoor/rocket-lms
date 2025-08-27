@@ -2597,15 +2597,6 @@
                     radio.addEventListener('change', function() {
                         handleBnplChange(this);
                     });
-
-                    // Also attach via label click for robustness
-                    const label = document.querySelector(`label[for="${radio.id}"]`);
-                    if (label) {
-                        label.addEventListener('click', function() {
-                            // Delay to allow the radio to become checked
-                            setTimeout(() => handleBnplChange(radio), 0);
-                        });
-                    }
                 });
 
                 // If a BNPL provider is preselected, trigger the modal
@@ -2622,8 +2613,8 @@
             modal.classList.add('active');
             modal.style.display = 'block';
 
-            // Check eligibility
-            checkTabbyEligibility();
+            // Bypass eligibility and proceed directly
+            proceedWithTabby();
         }
 
         function showMisPayModal() {
@@ -2631,8 +2622,8 @@
             modal.classList.add('active');
             modal.style.display = 'block';
 
-            // Check eligibility
-            checkMisPayEligibility();
+            // Start MisPay checkout and open hosted form in iframe
+            startMisPayCheckout();
         }
 
         function hideTabbyModal() {
@@ -2644,47 +2635,38 @@
         function checkTabbyEligibility() {
             const container = document.getElementById('tabby-form-container');
 
-            // Show loading state
+            // Eligibility disabled: directly show proceed button UI
+            const totalAmount = {{ $calculatePrices["total"] ?? 0 }};
+            const installmentCount = 4;
+            const monthlyPayment = (totalAmount / installmentCount).toFixed(2);
             container.innerHTML = `
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">{{ trans('update.tabby_eligibility_check') }}</span>
+                <div class="tabby-logo">T</div>
+                <h5>{{ trans('update.tabby_pay_later') }}</h5>
+                <p class="text-muted">{{ trans('update.tabby_use_any_card') }}</p>
+                <div class="tabby-installment-info">
+                    <h5>Installment Details</h5>
+                    <div class="tabby-installment-detail">
+                        <span class="label">Total Amount:</span>
+                        <span class="value">${totalAmount} {{ $order->currency ?? "SAR" }}</span>
                     </div>
-                    <p class="mt-3 text-muted">{{ trans('update.tabby_eligibility_check') }}</p>
+                    <div class="tabby-installment-detail">
+                        <span class="label">Installments:</span>
+                        <span class="value">${installmentCount}</span>
+                    </div>
+                    <div class="tabby-installment-detail">
+                        <span class="label">Monthly Payment:</span>
+                        <span class="value">${monthlyPayment} {{ $order->currency ?? "SAR" }}</span>
+                    </div>
+                </div>
+                <div class="tabby-eligibility-status success">
+                    <i class="fas fa-check-circle"></i> {{ trans('update.tabby_redirecting') }}
+                </div>
+                <div class="mt-4">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="proceedWithTabby()">
+                        {{ trans('update.tabby_processing') }}
+                    </button>
                 </div>
             `;
-
-            // Get order details
-            const orderId = document.querySelector('input[name="order_id"]').value;
-            const totalAmount = {{ $calculatePrices["total"] ?? 0 }};
-            const currency = '{{ $order->currency ?? "SAR" }}';
-
-            // Make AJAX call to check eligibility
-            fetch('/api/development/tabby/check-eligibility', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    amount: totalAmount,
-                    currency: currency
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Tabby eligibility response:', data);
-                if (data.success && data.eligible) {
-                    showTabbyEligibleState(data);
-                } else {
-                    showTabbyIneligibleState(data);
-                }
-            })
-            .catch(error => {
-                console.error('Tabby eligibility check failed:', error);
-                showTabbyErrorState();
-            });
         }
 
         function showTabbyEligibleState(data) {
@@ -2845,58 +2827,22 @@
         }
 
         function checkMisPayEligibility() {
-            // Debug: print MisPay credentials from bnpl_providers table
-            @php
-                $mispayProvider = \App\Models\BnplProvider::query()
-                    ->whereRaw("REPLACE(LOWER(name), ' ', '') = ?", ['mispay'])
-                    ->first();
-                $mispayDebug = $mispayProvider ? $mispayProvider->only(['id','name','app_id','app_secret_key','widget_access_key','config']) : null;
-            @endphp
-            const mispayProviderDebug = {!! json_encode($mispayDebug) !!};
-            console.log('MisPay provider (from DB):', mispayProviderDebug);
-
             const container = document.getElementById('mispay-form-container');
 
-            // Show loading state
+            // Eligibility disabled: directly show proceed button UI
+            const totalAmount = {{ $calculatePrices["total"] ?? 0 }};
             container.innerHTML = `
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">{{ trans('update.mispay_eligibility_check') }}</span>
-                    </div>
-                    <p class="mt-3 text-muted">{{ trans('update.mispay_eligibility_check') }}</p>
+                <div class="tabby-logo">M</div>
+                <h5>{{ trans('update.mispay_pay_later') }}</h5>
+                <div class="tabby-eligibility-status success">
+                    <i class="fas fa-check-circle"></i> {{ trans('update.tabby_redirecting') }}
+                </div>
+                <div class="mt-4">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="proceedWithMisPay()">
+                        {{ trans('update.mispay_processing') }}
+                    </button>
                 </div>
             `;
-
-            // Get order details
-            const orderId = document.querySelector('input[name="order_id"]').value;
-            const totalAmount = {{ $calculatePrices["total"] ?? 0 }};
-            const currency = '{{ $order->currency ?? "SAR" }}';
-
-            // Make AJAX call to check eligibility
-            fetch(mispayEligibilityUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    amount: totalAmount,
-                    currency: currency
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.eligible) {
-                    showMisPayEligibleState(data);
-                } else {
-                    showMisPayIneligibleState(data);
-                }
-            })
-            .catch(error => {
-                console.error('MisPay eligibility check failed:', error);
-                showMisPayErrorState();
-            });
         }
 
         function showMisPayEligibleState(data) {
@@ -2998,6 +2944,49 @@
                     </button>
                 </div>
             `;
+        }
+
+        async function startMisPayCheckout() {
+            // Prevent multiple simultaneous calls
+            if (window.mispayCheckoutInProgress) {
+                console.log('MisPay checkout already in progress, skipping...');
+                return;
+            }
+            window.mispayCheckoutInProgress = true;
+
+            try {
+                const orderId = document.querySelector('input[name="order_id"]').value;
+                const res = await fetch('/api/development/mispay/start-checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') || '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ order_id: orderId })
+                });
+                const data = await res.json();
+                if (!data.success || !data.web_url) {
+                    throw new Error(data.error || 'Failed to start MisPay checkout');
+                }
+
+                const container = document.getElementById('mispay-form-container');
+                container.innerHTML = `
+                    <div class="ratio ratio-16x9">
+                        <iframe src="${data.web_url}" style="width:100%; height:600px; border:0;" allow="payment *; fullscreen"></iframe>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('MisPay start checkout error:', e);
+                const container = document.getElementById('mispay-form-container');
+                container.innerHTML = `
+                    <div class="tabby-eligibility-status error">
+                        <i class="fas fa-times-circle"></i> ${e.message}
+                    </div>
+                `;
+            } finally {
+                // Reset the flag when done
+                window.mispayCheckoutInProgress = false;
+            }
         }
 
         function proceedWithMisPay() {

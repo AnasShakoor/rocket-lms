@@ -231,7 +231,7 @@ trait InstallmentsTrait
 
         if (!empty($user)) {
             $time = time();
-            $overdueIntervalDays = getInstallmentsSettings('overdue_interval_days') ?? 0; // days
+            $overdueIntervalDays = (int) (getInstallmentsSettings('overdue_interval_days') ?? 0); // days
             $overdueIntervalDays = $overdueIntervalDays * 86400;
             $time = $time - $overdueIntervalDays;
 
