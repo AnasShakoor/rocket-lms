@@ -54,7 +54,7 @@ return [
     'tabby' => [
         'secret_key' => 'sk_test_019890d8-6d73-9f99-f50c-05504e1c8756',
         'merchant_code' => 'Riyadhsau',
-        'api_endpoint' => 'https://api.tabby.ai',
+        'api_endpoint' => 'https://api.tabby.dev',
         'test_mode' => true,
     ],
 
