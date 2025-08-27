@@ -23,7 +23,7 @@
         "clickpaysa/laravel_package": "^1.4",
         "craftsys/msg91-laravel": "^0.15.1",
         "cviebrock/eloquent-sluggable": "*",
-        "doctrine/dbal": "^4.2",
+        "doctrine/dbal": "^3.8",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^3.0",
         "gizemsever/laravel-paytr": "^2.1",

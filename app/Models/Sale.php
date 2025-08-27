@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class Sale extends Model
 {
@@ -22,6 +23,8 @@ class Sale extends Model
     public static $installmentPayment = 'installmentPayment';
 
     protected $table = 'sales';
+    
+    public $timestamps = true;
 
     protected $fillable = [
         'buyer_id',
@@ -237,11 +240,12 @@ class Sale extends Model
     // Static method for backward compatibility
     public static function createSales($orderItem, $paymentMethod)
     {
-        // Prepare data with fallbacks for missing columns
-        $data = [
-            'amount' => $orderItem->amount ?? 0,
-            'payment_method' => $paymentMethod,
-        ];
+        try {
+            // Prepare data with fallbacks for missing columns
+            $data = [
+                'amount' => $orderItem->amount ?? 0,
+                'payment_method' => $paymentMethod,
+            ];
 
         // Add columns that might not exist in older database schemas
         if (Schema::hasColumn('sales', 'buyer_id')) {
@@ -310,15 +314,24 @@ class Sale extends Model
         }
 
                 if (Schema::hasColumn('sales', 'created_at')) {
-            $data['created_at'] = time();
+            $data['created_at'] = now()->format('Y-m-d H:i:s');
         }
 
-                        // Add updated_at column if it exists
+                    
         if (Schema::hasColumn('sales', 'updated_at')) {
-            $data['updated_at'] = time();
+            $data['updated_at'] = now()->format('Y-m-d H:i:s');
         }
 
         return self::create($data);
+        } catch (\Exception $e) {
+            Log::error('Error creating sale record', [
+                'error' => $e->getMessage(),
+                'orderItem' => $orderItem,
+                'paymentMethod' => $paymentMethod,
+                'data' => $data ?? []
+            ]);
+            throw $e;
+        }
     }
 
     private static function generateOrderNumber()

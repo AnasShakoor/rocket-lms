@@ -5,7 +5,7 @@
 @endpush
 
 @push("styles_top")
-<link rel="stylesheet" href="{{ getDesign1StylePath(" cart_page") }}">
+<link rel="stylesheet" href="{{ getDesign1StylePath('cart_page') }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/moyasar-payment-form@2.0.17/dist/moyasar.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -517,6 +517,87 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     }
+
+    /* Payment method selection indicators */
+    .payment-method-selected {
+        border: 2px solid #43d477 !important;
+        box-shadow: 0 4px 12px rgba(67, 212, 119, 0.15) !important;
+        background-color: #f8fff9 !important;
+    }
+
+    /* Moyasar form styling improvements */
+    #moyasar-form-container {
+        min-height: 400px;
+        padding: 20px;
+    }
+
+    #moyasar-form-container .mysr-form {
+        width: 100%;
+        min-height: 300px;
+    }
+
+    /* Ensure payment method buttons are visible and styled */
+    #moyasar-form-container .mysr-payment-methods {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+
+    /* Style for individual payment method sections */
+    #moyasar-form-container .mysr-credit-card,
+    #moyasar-form-container .mysr-stcpay,
+    #moyasar-form-container .mysr-applepay,
+    #moyasar-form-container .mysr-samsungpay {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    #moyasar-form-container .mysr-credit-card:hover,
+    #moyasar-form-container .mysr-stcpay:hover,
+    #moyasar-form-container .mysr-applepay:hover,
+    #moyasar-form-container .mysr-samsungpay:hover {
+        border-color: #007bff;
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+
+    /* Credit card form styling */
+    #moyasar-form-container .mysr-credit-card input[type="text"],
+    #moyasar-form-container .mysr-credit-card input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    /* STC Pay form styling */
+    #moyasar-form-container .mysr-stcpay input[type="tel"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    /* Loading state improvements */
+    #moyasar-form-container .loading-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    #moyasar-form-container .loading-state .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
 </style>
 @endpush
 
@@ -765,21 +846,16 @@
             </button>
         </div>
         <div class="moyasar-modal-body">
-                            <div id="moyasar-form-container" class="moyasar-form-container">
-                    <div class="mysr-form">
-                        <div class="text-center p-4">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading payment form...</span>
-                            </div>
-                            <p class="mt-3 text-muted">Loading payment form...</p>
-                        </div>
+            <div id="moyasar-form-container" class="moyasar-form-container">
+                <!-- Moyasar will render the complete payment form here -->
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading payment form...</span>
                     </div>
-                    <div class="moyasar-payment-methods">
-                        <p class="text-center text-muted mt-3">
-                            <small>Payment methods: Credit Card, STC Pay, Apple Pay, Samsung Pay</small>
-                        </p>
-                    </div>
+                    <p class="mt-3 text-muted">Loading Moyasar payment form...</p>
+                    <p class="mt-2 text-muted small">Available methods: Credit Card, STC Pay, Apple Pay, Samsung Pay</p>
                 </div>
+            </div>
         </div>
     </div>
 </div>
@@ -915,133 +991,13 @@
                     moyasar_available: {{ !empty($moyasar) && $moyasar ? 'true' : 'false' }}
                 });
 
+                // Global variables for Moyasar initialization
                 let moyasarInitialized = false;
                 let moyasarSelected = false;
                 let moyasarInitAttempts = 0;
                 const maxInitAttempts = 5;
 
-                                // Function to create working payment form
-                function createWorkingPaymentForm(container) {
-                    console.log('🔵 Moyasar: Creating working payment form');
-
-                    container.innerHTML = `
-                        <div class="working-payment-form">
-                            <div class="text-center mb-4">
-                                <h4 class="text-success mb-2">
-                                    <i class="fas fa-check-circle"></i> Payment Gateway Ready
-                                </h4>
-                                <p class="text-muted">Select your preferred payment method below</p>
-                            </div>
-
-                            <div class="payment-methods-grid">
-                                <div class="payment-method-card" onclick="selectPaymentMethod('creditcard')">
-                                    <div class="payment-icon">
-                                        <i class="fas fa-credit-card fa-2x text-primary"></i>
-                                    </div>
-                                    <h6>Credit Card</h6>
-                                    <p class="text-muted">Visa, Mastercard, Mada</p>
-                                    <small class="text-success">✓ Available</small>
-                                </div>
-
-                                <div class="payment-method-card" onclick="selectPaymentMethod('stcpay')">
-                                    <div class="payment-icon">
-                                        <i class="fas fa-mobile-alt fa-2x text-success"></i>
-                                    </div>
-                                    <h6>STC Pay</h6>
-                                    <p class="text-muted">Mobile wallet payment</p>
-                                    <small class="text-success">✓ Available</small>
-                                </div>
-
-                                <div class="payment-method-card" onclick="selectPaymentMethod('applepay')">
-                                    <div class="payment-icon">
-                                        <i class="fab fa-apple-pay fa-2x text-dark"></i>
-                                    </div>
-                                    <h6>Apple Pay</h6>
-                                    <p class="text-muted">Touch ID / Face ID</p>
-                                    <small class="text-success">✓ Available</small>
-                                </div>
-
-                                <div class="payment-method-card" onclick="selectPaymentMethod('samsungpay')">
-                                    <div class="payment-icon">
-                                        <i class="fab fa-google-pay fa-2x text-info"></i>
-                                    </div>
-                                    <h6>Samsung Pay</h6>
-                                    <p class="text-muted">Samsung device payment</p>
-                                    <small class="text-success">✓ Available</small>
-                                </div>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <button type="button" class="btn btn-primary btn-lg" onclick="processWorkingPayment()">
-                                    <i class="fas fa-lock"></i> Continue with Selected Method
-                                </button>
-                            </div>
-
-                            <div class="text-center mt-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-shield-alt"></i> All payments are secure and encrypted
-                                </small>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                // Function to create fallback payment form
-                function createFallbackPaymentForm(container) {
-                    console.log('🔵 Moyasar: Creating fallback payment form');
-
-                    container.innerHTML = `
-                        <div class="fallback-payment-form">
-                            <div class="text-center mb-4">
-                                <h5>Payment Options</h5>
-                                <p class="text-muted">Select your preferred payment method</p>
-                            </div>
-
-                            <div class="payment-methods-grid">
-                                <div class="payment-method-card" onclick="selectPaymentMethod('creditcard')">
-                                    <div class="payment-icon">
-                                        <i class="fas fa-credit-card fa-2x text-primary"></i>
-                                    </div>
-                                    <h6>Credit Card</h6>
-                                    <p class="text-muted">Visa, Mastercard, Mada</p>
-                                </div>
-
-                                <div class="payment-method-card" onclick="selectPaymentMethod('stcpay')">
-                                    <div class="payment-icon">
-                                        <i class="fas fa-mobile-alt fa-2x text-success"></i>
-                                    </div>
-                                    <h6>STC Pay</h6>
-                                    <p class="text-muted">Mobile wallet payment</p>
-                                </div>
-
-                                <div class="payment-method-card" onclick="selectPaymentMethod('applepay')">
-                                    <div class="payment-icon">
-                                        <i class="fab fa-apple-pay fa-2x text-dark"></i>
-                                    </div>
-                                    <h6>Apple Pay</h6>
-                                    <p class="text-muted">Touch ID / Face ID</p>
-                                </div>
-
-                                <div class="payment-method-card" onclick="selectPaymentMethod('samsungpay')">
-                                    <div class="payment-icon">
-                                        <i class="fab fa-google-pay fa-2x text-info"></i>
-                                    </div>
-                                    <h6>Samsung Pay</h6>
-                                    <p class="text-muted">Samsung device payment</p>
-                                </div>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <button type="button" class="btn btn-primary" onclick="processFallbackPayment()">
-                                    Continue with Selected Method
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                // Function to handle fallback payment method selection
-                // Note: selectPaymentMethod, processWorkingPayment, and processFallbackPayment are now defined globally
+                // Moyasar will handle all payment method rendering natively
 
                 // Function to initialize Moyasar
                 function initMoyasar() {
@@ -1051,19 +1007,7 @@
                     const libraryTimeout = setTimeout(() => {
                         if (typeof Moyasar === 'undefined') {
                             console.error('🔴 Moyasar: Library loading timeout - Moyasar library not loaded after 10 seconds');
-                            const formContainer = document.querySelector('#moyasar-form-container');
-                            if (formContainer) {
-                                formContainer.innerHTML = `
-                                    <div class="alert alert-warning text-center p-4">
-                                        <h5>Payment Form Loading Timeout</h5>
-                                        <p class="mb-2">The payment form is taking longer than expected to load.</p>
-                                        <p class="mb-3">This might be due to network issues or Moyasar service being temporarily unavailable.</p>
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="initMoyasar()">
-                                            <i class="fas fa-refresh"></i> Retry
-                                        </button>
-                                    </div>
-                                `;
-                            }
+                            alert('Payment form loading timeout. Please refresh the page and try again.');
                         }
                     }, 10000);
 
@@ -1073,19 +1017,7 @@
                         if (moyasarInitAttempts >= maxInitAttempts) {
                             clearTimeout(libraryTimeout);
                             console.error('🔴 Moyasar: Library failed to load after', maxInitAttempts, 'attempts');
-                            const formContainer = document.querySelector('#moyasar-form-container');
-                            if (formContainer) {
-                                formContainer.innerHTML = `
-                                    <div class="alert alert-danger text-center p-4">
-                                        <h5>Payment Form Loading Failed</h5>
-                                        <p class="mb-2">Failed to load the payment form after multiple attempts.</p>
-                                        <p class="mb-3">Please refresh the page and try again.</p>
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="location.reload()">
-                                            <i class="fas fa-refresh"></i> Reload Page
-                                        </button>
-                                    </div>
-                                `;
-                            }
+                            alert('Payment form loading failed after multiple attempts. Please refresh the page and try again.');
                             return;
                         }
                         console.error('🔴 Moyasar: Library not loaded yet, retrying in 1 second... (Attempt', moyasarInitAttempts, '/', maxInitAttempts, ')');
@@ -1097,9 +1029,69 @@
                         clearTimeout(libraryTimeout);
                         console.log('🔵 Moyasar: Library loaded, initializing form');
 
-                        @php $samsungServiceId = env('SAMSUNG_PAY_SERVICE_ID'); @endphp
+                                                @php
+                            // Get Moyasar payment channel configuration from database
+                            $moyasarChannel = $paymentChannels->where('class_name', 'Moyasar')->first();
+                            $samsungServiceId = $moyasarChannel ? $moyasarChannel->samsung_pay_service_id : null;
+                            $applePayMerchantId = $moyasarChannel ? $moyasarChannel->apple_pay_merchant_id : null;
+                            $stcPayMerchantId = $moyasarChannel ? $moyasarChannel->stc_pay_merchant_id : null;
+
+                            // Get additional configuration from payment channel settings
+                            $moyasarSettings = $moyasarChannel ? json_decode($moyasarChannel->settings ?? '{}', true) : [];
+                            $supportedNetworks = $moyasarSettings['supported_networks'] ?? ['visa', 'mastercard', 'mada'];
+                            $enabledMethods = $moyasarSettings['enabled_methods'] ?? ['creditcard', 'stcpay', 'applepay'];
+                            $testMode = $moyasarChannel ? ($moyasarChannel->test_mode ?? false) : true;
+
+                            // Ensure we have at least basic payment methods enabled
+                            if (empty($enabledMethods)) {
+                                $enabledMethods = ['creditcard', 'stcpay', 'applepay'];
+                            }
+
+                            // Ensure we have supported networks
+                            if (empty($supportedNetworks)) {
+                                $supportedNetworks = ['visa', 'mastercard', 'mada'];
+                            }
+
+                            // Log the configuration for debugging
+                            if ($moyasarChannel) {
+                                \Log::info('Moyasar payment channel found:', [
+                                    'id' => $moyasarChannel->id,
+                                    'title' => $moyasarChannel->title,
+                                    'class_name' => $moyasarChannel->class_name,
+                                    'samsung_pay_service_id' => $samsungServiceId,
+                                    'apple_pay_merchant_id' => $applePayMerchantId,
+                                    'stc_pay_merchant_id' => $stcPayMerchantId,
+                                    'test_mode' => $testMode,
+                                    'supported_networks' => $supportedNetworks,
+                                    'enabled_methods' => $enabledMethods,
+                                    'settings' => $moyasarSettings
+                                ]);
+
+                                // Also log to console for frontend debugging
+                                // Configuration will be logged in JavaScript below
+                            } else {
+                                \Log::warning('Moyasar payment channel not found in payment_channels table');
+                                // Warning will be logged in JavaScript below
+                            }
+                        @endphp
+
+                        // Log configuration for debugging
+                        @if($moyasarChannel)
+                        console.log('🔵 Moyasar: Database configuration loaded:', {
+                            channel_id: {{ $moyasarChannel->id ?? 'null' }},
+                            samsung_pay_service_id: '{{ $samsungServiceId ?? "" }}',
+                            apple_pay_merchant_id: '{{ $applePayMerchantId ?? "" }}',
+                            stc_pay_merchant_id: '{{ $stcPayMerchantId ?? "" }}',
+                            test_mode: {{ $testMode ? 'true' : 'false' }},
+                            supported_networks: @json($supportedNetworks ?? []),
+                            enabled_methods: @json($enabledMethods ?? [])
+                        });
+                        @else
+                        console.warn('⚠️ Moyasar: Payment channel not found in database');
+                        @endif
+
                         const config = {
-                            element: '.mysr-form',
+                            element: '#moyasar-form-container',
                             // Amount in the smallest currency unit (e.g., 1000 for 10.00 SAR)
                             // Moyasar only supports SAR currency, so we need to convert
                             amount: {{ (int)(convertAmountToSAR($order->total_amount) * 100) }},
@@ -1107,23 +1099,57 @@
                             description: 'Order #{{ $order->id }}',
                             publishable_api_key: '{{ getMoyasarApiKey() ?? "pk_test_..." }}',
                             callback_url: '{{ url("/payments/verify/Moyasar") }}?order_id={{ $order->id }}',
-                            supported_networks: ['visa', 'mastercard', 'mada'],
-                            methods: [
-                                'stcpay',
-                                'applepay'@if(!empty($samsungServiceId)), 'samsungpay'@endif
-                            ],
+                            supported_networks: @json($supportedNetworks),
+                            methods: @json(array_merge($enabledMethods, !empty($samsungServiceId) ? ['samsungpay'] : [])),
+                            test_mode: {{ $testMode ? 'true' : 'false' }},
+                            // Credit Card configuration
+                            creditcard: {
+                                enabled: true,
+                                supported_networks: @json($supportedNetworks),
+                                require_cvv: true,
+                                require_expiry: true,
+                                require_name: true
+                            },
+                            // STC Pay configuration
+                            stcpay: {
+                                enabled: true,
+                                merchant_id: '{{ $stcPayMerchantId ?? "" }}',
+                                theme: '{{ $moyasarSettings['stcpay_theme'] ?? 'light' }}',
+                                mobile_number_required: true,
+                                otp_challenge: true,
+                                @if(!empty($moyasarSettings['stcpay_merchant_name']))
+                                merchant_name: '{{ $moyasarSettings['stcpay_merchant_name'] }}',
+                                @endif
+                                @if(!empty($moyasarSettings['stcpay_logo_url']))
+                                logo_url: '{{ $moyasarSettings['stcpay_logo_url'] }}',
+                                @endif
+                            },
+                            // Apple Pay configuration
                             apple_pay: {
-                                country: 'SA',
-                                label: '{{ addslashes(getGeneralSettings('site_name') ?? 'Store') }}',
-                                validate_merchant_url: 'https://api.moyasar.com/v1/applepay/initiate',
+                                enabled: true,
+                                country: '{{ $moyasarSettings['apple_pay_country'] ?? 'SA' }}',
+                                label: '{{ addslashes($moyasarSettings['apple_pay_label'] ?? getGeneralSettings('site_name') ?? 'Store') }}',
+                                merchant_id: '{{ $applePayMerchantId ?? "" }}',
+                                validate_merchant_url: '{{ $moyasarSettings['apple_pay_merchant_url'] ?? 'https://api.moyasar.com/v1/applepay/initiate' }}',
+                                merchant_capabilities: @json($moyasarSettings['apple_pay_merchant_capabilities'] ?? ['supports3DS', 'supportsCredit', 'supportsDebit']),
+                                supported_countries: @json($moyasarSettings['apple_pay_supported_countries'] ?? ['SA'])
                             },
                             @if(!empty($samsungServiceId))
+                            // Samsung Pay configuration
                             samsung_pay: {
+                                enabled: true,
                                 service_id: '{{ $samsungServiceId }}',
                                 order_number: 'order-{{ $order->id }}-{{ time() }}',
-                                country: 'SA',
-                                label: '{{ addslashes(getGeneralSettings('site_name') ?? 'Store') }}',
-                                environment: '{{ env('SAMSUNG_PAY_ENV', 'TEST') }}',
+                                country: '{{ $moyasarSettings['samsung_pay_country'] ?? 'SA' }}',
+                                label: '{{ addslashes($moyasarSettings['samsung_pay_label'] ?? getGeneralSettings('site_name') ?? 'Store') }}',
+                                environment: '{{ $moyasarChannel ? ($moyasarChannel->samsung_pay_environment ?? 'TEST') : 'TEST' }}',
+                                supported_networks: @json($supportedNetworks),
+                                @if(!empty($moyasarSettings['samsung_pay_merchant_name']))
+                                merchant_name: '{{ $moyasarSettings['samsung_pay_merchant_name'] }}',
+                                @endif
+                                @if(!empty($moyasarSettings['samsung_pay_logo_url']))
+                                logo_url: '{{ $moyasarSettings['samsung_pay_logo_url'] }}',
+                                @endif
                             },
                             @endif
                             // Add required fields for better compatibility
@@ -1138,23 +1164,30 @@
                                         children: formContainer.children.length,
                                         visible: formContainer.offsetWidth > 0 && formContainer.offsetHeight > 0
                                     });
+
+                                    // Verify all payment methods are available
+                                    setTimeout(() => {
+                                        const creditCardForm = formContainer.querySelector('[class*="credit"], [class*="card"], [class*="mysr-credit"]');
+                                        const stcPayForm = formContainer.querySelector('[class*="stc"], [class*="mysr-stc"]');
+                                        const applePayForm = formContainer.querySelector('[class*="apple"], [class*="mysr-apple"]');
+                                        const samsungPayForm = formContainer.querySelector('[class*="samsung"], [class*="mysr-samsung"]');
+
+                                        console.log('🔵 Moyasar: Payment method availability check:', {
+                                            credit_card: !!creditCardForm,
+                                            stc_pay: !!stcPayForm,
+                                            apple_pay: !!applePayForm,
+                                            samsung_pay: !!samsungPayForm
+                                        });
+
+                                        // If any payment method is missing, log a warning
+                                        if (!creditCardForm) console.warn('⚠️ Moyasar: Credit card form not found');
+                                        if (!stcPayForm) console.warn('⚠️ Moyasar: STC Pay form not found');
+                                        if (!applePayForm) console.warn('⚠️ Moyasar: Apple Pay form not found');
+                                        if (!samsungPayForm) console.warn('⚠️ Moyasar: Samsung Pay form not found');
+                                    }, 1000);
                                 }
 
-                                                            // Force a re-render if needed
-                            setTimeout(() => {
-                                if (formContainer && formContainer.children.length === 0) {
-                                    console.warn('⚠️ Moyasar: Form container is empty after initialization, forcing re-render');
-                                    Moyasar.init(config);
-                                }
-                            }, 1000);
-
-                            // Add a fallback form if Moyasar doesn't render
-                            setTimeout(() => {
-                                if (formContainer && formContainer.children.length === 0) {
-                                    console.warn('⚠️ Moyasar: Form still empty after re-render, creating fallback form');
-                                    createFallbackPaymentForm(formContainer);
-                                }
-                            }, 2000);
+                                // Moyasar will handle form rendering natively
                             },
                             on_error: function(error) {
                                 console.error('🔴 Moyasar: Form error occurred', {
@@ -1337,7 +1370,38 @@
                                 console.log('🟡 Samsung Pay: User authorized with Samsung Pay');
                             },
 
-                            // Apple Pay configuration removed to simplify and avoid errors
+                            // Credit Card specific event handlers
+                            on_creditcard_initiated: function() {
+                                console.log('🟡 Credit Card: Payment initiated, waiting for card details');
+                            },
+
+                            on_creditcard_submitted: function(cardData) {
+                                console.log('🟡 Credit Card: Card details submitted', {
+                                    card_last4: cardData.last4 || 'N/A',
+                                    card_brand: cardData.brand || 'N/A',
+                                    order_id: '{{ $order->id }}',
+                                    timestamp: new Date().toISOString()
+                                });
+                            },
+
+                            // General payment method selection handler
+                            on_payment_method_selected: function(method) {
+                                console.log('🟡 Moyasar: Payment method selected:', method);
+
+                                // Update UI to show selected method
+                                const formContainer = document.querySelector('#moyasar-form-container');
+                                if (formContainer) {
+                                    // Remove any existing selection indicators
+                                    formContainer.querySelectorAll('.payment-method-selected').forEach(el => el.classList.remove('payment-method-selected'));
+
+                                    // Add selection indicator to the selected method
+                                    const selectedMethod = formContainer.querySelector(`[class*="${method}"]`);
+                                    if (selectedMethod) {
+                                        selectedMethod.classList.add('payment-method-selected');
+                                        console.log('🟢 Moyasar: Payment method selection indicator added');
+                                    }
+                                }
+                            }
                         };
 
                         console.log('🔵 Moyasar: Configuration prepared', {
@@ -1449,36 +1513,7 @@
                             console.log('🔵 Moyasar: Library object properties:', Object.getOwnPropertyNames(Moyasar));
                             console.log('🔵 Moyasar: Library prototype chain:', Object.getPrototypeOf(Moyasar));
 
-                            // If Moyasar seems broken, create working form immediately
-                            if (Object.getOwnPropertyNames(Moyasar).length === 0) {
-                                console.warn('⚠️ Moyasar: Library appears to be empty/broken, creating working form immediately');
-                                const container = document.querySelector('#moyasar-form-container');
-                                if (container) {
-                                    container.innerHTML = '';
-                                    createWorkingPaymentForm(container);
-                                    return;
-                                }
-                            }
-
-                            // Additional check: if Moyasar library has no properties, it's likely broken
-                            if (typeof Moyasar === 'function' && Object.getOwnPropertyNames(Moyasar).length === 0) {
-                                console.warn('⚠️ Moyasar: Library is a function but has no properties, likely broken');
-                                const container = document.querySelector('#moyasar-form-container');
-                                if (container) {
-                                    container.innerHTML = '';
-                                    createWorkingPaymentForm(container);
-                                    return;
-                                }
-                            }
-
-                            // Based on the console logs, Moyasar library has no properties, so create working form immediately
-                            console.log('🔵 Moyasar: Library properties check - creating working form immediately');
-                            const container = document.querySelector('#moyasar-form-container');
-                            if (container) {
-                                container.innerHTML = '';
-                                createWorkingPaymentForm(container);
-                                return;
-                            }
+                            // Moyasar will handle form rendering natively
 
                                                         // Check if the form element exists
                             const formElement = document.querySelector(config.element);
@@ -1772,27 +1807,11 @@
                                 Moyasar.init(config);
                                 console.log('🟢 Moyasar: Form initialized successfully');
 
-                                // Check if Moyasar actually rendered content after a short delay
-                                setTimeout(() => {
-                                    const container = document.querySelector('#moyasar-form-container');
-                                    if (container && (container.textContent.includes('Something went wrong') || container.children.length === 0)) {
-                                        console.warn('⚠️ Moyasar: Form failed to render properly, creating working form');
-                                        container.innerHTML = '';
-                                        createWorkingPaymentForm(container);
-                                    }
-                                }, 1000);
+                                // Moyasar will handle form rendering natively
 
                             } catch (initError) {
                                 console.error('🔴 Moyasar: Form initialization error:', initError);
-
-                                // Instead of throwing an error, create a working form immediately
-                                console.log('🔵 Moyasar: Creating working form due to initialization failure');
-                                const container = document.querySelector('#moyasar-form-container');
-                                if (container) {
-                                    container.innerHTML = '';
-                                    createWorkingPaymentForm(container);
-                                    return;
-                                }
+                                // Moyasar will handle error display natively
                             }
 
                             // Check the form container after initialization
@@ -1873,13 +1892,7 @@
 
                                 if (errorMessage || somethingWentWrong) {
                                     console.warn('⚠️ Moyasar: Error message detected:', errorMessage ? errorMessage.textContent : 'Something went wrong');
-
-                                    // Clear the error and create a working payment form
-                                    updatedContainer.innerHTML = '';
-                                    createWorkingPaymentForm(updatedContainer);
-                                } else if (!moyasarElements || moyasarElements.length === 0) {
-                                    console.warn('⚠️ Moyasar: No Moyasar elements found, attempting manual creation');
-                                    createWorkingPaymentForm(updatedContainer);
+                                    // Moyasar will handle error display natively
                                 }
                             }, 500);
                             moyasarInitialized = true;
@@ -1920,19 +1933,7 @@
                             });
 
                             // Show error message to user
-                            const formContainer = document.querySelector('#moyasar-form-container');
-                            if (formContainer) {
-                                formContainer.innerHTML = `
-                                    <div class="alert alert-danger text-center p-4">
-                                        <h5>Payment Form Error</h5>
-                                        <p class="mb-2">Something went wrong while loading the payment form.</p>
-                                        <p class="mb-3"><strong>Error:</strong> ${error.message}</p>
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="location.reload()">
-                                            <i class="fas fa-refresh"></i> Reload Page
-                                        </button>
-                                    </div>
-                                `;
-                            }
+                            alert('Payment form error: ' + error.message);
 
                             // Log STC Pay specific error if applicable
                             if (error.message && error.message.includes('stcpay')) {
@@ -1997,6 +1998,55 @@
                                 moyasarRadio = gateway;
                             }
                         }
+                    });
+                }
+
+                // Enhanced Moyasar detection - also check by value and other attributes
+                if (!moyasarRadio) {
+                    console.log('🔵 Moyasar: Trying enhanced detection methods');
+
+                    // Check all gateways for Moyasar indicators
+                    const allGateways = document.querySelectorAll('input[name="gateway"]');
+                    allGateways.forEach((gateway, index) => {
+                        const dataClass = gateway.dataset.class;
+                        const value = gateway.value;
+                        const id = gateway.id;
+
+                        console.log(`🔵 Moyasar: Gateway ${index} - data-class: "${dataClass}", value: "${value}", id: "${id}"`);
+
+                        // Check multiple ways to identify Moyasar
+                        if (dataClass && dataClass.toLowerCase().includes('moyasar')) {
+                            console.log('🟢 Moyasar: Found by data-class containing "moyasar"');
+                            moyasarRadio = gateway;
+                        } else if (value && value.toString().toLowerCase().includes('moyasar')) {
+                            console.log('🟢 Moyasar: Found by value containing "moyasar"');
+                            moyasarRadio = gateway;
+                        } else if (id && id.toLowerCase().includes('moyasar')) {
+                            console.log('🟢 Moyasar: Found by id containing "moyasar"');
+                            moyasarRadio = gateway;
+                        }
+
+                        // Also check the label text for Moyasar
+                        const label = document.querySelector(`label[for="${gateway.id}"]`);
+                        if (label) {
+                            const labelText = label.textContent.toLowerCase();
+                            if (labelText.includes('moyasar')) {
+                                console.log('🟢 Moyasar: Found by label text containing "moyasar"');
+                                moyasarRadio = gateway;
+                            }
+                        }
+                    });
+                }
+
+                // Additional debugging for gateway detection
+                console.log('🔵 Moyasar: Enhanced gateway detection completed');
+                console.log('🔵 Moyasar: Found radio button:', moyasarRadio);
+                if (moyasarRadio) {
+                    console.log('🔵 Moyasar: Radio button details:', {
+                        id: moyasarRadio.id,
+                        value: moyasarRadio.value,
+                        dataClass: moyasarRadio.dataset.class,
+                        checked: moyasarRadio.checked
                     });
                 }
 
@@ -2073,6 +2123,9 @@
                                 checked: gateway.checked
                             });
                         });
+
+                        // Last resort: try to find Moyasar by checking all gateways on every click
+                        console.log('🔵 Moyasar: Setting up fallback detection on Pay Now button click');
                     }
                     if (!moyasarFormContainer) {
                         console.warn('🟡 Moyasar: Form container not found');
@@ -2113,22 +2166,18 @@
 
                                 // Functions to show/hide modal
                 function showMoyasarModal() {
+                    const moyasarModal = document.getElementById('moyasar-modal');
                     if (moyasarModal) {
                         console.log('🔵 Moyasar: Showing modal');
-                        console.log('🔵 Moyasar: Modal element:', moyasarModal);
-                        console.log('🔵 Moyasar: Modal display style before:', moyasarModal.style.display);
-                        console.log('🔵 Moyasar: Modal classes before:', moyasarModal.className);
 
-                        moyasarModal.classList.add('active');
+                        // Show modal
                         moyasarModal.style.display = 'block';
+                        moyasarModal.classList.add('active');
                         document.body.style.overflow = 'hidden';
-
-                        console.log('🔵 Moyasar: Modal display style after:', moyasarModal.style.display);
-                        console.log('🔵 Moyasar: Modal classes after:', moyasarModal.className);
-                        console.log('🔵 Moyasar: Modal computed styles:', window.getComputedStyle(moyasarModal));
 
                         // Initialize Moyasar form when modal is shown
                         setTimeout(() => {
+                            console.log('🔵 Moyasar: Initializing payment form in modal');
                             initMoyasar();
                         }, 100);
                     } else {
@@ -2137,6 +2186,7 @@
                 }
 
                 function hideMoyasarModal() {
+                    const moyasarModal = document.getElementById('moyasar-modal');
                     if (moyasarModal) {
                         console.log('🔵 Moyasar: Hiding modal');
                         moyasarModal.classList.remove('active');
@@ -2156,12 +2206,58 @@
                     payNowButton.addEventListener('click', function(e) {
                         console.log('🔵 Moyasar: Pay Now button clicked');
                         console.log('🔵 Moyasar: Current moyasarSelected state:', moyasarSelected);
+                        console.log('🔵 Moyasar: Event details:', {
+                            type: e.type,
+                            target: e.target,
+                            currentTarget: e.currentTarget,
+                            defaultPrevented: e.defaultPrevented
+                        });
+
+                        // Fallback detection: check if Moyasar is selected right now
+                        if (!moyasarSelected) {
+                            console.log('🔵 Moyasar: Fallback detection - checking current gateway selection');
+                            const selectedGateway = document.querySelector('input[name="gateway"]:checked');
+                            if (selectedGateway) {
+                                const dataClass = selectedGateway.dataset.class;
+                                const value = selectedGateway.value;
+                                const id = selectedGateway.id;
+
+                                console.log('🔵 Moyasar: Selected gateway details:', { dataClass, value, id });
+
+                                // Check if this is Moyasar
+                                if (dataClass && dataClass.toLowerCase().includes('moyasar')) {
+                                    console.log('🟢 Moyasar: Fallback detection found Moyasar gateway!');
+                                    moyasarSelected = true;
+                                    moyasarRadio = selectedGateway;
+                                } else if (value && value.toString().toLowerCase().includes('moyasar')) {
+                                    console.log('🟢 Moyasar: Fallback detection found Moyasar gateway by value!');
+                                    moyasarSelected = true;
+                                    moyasarRadio = selectedGateway;
+                                } else if (id && id.toLowerCase().includes('moyasar')) {
+                                    console.log('🟢 Moyasar: Fallback detection found Moyasar gateway by id!');
+                                    moyasarSelected = true;
+                                    moyasarRadio = selectedGateway;
+                                }
+
+                                // Also check label text
+                                const label = document.querySelector(`label[for="${selectedGateway.id}"]`);
+                                if (label && label.textContent.toLowerCase().includes('moyasar')) {
+                                    console.log('🟢 Moyasar: Fallback detection found Moyasar gateway by label text!');
+                                    moyasarSelected = true;
+                                    moyasarRadio = selectedGateway;
+                                }
+                            } else {
+                                console.log('🔵 Moyasar: No gateway currently selected');
+                            }
+                        }
 
                         // Check if Moyasar is selected
                         if (moyasarSelected) {
                             console.log('🟢 Moyasar: Moyasar selected, showing modal');
                             e.preventDefault(); // Prevent form submission
+                            e.stopPropagation(); // Stop event bubbling
                             showMoyasarModal();
+                            return false; // Ensure form doesn't submit
                         } else {
                             console.log('🟡 Moyasar: Moyasar not selected, allowing normal form submission');
                             console.log('🔵 Moyasar: Available payment gateways:');
@@ -2184,15 +2280,16 @@
                                 console.log('🔵 Moyasar: Event listeners setup completed');
                 console.log('🔵 Moyasar: Ready for payment processing');
 
-                // Debug: Add test button to manually show modal
-                const debugButton = document.createElement('button');
-                debugButton.textContent = '🔴 DEBUG: Show Moyasar Modal';
-                debugButton.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 99999; background: red; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;';
-                debugButton.addEventListener('click', function() {
-                    console.log('🔴 DEBUG: Manual modal trigger clicked');
-                    showMoyasarModal();
+                // Summary of Moyasar integration
+                console.log('🔵 Moyasar: Integration Summary', {
+                    gateway_detection: 'Enhanced detection by data-class, value, and id',
+                    modal_functionality: 'Modal shows when Moyasar is selected and Pay Now is clicked',
+                    form_initialization: 'Moyasar form initializes in modal with proper configuration',
+                    payment_methods: ['creditcard', 'stcpay', 'applepay', 'samsungpay'],
+                    fallback_detection: 'Fallback detection on Pay Now button click'
                 });
-                document.body.appendChild(debugButton);
+
+
 
                 // STC Pay Debug Information
                 console.log('🔵 STC Pay: Debug information loaded', {
@@ -2291,146 +2388,14 @@
             alert('Fallback payment processing for ' + method + '. This is a demo implementation.');
         }
 
-        // Function to initialize Moyasar (moved to global scope)
-        function initMoyasar() {
-            console.log('🔵 Moyasar: Initialization started');
+        // Moyasar initialization is handled by the main function above
+        // The initMoyasar function is defined in the main script section above
 
-            // Add timeout for library loading
-            const libraryTimeout = setTimeout(() => {
-                if (typeof Moyasar === 'undefined') {
-                    console.error('🔴 Moyasar: Library loading timeout - Moyasar library not loaded after 10 seconds');
-                    const formContainer = document.querySelector('#moyasar-form-container');
-                    if (formContainer) {
-                        formContainer.innerHTML = `
-                            <div class="alert alert-warning text-center p-4">
-                                <h5>Payment Form Loading Timeout</h5>
-                                <p class="mb-2">The payment form is taking longer than expected to load.</p>
-                                <p class="mb-3">This might be due to network issues or Moyasar service being temporarily unavailable.</p>
-                                <button type="button" class="btn btn-primary btn-sm" onclick="initMoyasar()">
-                                    <i class="fas fa-refresh"></i> Retry
-                                </button>
-                            </div>
-                        `;
-                    }
-                }
-            }, 10000);
 
-            // Check if Moyasar library is loaded
-            if (typeof Moyasar === 'undefined') {
-                moyasarInitAttempts++;
-                if (moyasarInitAttempts >= maxInitAttempts) {
-                    clearTimeout(libraryTimeout);
-                    console.error('🔴 Moyasar: Library failed to load after', maxInitAttempts, 'attempts');
-                    const formContainer = document.querySelector('#moyasar-form-container');
-                    if (formContainer) {
-                        formContainer.innerHTML = `
-                            <div class="alert alert-danger text-center p-4">
-                                <h5>Payment Form Loading Failed</h5>
-                                <p class="mb-2">Failed to load the payment form after multiple attempts.</p>
-                                <p class="mb-3">Please refresh the page and try again.</p>
-                                <button type="button" class="btn btn-primary btn-sm" onclick="location.reload()">
-                                    <i class="fas fa-refresh"></i> Reload Page
-                                </button>
-                            </div>
-                        `;
-                    }
-                    return;
-                }
-                console.error('🔴 Moyasar: Library not loaded yet, retrying in 1 second... (Attempt', moyasarInitAttempts, '/', maxInitAttempts, ')');
-                setTimeout(initMoyasar, 1000);
-                return;
-            }
 
-            if (!moyasarInitialized) {
-                clearTimeout(libraryTimeout);
-                console.log('🔵 Moyasar: Library loaded, initializing form');
 
-                const config = {
-                    element: '#moyasar-form-container',
-                    // Amount in the smallest currency unit (e.g., 1000 for 10.00 SAR)
-                    // Moyasar only supports SAR currency, so we need to convert
-                    amount: {{ (int)(convertAmountToSAR($order->total_amount) * 100) }},
-                    currency: 'SAR', // Moyasar only supports SAR
-                    description: 'Order #{{ $order->id }}',
-                    publishable_api_key: '{{ getMoyasarApiKey() ?? "pk_test_..." }}',
-                    callback_url: '{{ url("/payments/verify/Moyasar") }}?order_id={{ $order->id }}',
-                    supported_networks: ['visa', 'mastercard', 'mada'],
-                    methods: ['creditcard'],
-                    // Add required fields for better compatibility
-                    on_ready: function() {
-                        console.log('🟢 Moyasar: Form is ready and loaded');
 
-                        // Check if the form content is visible
-                        const formContainer = document.querySelector('#moyasar-form-container');
-                        if (formContainer) {
-                            console.log('🔵 Moyasar: Form container content after initialization:', {
-                                innerHTML: formContainer.innerHTML,
-                                children: formContainer.children.length,
-                                visible: formContainer.offsetWidth > 0 && formContainer.offsetHeight > 0
-                            });
-                        }
 
-                        // Force a re-render if needed
-                        setTimeout(() => {
-                            if (formContainer && formContainer.children.length === 0) {
-                                console.warn('⚠️ Moyasar: Form container is empty after initialization, forcing re-render');
-                                Moyasar.init(config);
-                            }
-                        }, 1000);
-
-                        // Add a fallback form if Moyasar doesn't render
-                        setTimeout(() => {
-                            if (formContainer && formContainer.children.length === 0) {
-                                console.warn('⚠️ Moyasar: Form still empty after re-render, creating fallback form');
-                                createFallbackPaymentForm(formContainer);
-                            }
-                        }, 2000);
-                    },
-                    on_error: function(error) {
-                        console.error('🔴 Moyasar: Form error occurred', {
-                            error: error,
-                            message: error.message,
-                            type: error.type
-                        });
-
-                        const formContainer = document.querySelector('#moyasar-form-container');
-                        if (formContainer) {
-                            formContainer.innerHTML = `
-                                <div class="alert alert-danger text-center p-4">
-                                    <h5>Payment Form Error</h5>
-                                    <p class="mb-2">An error occurred while loading the payment form.</p>
-                                    <p class="mb-3">Error: ${error.message || 'Unknown error'}</p>
-                                    <button type="button" class="btn btn-primary btn-sm" onclick="initMoyasar()">
-                                        <i class="fas fa-refresh"></i> Retry
-                                    </button>
-                                </div>
-                            `;
-                        }
-                    }
-                };
-
-                try {
-                    Moyasar.init(config);
-                    moyasarInitialized = true;
-                    console.log('🟢 Moyasar: Form initialized successfully');
-                } catch (error) {
-                    console.error('🔴 Moyasar: Failed to initialize form', error);
-                    const formContainer = document.querySelector('#moyasar-form-container');
-                    if (formContainer) {
-                        formContainer.innerHTML = `
-                            <div class="alert alert-danger text-center p-4">
-                                <h5>Payment Form Initialization Failed</h5>
-                                <p class="mb-2">Failed to initialize the payment form.</p>
-                                <p class="mb-3">Error: ${error.message || 'Unknown error'}</p>
-                                <button type="button" class="btn btn-primary btn-sm" onclick="initMoyasar()">
-                                    <i class="fas fa-refresh"></i> Retry
-                                </button>
-                            </div>
-                        `;
-                    }
-                }
-            }
-        }
 
         // BNPL functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -2739,7 +2704,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({
                     order_id: orderId,
@@ -2906,6 +2871,6 @@
             }
         });
     </script>
-<script src="{{ getDesign1ScriptPath(" cart_page") }}"></script>
+<script src="{{ getDesign1ScriptPath('cart_page') }}"></script>
 
 @endpush

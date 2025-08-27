@@ -91,7 +91,6 @@ function handleSendFirebaseMessages($user_id, $group_id, $sender, $type, $title,
                 'message' => preg_replace('/<[^>]*>/', '', $message),
                 'sender' => $sender,
                 'type' => $type,
-                'created_at' => time()
             ]);
 
             $fcmMessage = $fcmMessage->withAndroidConfig(\Kreait\Firebase\Messaging\AndroidConfig::fromArray([

@@ -236,7 +236,6 @@ class MeetingsController extends Controller
             'end_at' => $endAt,
             'paid_amount' => 0,
             'discount' => $meetingTime->meeting->discount,
-            'created_at' => time(),
         ]);
 
         if (!empty($reserve)) {
@@ -248,7 +247,6 @@ class MeetingsController extends Controller
                 'payment_method' => Sale::$credit,
                 'amount' => 0,
                 'total_amount' => 0,
-                'created_at' => time(),
             ]);
 
             if (!empty($sale)) {

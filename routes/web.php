@@ -176,6 +176,12 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
             });
 
             Route::post('/direct-payment', 'WebinarController@directPayment');
+            Route::get('/direct-payment', function() {
+                return response()->json([
+                    'error' => 'Method not allowed',
+                    'message' => 'Direct payment must be accessed via POST request with proper parameters'
+                ], 405);
+            });
 
             Route::group(['prefix' => 'personal-notes'], function () {
                 Route::get('/{id}/delete', 'CoursePersonalNotesController@deleteAttachment');
@@ -499,6 +505,9 @@ Route::get('/payments/verify/MisPay', 'PaymentController@mispayVerify')->name('p
 Route::get('/payments/mispay/success', 'PaymentController@mispaySuccess')->name('payments.mispay.success');
 Route::get('/payments/mispay/cancel', 'PaymentController@mispayCancel')->name('payments.mispay.cancel');
 Route::get('/payments/mispay/failure', 'PaymentController@mispayFailure')->name('payments.mispay.failure');
+
+// Payment Status Route
+Route::get('/payments/status', 'PaymentController@paymentStatus')->name('payments.status');
 
 // Debug routes for BNPL providers
 Route::get('/debug/tabby/status', function() {

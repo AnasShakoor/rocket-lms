@@ -22,6 +22,7 @@ class TabbyController extends Controller
      */
     public function checkEligibility(Request $request)
     {
+        
         try {
             $request->validate([
                 'order_id' => 'required|integer',
@@ -47,6 +48,7 @@ class TabbyController extends Controller
                 'phone' => $order->user->mobile,
                 'name' => $order->user->full_name,
             ];
+
 
             // Check eligibility using Tabby service
             $eligibilityResult = $this->tabbyService->checkEligibility($order, $customerData);

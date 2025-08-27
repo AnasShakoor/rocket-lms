@@ -60,7 +60,6 @@ class AIContentTemplatesController extends Controller
             'length' => (!empty($data['enable_length']) and !empty($data['length'])) ? $data['length'] : null,
             'image_size' => (!empty($data['image_size']) and $data['type'] == "image") ? $data['image_size'] : null,
             'enable' => (!empty($data['status']) and $data['status'] == "active"),
-            'created_at' => time(),
         ]);
 
         AiContentTemplateTranslation::query()->updateOrCreate([

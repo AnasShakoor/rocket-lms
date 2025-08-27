@@ -916,4 +916,42 @@ class PaymentController extends Controller
 
         return redirect('/cart');
     }
+
+    /**
+     * Payment status page
+     */
+    public function paymentStatus(Request $request)
+    {
+        $orderId = $request->get('t') ?? session()->get($this->order_session_key);
+
+        if (!$orderId) {
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => 'Order not found',
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+
+        $order = Order::where('id', $orderId)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$order) {
+            $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => 'Order not found or unauthorized',
+                'status' => 'error'
+            ];
+            return redirect('/cart')->with(['toast' => $toastData]);
+        }
+
+        $data = [
+            'pageTitle' => trans('public.payment_status'),
+            'order' => $order,
+            'user' => auth()->user()
+        ];
+
+        return view('design_1.web.cart.payment.status', $data);
+    }
 }

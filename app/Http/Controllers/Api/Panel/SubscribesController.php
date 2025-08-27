@@ -214,8 +214,7 @@ class SubscribesController extends Controller
             'payment_method' => Sale::$subscribe,
             'amount' => 0,
             'total_amount' => 0,
-            'created_at' => time(),
-        ]);
+                ]);
 
         Accounting::createAccountingForSaleWithSubscribe($webinar, $subscribe, Sale::$webinar . "_id");
 
@@ -282,7 +281,6 @@ class SubscribesController extends Controller
             'payment_method' => Sale::$subscribe,
             'amount' => 0,
             'total_amount' => 0,
-            'created_at' => time(),
         ]);
 
         Accounting::createAccountingForSaleWithSubscribe($item, $subscribe, $item_name . '_id');

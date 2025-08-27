@@ -109,7 +109,6 @@ class WebinarsController extends Controller
             'payment_method' => Sale::$credit,
             'amount' => 0,
             'total_amount' => 0,
-            'created_at' => time(),
         ]);
 
         return apiResponse2(1, 'enrolled', trans('api.webinar.enrolled'));

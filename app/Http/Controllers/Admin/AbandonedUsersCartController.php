@@ -200,7 +200,6 @@ class AbandonedUsersCartController extends Controller
             'user_id' => $user->id,
             'rule_action' => 'send_reminder',
             'type' => 'manual',
-            'created_at' => time()
         ]);
 
         $toastData = [

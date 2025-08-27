@@ -16,10 +16,10 @@
                     <x-iconsax-lin-add class="close-icon text-gray-500" width="24px" height="24px" />
                 </div>
             </div>
-                {{-- @php
+                @php
                     $multiCurrency = new App\Mixins\Financial\MultiCurrency();
                     $currencies = $multiCurrency->getCurrencies();
-                @endphp --}}
+                @endphp
 
             @foreach ($currencies as $currencyItem)
                 <div class="js-currency-dropdown-item d-flex align-items-center justify-content-between w-100 px-16 py-8 cursor-pointer {{ $userCurrency == $currencyItem->currency ? 'bg-gray-100 font-weight-bold' : '' }}"
