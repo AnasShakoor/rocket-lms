@@ -17,6 +17,7 @@ class LicenseEventServiceProvider extends ServiceProvider
      *
      * @return void
      */
+
     public function register()
     {
         $this->app->singleton(LicenseService::class, function ($app) {
@@ -41,9 +42,10 @@ class LicenseEventServiceProvider extends ServiceProvider
         $currentDomain = request()->getHost();
         $isLocalDomain = $licenseService->isLocalDomain($currentDomain);
         
-        if ($isLocalDomain) {
-            return;
-        }
+        // dd('anas');
+        // if ($isLocalDomain) {
+        //     return;
+        // }
 
         Event::listen(RouteMatched::class, function ($event) {
             try {
