@@ -44,6 +44,14 @@
             font-size: 12px;
             color: #6c757d;
         }
+        .alert {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -53,6 +61,10 @@
     </div>
 
     <div class="content">
+        <div class="alert">
+            <strong>Action Required:</strong> Please review this request and take appropriate action.
+        </div>
+
         <h3>Request Details:</h3>
 
         <div class="info-row">
@@ -76,16 +88,27 @@
         </div>
 
         <div class="info-row">
+            <span class="label">Course Type:</span>
+            <span class="value">{{ ucfirst($course_type) }}</span>
+        </div>
+
+        <div class="info-row">
             <span class="label">Request Date:</span>
             <span class="value">{{ $request_date }}</span>
         </div>
 
-        <p><strong>Action Required:</strong> Please review this request and decide whether to approve or deny the certificate issuance without course completion.</p>
+        <h3>Next Steps:</h3>
+        <ul>
+            <li>Review the user's course progress</li>
+            <li>Check if they meet certificate requirements</li>
+            <li>Approve or reject the request</li>
+            <li>Contact the user if additional information is needed</li>
+        </ul>
     </div>
 
     <div class="footer">
         <p>This is an automated notification from your LMS system.</p>
-        <p>Generated on: {{ now()->format('M d, Y H:i:s') }}</p>
+        <p>Please log into your admin panel to review and take action on this request.</p>
     </div>
 </body>
 </html>

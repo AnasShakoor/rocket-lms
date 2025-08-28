@@ -57,4 +57,123 @@
     <script src="/assets/design_1/js/panel/my_course_lists.min.js"></script>
     <script src="/assets/design_1/js/panel/make_next_session.min.js"></script>
 
+    <script>
+        $(document).ready(function() {
+            // Handle certificate request button clicks
+            $('.certificate-request-btn').on('click', function() {
+                var courseId = $(this).data('course-id');
+                var courseType = $(this).data('course-type');
+                var courseTitle = $(this).data('course-title');
+
+                showCertificateRequestModal(courseId, courseType, courseTitle);
+            });
+        });
+
+        function showCertificateRequestModal(courseId, courseType, courseTitle) {
+            var modalHtml = `
+                <div class="modal fade" id="certificateRequestModal" tabindex="-1" role="dialog" aria-labelledby="certificateRequestModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="certificateRequestModalLabel">Request Certificate Without Completion</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-warning">
+                                    <strong>Important:</strong> You are requesting a certificate without completing the course requirements.
+                                </div>
+                                <p><strong>Course:</strong> ${courseTitle}</p>
+                                <p>Your request will be sent to the admin for review. Please check back later for updates.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-warning" id="submitCertificateRequest">Submit Request</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Remove existing modal if any
+            $('#certificateRequestModal').remove();
+
+            // Add modal to body
+            $('body').append(modalHtml);
+
+            // Show modal
+            $('#certificateRequestModal').modal('show');
+
+            // Handle submit button click
+            $('#submitCertificateRequest').on('click', function() {
+                submitCertificateRequest(courseId, courseType);
+            });
+        }
+
+        function submitCertificateRequest(courseId, courseType) {
+            var submitBtn = $('#submitCertificateRequest');
+            var originalText = submitBtn.text();
+
+            // Debug logging
+            console.log('Submitting certificate request:', {
+                courseId: courseId,
+                courseType: courseType
+            });
+
+            // Disable button and show loading
+            submitBtn.prop('disabled', true).text('Submitting...');
+
+            $.ajax({
+                url: '/panel/courses/purchases/certificate-request',
+                method: 'POST',
+                data: {
+                    course_id: courseId,
+                    course_type: courseType,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Show success message
+                        $('#certificateRequestModal .modal-body').html(`
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> ${response.message}
+                            </div>
+                            <p>Admin has received your request and will review it. Please check back in a while.</p>
+                        `);
+
+                        // Update button
+                        submitBtn.removeClass('btn-warning').addClass('btn-success').text('Request Submitted');
+
+                        // Hide modal after 3 seconds
+                        setTimeout(function() {
+                            $('#certificateRequestModal').modal('hide');
+                        }, 3000);
+                    } else {
+                        showError(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    var errorMessage = 'An error occurred. Please try again.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    showError(errorMessage);
+                },
+                complete: function() {
+                    // Re-enable button
+                    submitBtn.prop('disabled', false).text(originalText);
+                }
+            });
+        }
+
+        function showError(message) {
+            $('#certificateRequestModal .modal-body').html(`
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `);
+        }
+    </script>
+
 @endpush

@@ -227,6 +227,9 @@ class PaymentController extends Controller
                     ]
                 ]);
 
+                // Set order status to paying for BNPL processing
+                $order->update(['status' => Order::$paying]);
+
                 // Process BNPL payment (this would typically redirect to BNPL provider's checkout)
                 // For now, we'll redirect to a success page and handle the actual BNPL processing later
                 $this->setPaymentAccounting($order, 'bnpl');
@@ -649,6 +652,15 @@ class PaymentController extends Controller
 
             // Update order status based on Tabby response
             if ($tabbyStatus === 'AUTHORIZED') {
+                // Ensure order status is set to paying before calling setPaymentAccounting
+                if ($order->status !== Order::$paying) {
+                    $order->update(['status' => Order::$paying]);
+                }
+
+                // Set payment accounting (this creates the sale records)
+                $this->setPaymentAccounting($order, 'tabby');
+
+                // Update order status to paid after successful accounting
                 $order->update([
                     'status' => Order::$paid,
                     'payment_data' => $this->mergePaymentData($order, [
@@ -656,9 +668,6 @@ class PaymentController extends Controller
                         'tabby_status' => $tabbyStatus
                     ])
                 ]);
-
-                // Set payment accounting
-                $this->setPaymentAccounting($order, 'tabby');
 
                 session()->put($this->order_session_key, $order->id);
                 return redirect('/payments/status');
@@ -887,6 +896,15 @@ class PaymentController extends Controller
 
             // Update order status based on MisPay response
             if ($mispayStatus === 'completed' || $mispayStatus === 'success') {
+                // Ensure order status is set to paying before calling setPaymentAccounting
+                if ($order->status !== Order::$paying) {
+                    $order->update(['status' => Order::$paying]);
+                }
+
+                // Set payment accounting (this creates the sale records)
+                $this->setPaymentAccounting($order, 'mispay');
+
+                // Update order status to paid after successful accounting
                 $order->update([
                     'status' => Order::$paid,
                     'payment_data' => $this->mergePaymentData($order, [
@@ -894,9 +912,6 @@ class PaymentController extends Controller
                         'mispay_status' => $mispayStatus
                     ])
                 ]);
-
-                // Set payment accounting
-                $this->setPaymentAccounting($order, 'mispay');
 
                 session()->put($this->order_session_key, $order->id);
                 return redirect('/payments/status');

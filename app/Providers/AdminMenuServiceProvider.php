@@ -56,6 +56,13 @@ class AdminMenuServiceProvider extends ServiceProvider
                 'url' => getAdminPanelUrl('/enhanced-reports'),
                 'active' => request()->is(getAdminPanelUrl('/enhanced-reports*', false)),
                 'permission' => 'admin_enhanced_reports_access'
+            ],
+            'certificate_requests' => [
+                'title' => 'Certificate Requests',
+                'icon' => 'fas fa-certificate',
+                'url' => getAdminPanelUrl('/certificate-requests'),
+                'active' => request()->is(getAdminPanelUrl('/certificate-requests*', false)),
+                'permission' => 'admin_certificate_requests_list'
             ]
         ];
 

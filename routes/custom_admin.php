@@ -74,6 +74,14 @@ Route::group(['prefix' => 'enhanced-reports'], function () {
 //     Route::get('/{id}/delete', 'YourCustomController@delete')->name('admin.custom.delete');
 // });
 
+// Certificate Requests Routes
+Route::group(['prefix' => 'certificate-requests'], function () {
+    Route::get('/', 'CertificateRequestController@index')->name('admin.certificate-requests.index');
+    Route::get('/{id}', 'CertificateRequestController@show')->name('admin.certificate-requests.show');
+    Route::post('/{id}/update-status', 'CertificateRequestController@updateStatus')->name('admin.certificate-requests.update-status');
+    Route::post('/bulk-action', 'CertificateRequestController@bulkAction')->name('admin.certificate-requests.bulk-action');
+});
+
 // You can add as many route groups as needed
 
 /**

@@ -28,6 +28,9 @@ class DatabaseSeeder extends Seeder
         // Add BNPL permissions
         $this->call(BnplPermissionsSeeder::class);
 
+        // Add Certificate Requests permissions
+        $this->call(CertificateRequestsPermissionsSeeder::class);
+
         // Add purchased courses for user@gmail.com
         $this->call(UserPurchasedCoursesSeeder::class);
     }

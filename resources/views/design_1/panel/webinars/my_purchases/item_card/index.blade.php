@@ -95,6 +95,20 @@
                     @endif
                 </div>
 
+                {{-- Certificate Request Button --}}
+                @if($saleItem->certificate)
+                    <div class="mt-12">
+                        <button type="button"
+                                class="btn btn-outline-warning btn-sm w-100 certificate-request-btn"
+                                data-course-id="{{ $saleItem->id }}"
+                                data-course-type="{{ !empty($sale->webinar) ? 'webinar' : 'bundle' }}"
+                                data-course-title="{{ $saleItem->title }}">
+                            <x-iconsax-lin-award class="icons mr-2" width="16px" height="16px"/>
+                            Download certificate without completing course
+                        </button>
+                    </div>
+                @endif
+
             </div>
         </div>
     </div>

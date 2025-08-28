@@ -59,6 +59,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['imp
         Route::group(['prefix' => 'purchases'], function () {
             Route::get('/', 'MyPurchasedCoursesController@index');
             Route::post('/getJoinInfo', 'MyPurchasedCoursesController@getJoinInfo');
+            Route::post('/certificate-request', 'CertificateRequestController@store');
         });
 
         Route::post('/search', 'WebinarController@search');
