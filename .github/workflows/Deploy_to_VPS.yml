@@ -24,11 +24,17 @@ jobs:
             git pull origin simulation
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
+
+            # Clear and rebuild caches
             php artisan config:clear
             php artisan cache:clear
             php artisan route:clear
 
-            chown -R www-data:www-data storage bootstrap/cache
-            chmod -R 775 storage bootstrap/cache
+           
+            php artisan storage:link || true
+
             
+            chown -R www-data:www-data storage bootstrap/cache public
+            chmod -R 775 storage bootstrap/cache public
+
             systemctl restart apache2
