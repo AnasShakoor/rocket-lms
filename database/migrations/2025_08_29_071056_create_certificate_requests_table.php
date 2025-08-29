@@ -8,18 +8,20 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('certificate_requests', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('course_id');
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('course_id');
             $table->enum('course_type', ['webinar', 'bundle'])->default('webinar');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('admin_notes')->nullable();
             $table->unsignedInteger('created_at');
-            $table->unsignedInteger('updated_at');
+            $table->unsignedInteger('updated_at')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->index(['user_id', 'course_id', 'course_type']);
@@ -29,8 +31,10 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('certificate_requests');
     }

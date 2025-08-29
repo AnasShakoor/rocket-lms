@@ -60,6 +60,11 @@ class SettingsController extends Controller
             $data['notificationTemplates'] = NotificationTemplate::all();
         }
 
+        if ($page == 'simulation') {
+            // Pass all settings keyed for the view helper
+            $data['settings'] = $settings;
+        }
+
         if ($page == 'financial') {
             $paymentChannels = PaymentChannel::orderBy('created_at', 'desc')->paginate(10);
             $data['paymentChannels'] = $paymentChannels;

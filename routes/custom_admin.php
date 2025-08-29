@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Route;
 
 // Get the admin panel prefix from the main application
 $prefix = getAdminPanelUrlPrefix();
+// Simulation Settings
+Route::group(['prefix' => 'settings'], function () {
+    Route::get('/simulation', 'SettingsController@page')->defaults('page', 'simulation')->name('admin.settings.simulation');
+    Route::post('/simulation', 'SettingsController@store')->name('admin.settings.simulation.store');
+});
 
 /**
  * Define your custom admin panel routes here
@@ -26,8 +31,10 @@ Route::group(['prefix' => 'simulation'], function () {
     Route::get('/create', 'SimulationController@create')->name('admin.simulation.create');
     Route::post('/store', 'SimulationController@store')->name('admin.simulation.store');
     Route::get('/{rule}', 'SimulationController@show')->name('admin.simulation.show');
+    Route::get('/{rule}/execute-view', 'SimulationController@executeView')->name('admin.simulation.execute.view');
     Route::post('/{rule}/preview', 'SimulationController@preview')->name('admin.simulation.preview');
     Route::post('/{rule}/execute', 'SimulationController@execute')->name('admin.simulation.execute');
+    Route::post('/execute-immediate', 'SimulationController@executeImmediate')->name('admin.simulation.execute.immediate');
     Route::delete('/{rule}', 'SimulationController@destroy')->name('admin.simulation.destroy');
 
     // Test route for debugging

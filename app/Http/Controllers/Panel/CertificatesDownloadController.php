@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Models\Webinar;
+use App\Models\CertificateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -60,6 +61,26 @@ class CertificatesDownloadController extends Controller
             return back()->with('error', 'Course not found');
         }
 
+        // Check if request already exists for this user/course
+        $existing = CertificateRequest::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->where('course_type', 'webinar')
+            ->first();
+
+        if ($existing) {
+            return back()->with('error', 'You have already requested a certificate for this course');
+        }
+
+        // Create certificate request
+        CertificateRequest::create([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'course_type' => 'webinar',
+            'status' => 'pending',
+            'created_at' => time(),
+            'updated_at' => time(),
+        ]);
+
         // Send notification to admin
         $this->sendAdminNotification($user, $course);
 
@@ -96,13 +117,18 @@ class CertificatesDownloadController extends Controller
                 'user_email' => $user->email,
                 'course_name' => $course->title,
                 'course_id' => $course->id,
+                'course_type' => 'webinar',
                 'request_date' => now()->format('M d, Y H:i:s'),
             ];
 
-            Mail::send('emails.certificate_request_without_completion', $data, function($message) use ($adminEmail, $user, $course) {
-                $message->to($adminEmail)
-                        ->subject('Certificate Request Without Course Completion - ' . $course->title);
-            });
+            try {
+                Mail::send('emails.certificate_request_without_completion', $data, function($message) use ($adminEmail, $user, $course) {
+                    $message->to($adminEmail)
+                            ->subject('Certificate Request Without Course Completion - ' . $course->title);
+                });
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send certificate request email: ' . $e->getMessage());
+            }
         }
     }
 

@@ -24,7 +24,7 @@ class NotificationsController extends Controller
     {
         $this->authorize('admin_notifications_list');
 
-        $notifications = Notification::where('user_id', 1)
+        $notifications = Notification::where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 

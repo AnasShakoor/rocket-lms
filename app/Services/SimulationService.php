@@ -752,7 +752,7 @@ class SimulationService
         foreach ($users as $user) {
             // Get all bundles the user has purchased
             $userBundles = $this->getUserBundles($user);
-            
+
             foreach ($userBundles as $bundle) {
                 $bundleCourses = $this->getBundleCourses($bundle);
                 $processed = $this->processBundleCoursesSequentially(

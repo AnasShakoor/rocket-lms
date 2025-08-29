@@ -93,17 +93,16 @@ class CertificateRequestController extends Controller
             ], 400);
         }
 
-        // Check if request already exists
+        // Check if request already exists (any status)
         $existingRequest = CertificateRequest::where('user_id', $user->id)
             ->where('course_id', $courseId)
             ->where('course_type', $courseType)
-            ->where('status', 'pending')
             ->first();
 
         if ($existingRequest) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Request already submitted'
+                'message' => 'You have already requested a certificate for this course'
             ], 400);
         }
 
@@ -137,7 +136,10 @@ class CertificateRequestController extends Controller
             '[c.id]' => $certificateRequest->course_id,
         ];
 
-        sendNotification('certificate_request_without_completion', $notifyOptions, 1);
+        $admins = \App\User::where('role_name', 'admin')->get();
+        foreach ($admins as $admin) {
+            sendNotification('certificate_request_without_completion', $notifyOptions, $admin->id);
+        }
     }
 
     private function sendAdminEmail($user, $certificateRequest)

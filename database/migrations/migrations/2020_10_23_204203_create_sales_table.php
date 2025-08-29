@@ -30,6 +30,7 @@ class CreateSalesTable extends Migration
             $table->integer('commission')->unsigned()->nullable();
             $table->integer('discount')->unsigned()->nullable();
             $table->integer('total_amount')->unsigned();
+            $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'refunded'])->default('completed');
             $table->integer('created_at')->unsigned();
             $table->integer('refund_at')->unsigned()->nullable();
 

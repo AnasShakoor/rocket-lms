@@ -27,7 +27,14 @@ class SimulationController extends Controller
         }
 
         $rules = SimulationRule::with('creator')->latest()->paginate(20);
-        return view('admin.simulation.index', compact('rules'));
+
+        $courses = \App\Models\Api\Webinar::where('status', 'active')
+            ->where('type', 'course')
+            ->get();
+        $bundles = \App\Models\Bundle::where('status', 'active')->get();
+        $students = \App\User::where('role_name', 'user')->where('status', 'active')->get(['id','full_name','email']);
+
+        return view('admin.simulation.index', compact('rules','courses','bundles','students'));
     }
 
     public function create()
@@ -151,6 +158,12 @@ class SimulationController extends Controller
             abort(403, 'This action is unauthorized.');
         }
 
+        // Global toggle
+        $enabled = getGeneralSettings('simulation') ? (bool) (getGeneralSettings('simulation')['enabled'] ?? false) : (bool) (\App\Models\Setting::getSetting($tmp, 'simulation')['enabled'] ?? false);
+        if (!$enabled) {
+            return back()->withErrors(['error' => 'Simulation module is disabled. Enable it in Settings → Simulation.']);
+        }
+
         if ($rule->status !== 'active') {
             return back()->withErrors(['error' => 'Cannot execute inactive simulation rule.']);
         }
@@ -178,18 +191,38 @@ class SimulationController extends Controller
             abort(403, 'This action is unauthorized.');
         }
 
+        // Global toggle
+        $enabled = getGeneralSettings('simulation') ? (bool) (getGeneralSettings('simulation')['enabled'] ?? false) : (bool) (\App\Models\Setting::getSetting($tmp, 'simulation')['enabled'] ?? false);
+        if (!$enabled) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Simulation module is disabled. Enable it in Settings → Simulation.'
+            ], 403);
+        }
+
         try {
             $validated = $request->validate([
                 'target_type' => 'required|in:course,student,bundle',
-                'enrollment_offset_days' => 'required|integer|min:-365|max:365',
-                'completion_offset_days' => 'required|integer|min:1|max:365',
-                'inter_course_gap_days' => 'required|integer|min:0|max:30',
+                'enrollment_offset_days' => 'nullable|integer|min:-365|max:365',
+                'completion_offset_days' => 'nullable|integer|min:1|max:365',
+                'inter_course_gap_days' => 'nullable|integer|min:0|max:30',
                 'user_ids' => 'required|array|min:1',
                 'user_ids.*' => 'exists:users,id',
                 'course_ids' => 'required_if:target_type,course|array',
                 'course_ids.*' => 'exists:webinars,id',
                 'status' => 'required|in:active,inactive'
             ]);
+
+            // Apply defaults from settings if omitted
+            $sim = \App\Models\Setting::getSetting($tmp, 'simulation');
+            $defaults = [
+                'default_enrol_offset_days' => -12,
+                'default_complete_offset_days' => 2,
+                'default_sequence_gap_days' => 1,
+            ];
+            $validated['enrollment_offset_days'] = $validated['enrollment_offset_days'] ?? ($sim['default_enrol_offset_days'] ?? $defaults['default_enrol_offset_days']);
+            $validated['completion_offset_days'] = $validated['completion_offset_days'] ?? ($sim['default_complete_offset_days'] ?? $defaults['default_complete_offset_days']);
+            $validated['inter_course_gap_days'] = $validated['inter_course_gap_days'] ?? ($sim['default_sequence_gap_days'] ?? $defaults['default_sequence_gap_days']);
 
             // Create a temporary simulation rule for immediate execution
             $rule = new SimulationRule([
