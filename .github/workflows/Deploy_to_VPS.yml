@@ -37,4 +37,5 @@ jobs:
             chmod -R 775 storage bootstrap/cache public
 
             systemctl restart apache2
+#
 
